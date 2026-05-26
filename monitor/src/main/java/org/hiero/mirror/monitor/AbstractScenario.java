@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor;
 
 import com.google.common.base.Stopwatch;
@@ -26,7 +25,8 @@ import org.slf4j.LoggerFactory;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public abstract class AbstractScenario<P extends ScenarioProperties, T> implements Scenario<P, T> {
 
-    private static final long UPDATE_INTERVAL = 20_000L; // 20s measured in milliseconds
+    // 20s measured in milliseconds
+    private static final long UPDATE_INTERVAL = 20_000L;
 
     @EqualsAndHashCode.Include
     protected final int id;
@@ -35,79 +35,68 @@ public abstract class AbstractScenario<P extends ScenarioProperties, T> implemen
     protected final P properties;
 
     protected final AtomicLong counter = new AtomicLong(0L);
+
     protected final Multiset<String> errors = ConcurrentHashMultiset.create();
+
     protected final StepLong intervalCounter = new StepLong(Clock.SYSTEM, UPDATE_INTERVAL);
+
     protected final AtomicReference<T> last = new AtomicReference<>();
+
     protected final Logger log = LoggerFactory.getLogger(getClass());
+
     protected final Stopwatch stopwatch = Stopwatch.createStarted();
 
     @Override
     public long getCount() {
-        return counter.get();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public Duration getElapsed() {
-        return stopwatch.elapsed();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public Map<String, Integer> getErrors() {
-        Map<String, Integer> errorCounts = new TreeMap<>();
-        errors.forEachEntry(errorCounts::put);
-        return Collections.unmodifiableMap(errorCounts);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public Optional<T> getLast() {
-        return Optional.ofNullable(last.get());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public double getRate() {
-        long intervalCount = intervalCounter.poll();
-        return Precision.round((intervalCount * 1000.0) / UPDATE_INTERVAL, 1);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public ScenarioStatus getStatus() {
-        if (!isRunning()) {
-            return ScenarioStatus.COMPLETED;
-        } else if (getRate() <= 0.0) {
-            return ScenarioStatus.IDLE;
-        } else {
-            return ScenarioStatus.RUNNING;
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public boolean isRunning() {
-        return stopwatch.isRunning();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onComplete() {
-        if (isRunning()) {
-            stopwatch.stop();
-            log.info("Stopping '{}' scenario", this);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onError(Throwable throwable) {
-        Throwable rootCause = Throwables.getRootCause(throwable);
-        errors.add(rootCause.getClass().getSimpleName());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onNext(T response) {
-        counter.incrementAndGet();
-        intervalCounter.getCurrent().increment();
-        log.trace("{}: Received response {}", this, response);
-        last.set(response);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public String toString() {
-        return getName();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

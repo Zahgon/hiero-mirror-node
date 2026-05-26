@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.downloader.block.scheduler;
 
 import org.hiero.mirror.common.domain.transaction.BlockFile;
@@ -18,6 +17,6 @@ final class Utils {
      * @return Latency in millis
      */
     static long getLatency(final BlockFile blockFile, final BlockStream blockStream) {
-        return blockStream.blockCompleteTime() - blockFile.getConsensusEnd() / MS_IN_NANOS;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

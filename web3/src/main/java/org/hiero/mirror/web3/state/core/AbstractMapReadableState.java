@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.state.core;
 
 import com.swirlds.state.spi.ReadableStates;
@@ -19,12 +18,12 @@ abstract class AbstractMapReadableState implements ReadableStates {
 
     @Override
     public boolean contains(int stateId) {
-        return states.containsKey(stateId);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @NonNull
     @Override
     public Set<Integer> stateIds() {
-        return Collections.unmodifiableSet(states.keySet());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

@@ -1,12 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.restjava.repository;
 
 import static org.hiero.mirror.restjava.common.RangeOperator.EQ;
 import static org.hiero.mirror.restjava.common.RangeOperator.GT;
 import static org.hiero.mirror.restjava.common.RangeOperator.LT;
 import static org.jooq.impl.DSL.noCondition;
-
 import java.util.Arrays;
 import java.util.List;
 import org.hiero.mirror.restjava.common.RangeOperator;
@@ -18,14 +16,13 @@ import org.jooq.Field;
 interface JooqRepository {
 
     default Condition getCondition(Field<Long> field, RangeOperator operator, Long value) {
-        return operator.getFunction().apply(field, value);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private Condition getCondition(RangeParameter<Long> param, Field<Long> field) {
         if (param == null || param.isEmpty()) {
             return noCondition();
         }
-
         return getCondition(field, param.operator(), param.value());
     }
 
@@ -35,7 +32,7 @@ interface JooqRepository {
     }
 
     default Condition getBoundConditions(List<Bound> bounds) {
-        return getBoundConditions(bounds, false, false);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -68,12 +65,10 @@ interface JooqRepository {
         if (bounds == null || bounds.isEmpty()) {
             return noCondition();
         }
-
         var primary = bounds.getFirst();
         if (bounds.size() == 1) {
             return getCondition(primary);
         }
-
         var secondaryBounds = bounds.subList(1, bounds.size());
         if (!lowerProcessed) {
             for (var bound : secondaryBounds) {
@@ -81,13 +76,11 @@ interface JooqRepository {
                 bound.adjustUpperRange();
             }
         }
-
         // Lower conditions need to be discovered before upper conditions because the methods involved update the
         // primary bound
         var lowerCondition = getOuterCondition(primary, secondaryBounds, false, lowerProcessed);
         var middleCondition = getMiddleCondition(primary, secondaryBounds);
         var upperCondition = getOuterCondition(primary, secondaryBounds, true, upperProcessed);
-
         return lowerCondition.or(middleCondition).or(upperCondition);
     }
 
@@ -116,14 +109,12 @@ interface JooqRepository {
      *       )
      *  )
      */
-    private Condition getOuterCondition(
-            Bound primary, List<Bound> secondaryBounds, boolean isUpper, boolean processed) {
+    private Condition getOuterCondition(Bound primary, List<Bound> secondaryBounds, boolean isUpper, boolean processed) {
         var outerCondition = getPrimaryCondition(primary, isUpper);
         if (outerCondition != noCondition()) {
             var outerBounds = processed ? secondaryBounds : removeRanges(secondaryBounds, isUpper);
             outerCondition = outerCondition.and(getBoundConditions(outerBounds, true, isUpper));
         }
-
         return outerCondition;
     }
 
@@ -169,19 +160,16 @@ interface JooqRepository {
         var field = primaryBound.getField();
         var primaryLowerCondition = getPrimaryMiddleCondition(primaryLower, field, GT);
         var primaryUpperCondition = getPrimaryMiddleCondition(primaryUpper, field, LT);
-
         var secondaryCondition = noCondition();
         for (var secondaryBound : secondaryBounds) {
             if (containsEqOperator(primaryLower, primaryUpper, secondaryBound.getUpper(), secondaryBound.getLower())) {
                 secondaryCondition = secondaryCondition.and(getCondition(secondaryBound));
             }
         }
-
         return primaryLowerCondition.and(primaryUpperCondition).and(secondaryCondition);
     }
 
-    private Condition getPrimaryMiddleCondition(
-            RangeParameter<Long> rangeParameter, Field<Long> field, RangeOperator inclusiveOperator) {
+    private Condition getPrimaryMiddleCondition(RangeParameter<Long> rangeParameter, Field<Long> field, RangeOperator inclusiveOperator) {
         var condition = noCondition();
         if (rangeParameter != null && !rangeParameter.isEmpty()) {
             // When the primary param operator is EQ don't adjust the value for the primary param.
@@ -193,7 +181,6 @@ interface JooqRepository {
                 condition = getCondition(rangeParameter, field);
             }
         }
-
         return condition;
     }
 

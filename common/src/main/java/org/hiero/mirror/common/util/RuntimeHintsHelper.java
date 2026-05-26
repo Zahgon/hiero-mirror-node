@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.util;
 
 import java.lang.annotation.Annotation;
@@ -18,86 +17,61 @@ import org.springframework.core.type.filter.TypeFilter;
 public final class RuntimeHintsHelper {
 
     public static final MemberCategory[] NONE = {};
-    public static final MemberCategory[] UNSAFE_ALLOCATED = {MemberCategory.UNSAFE_ALLOCATED};
-    public static final MemberCategory[] METHODS_ONLY = {MemberCategory.INVOKE_DECLARED_METHODS};
-    public static final MemberCategory[] CONSTRUCTORS_AND_METHODS = {
-        MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.INVOKE_DECLARED_METHODS
-    };
-    public static final MemberCategory[] CONSTRUCTORS_ONLY = {MemberCategory.INVOKE_DECLARED_CONSTRUCTORS};
-    public static final MemberCategory[] CONSTRUCTORS_AND_FIELDS = {
-        MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.ACCESS_DECLARED_FIELDS
-    };
 
-    private static final MemberCategory[] DEFAULT_CATEGORIES = {
-        MemberCategory.INVOKE_DECLARED_CONSTRUCTORS,
-        MemberCategory.INVOKE_DECLARED_METHODS,
-        MemberCategory.ACCESS_DECLARED_FIELDS,
-    };
+    public static final MemberCategory[] UNSAFE_ALLOCATED = { MemberCategory.UNSAFE_ALLOCATED };
+
+    public static final MemberCategory[] METHODS_ONLY = { MemberCategory.INVOKE_DECLARED_METHODS };
+
+    public static final MemberCategory[] CONSTRUCTORS_AND_METHODS = { MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.INVOKE_DECLARED_METHODS };
+
+    public static final MemberCategory[] CONSTRUCTORS_ONLY = { MemberCategory.INVOKE_DECLARED_CONSTRUCTORS };
+
+    public static final MemberCategory[] CONSTRUCTORS_AND_FIELDS = { MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.ACCESS_DECLARED_FIELDS };
+
+    private static final MemberCategory[] DEFAULT_CATEGORIES = { MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.INVOKE_DECLARED_METHODS, MemberCategory.ACCESS_DECLARED_FIELDS };
 
     public static void registerReflectionTypes(RuntimeHints hints, String... classNames) {
-        registerReflectionTypes(hints, DEFAULT_CATEGORIES, classNames);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    public static void registerReflectionTypes(
-            RuntimeHints hints, MemberCategory[] memberCategories, String... classNames) {
-        for (final var className : classNames) {
-            registerReflectionType(hints, className, memberCategories);
-        }
+    public static void registerReflectionTypes(RuntimeHints hints, MemberCategory[] memberCategories, String... classNames) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    public static void registerReflectionTypes(
-            RuntimeHints hints, MemberCategory[] memberCategories, Class<?>... types) {
-        for (final var type : types) {
-            registerReflectionType(hints, type, memberCategories);
-        }
+    public static void registerReflectionTypes(RuntimeHints hints, MemberCategory[] memberCategories, Class<?>... types) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public static void registerReflectionType(RuntimeHints hints, Class<?> type, MemberCategory... memberCategories) {
-        hints.reflection().registerType(TypeReference.of(type), memberCategories);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public static void registerReflectionType(RuntimeHints hints, String className) {
-        registerType(hints, className, DEFAULT_CATEGORIES);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    public static void registerReflectionType(
-            RuntimeHints hints, String className, MemberCategory... memberCategories) {
-        registerType(hints, className, memberCategories);
+    public static void registerReflectionType(RuntimeHints hints, String className, MemberCategory... memberCategories) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    public static void registerAnnotatedPackage(
-            RuntimeHints hints, ClassLoader loader, String basePackage, Class<? extends Annotation> annotationType) {
-        registerAnnotatedPackage(hints, loader, basePackage, annotationType, DEFAULT_CATEGORIES);
+    public static void registerAnnotatedPackage(RuntimeHints hints, ClassLoader loader, String basePackage, Class<? extends Annotation> annotationType) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    public static void registerAnnotatedPackage(
-            RuntimeHints hints,
-            ClassLoader loader,
-            String basePackage,
-            Class<? extends Annotation> annotationType,
-            MemberCategory... memberCategories) {
-        registerPackageMatching(hints, loader, basePackage, new AnnotationTypeFilter(annotationType), memberCategories);
+    public static void registerAnnotatedPackage(RuntimeHints hints, ClassLoader loader, String basePackage, Class<? extends Annotation> annotationType, MemberCategory... memberCategories) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public static void registerPackage(RuntimeHints hints, ClassLoader loader, String basePackage) {
-        registerPackage(hints, loader, basePackage, DEFAULT_CATEGORIES);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    public static void registerPackage(
-            RuntimeHints hints, ClassLoader loader, String basePackage, MemberCategory... memberCategories) {
-        registerPackageMatching(
-                hints,
-                loader,
-                basePackage,
-                (metadataReader, metadataReaderFactory) ->
-                        metadataReader.getClassMetadata().getClassName().startsWith(basePackage),
-                memberCategories);
+    public static void registerPackage(RuntimeHints hints, ClassLoader loader, String basePackage, MemberCategory... memberCategories) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public static void registerResourcePatterns(RuntimeHints hints, String... patterns) {
-        for (final var pattern : patterns) {
-            hints.resources().registerPattern(pattern);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private static void registerType(RuntimeHints hints, String className, MemberCategory... memberCategories) {
@@ -105,27 +79,19 @@ public final class RuntimeHintsHelper {
         hints.reflection().registerType(type, memberCategories);
     }
 
-    private static void registerPackageMatching(
-            RuntimeHints hints,
-            ClassLoader loader,
-            String basePackage,
-            TypeFilter includeFilter,
-            MemberCategory... memberCategories) {
+    private static void registerPackageMatching(RuntimeHints hints, ClassLoader loader, String basePackage, TypeFilter includeFilter, MemberCategory... memberCategories) {
         final var scanner = new ClassPathScanningCandidateComponentProvider(false);
         scanner.addIncludeFilter(includeFilter);
-
         for (final var candidate : scanner.findCandidateComponents(basePackage)) {
             final var className = candidate.getBeanClassName();
             if (className == null) {
                 continue;
             }
-
             registerLoadedClass(hints, loader, className, memberCategories);
         }
     }
 
-    private static void registerLoadedClass(
-            RuntimeHints hints, ClassLoader loader, String className, MemberCategory... memberCategories) {
+    private static void registerLoadedClass(RuntimeHints hints, ClassLoader loader, String className, MemberCategory... memberCategories) {
         try {
             final var type = Class.forName(className, false, loader);
             hints.reflection().registerType(type, memberCategories);

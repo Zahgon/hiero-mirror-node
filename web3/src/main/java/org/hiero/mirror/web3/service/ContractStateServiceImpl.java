@@ -1,12 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.service;
 
 import static org.hiero.mirror.web3.evm.config.EvmConfiguration.CACHE_MANAGER_CONTRACT_SLOTS;
 import static org.hiero.mirror.web3.evm.config.EvmConfiguration.CACHE_MANAGER_CONTRACT_STATE;
 import static org.hiero.mirror.web3.evm.config.EvmConfiguration.CACHE_MANAGER_SLOTS_PER_CONTRACT;
 import static org.hiero.mirror.web3.evm.config.EvmConfiguration.CACHE_NAME;
-
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,17 +27,16 @@ final class ContractStateServiceImpl implements ContractStateService {
     private static final byte[] EMPTY_VALUE = new byte[0];
 
     private final CacheManager cacheManagerSlotsPerContract;
+
     private final CacheProperties cacheProperties;
+
     private final Cache contractSlotsCache;
+
     private final Cache contractStateCache;
+
     private final ContractStateRepository contractStateRepository;
 
-    ContractStateServiceImpl(
-            final @Qualifier(CACHE_MANAGER_CONTRACT_SLOTS) CacheManager cacheManagerContractSlots,
-            final @Qualifier(CACHE_MANAGER_CONTRACT_STATE) CacheManager cacheManagerContractState,
-            final @Qualifier(CACHE_MANAGER_SLOTS_PER_CONTRACT) CacheManager cacheManagerSlotsPerContract,
-            final CacheProperties cacheProperties,
-            final ContractStateRepository contractStateRepository) {
+    ContractStateServiceImpl(@Qualifier(CACHE_MANAGER_CONTRACT_SLOTS) final CacheManager cacheManagerContractSlots, @Qualifier(CACHE_MANAGER_CONTRACT_STATE) final CacheManager cacheManagerContractState, @Qualifier(CACHE_MANAGER_SLOTS_PER_CONTRACT) final CacheManager cacheManagerSlotsPerContract, final CacheProperties cacheProperties, final ContractStateRepository contractStateRepository) {
         this.cacheManagerSlotsPerContract = cacheManagerSlotsPerContract;
         this.cacheProperties = cacheProperties;
         this.contractSlotsCache = cacheManagerContractSlots.getCache(CACHE_NAME);
@@ -56,23 +53,12 @@ final class ContractStateServiceImpl implements ContractStateService {
      */
     @Override
     public Optional<byte[]> findStorage(final EntityId contractId, final byte[] key) {
-        if (!cacheProperties.isEnableBatchContractSlotCaching()) {
-            return contractStateRepository.findStorage(contractId.getId(), key);
-        }
-
-        final var cachedValue = contractStateCache.get(generateCacheKey(contractId, key), byte[].class);
-
-        if (cachedValue != null && cachedValue != EMPTY_VALUE) {
-            return Optional.of(cachedValue);
-        }
-
-        return findStorageBatch(contractId, key);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
-    public Optional<byte[]> findStorageByBlockTimestamp(
-            final EntityId entityId, final byte[] slotKeyByteArray, final long blockTimestamp) {
-        return contractStateRepository.findStorageByBlockTimestamp(entityId.getId(), slotKeyByteArray, blockTimestamp);
+    public Optional<byte[]> findStorageByBlockTimestamp(final EntityId entityId, final byte[] slotKeyByteArray, final long blockTimestamp) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -83,36 +69,29 @@ final class ContractStateServiceImpl implements ContractStateService {
      * @return slotKey-value pairs for contractId
      */
     private Optional<byte[]> findStorageBatch(final EntityId contractId, final byte[] key) {
-        final var contractSlotsCache = ((CaffeineCache) this.contractSlotsCache.get(
-                contractId, () -> cacheManagerSlotsPerContract.getCache(contractId.toString())));
+        final var contractSlotsCache = ((CaffeineCache) this.contractSlotsCache.get(contractId, () -> cacheManagerSlotsPerContract.getCache(contractId.toString())));
         final var wrappedKey = ByteBuffer.wrap(key);
         // Cached slot keys for contract, whose slot values are not present in the contractStateCache
         contractSlotsCache.putIfAbsent(wrappedKey, EMPTY_VALUE);
         final var cachedSlotKeys = contractSlotsCache.getNativeCache().asMap().keySet();
-
         final var cachedSlots = new ArrayList<byte[]>(cachedSlotKeys.size());
         boolean isKeyEvictedFromCache = true;
-
         for (var slot : cachedSlotKeys) {
             cachedSlots.add(((ByteBuffer) slot).array());
             if (wrappedKey.equals(slot)) {
                 isKeyEvictedFromCache = false;
             }
         }
-
         final var contractSlotValues = contractStateRepository.findStorageBatch(contractId.getId(), cachedSlots);
         byte[] cachedValue = null;
-
         for (final var contractSlotValue : contractSlotValues) {
             final byte[] slotKey = contractSlotValue.getSlot();
             final byte[] slotValue = contractSlotValue.getValue();
             contractStateCache.put(generateCacheKey(contractId, slotKey), slotValue);
-
             if (Arrays.equals(slotKey, key)) {
                 cachedValue = slotValue;
             }
         }
-
         // If the cache key was evicted and hasn't been requested since, the cached value will be null.
         // In that case, fall back to the original query.
         if (isKeyEvictedFromCache) {

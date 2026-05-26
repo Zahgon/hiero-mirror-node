@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.subscribe;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -27,7 +26,7 @@ public interface Scenario<P extends ScenarioProperties, T> {
     int getId();
 
     default String getName() {
-        return getProperties().getName();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @JsonIgnore

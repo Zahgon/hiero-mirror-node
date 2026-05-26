@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.entity.staking;
 
 import org.hiero.mirror.importer.parser.record.transactionhandler.NodeStakeUpdatedEvent;
@@ -16,6 +15,6 @@ public interface EntityStakeCalculator {
 
     @EventListener(classes = ApplicationReadyEvent.class)
     default void calculateOnApplicationReady() {
-        calculate();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

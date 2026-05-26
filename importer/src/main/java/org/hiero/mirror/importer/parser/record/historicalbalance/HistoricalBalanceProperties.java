@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.historicalbalance;
 
 import jakarta.annotation.PostConstruct;
@@ -51,9 +50,6 @@ public class HistoricalBalanceProperties {
 
     @PostConstruct
     void init() {
-        if (balanceDownloaderProperties.isEnabled() && isEnabled()) {
-            throw new IllegalArgumentException(
-                    "The two configuration properties can't be both true: hiero.mirror.importer.downloader.balance.enabled and hiero.mirror.importer.parser.record.historicalBalance.enabled");
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

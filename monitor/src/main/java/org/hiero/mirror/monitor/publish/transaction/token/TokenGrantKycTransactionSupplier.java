@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.publish.transaction.token;
 
 import com.hedera.hashgraph.sdk.AccountId;
@@ -25,10 +24,6 @@ public class TokenGrantKycTransactionSupplier implements TransactionSupplier<Tok
 
     @Override
     public TokenGrantKycTransaction get() {
-
-        return new TokenGrantKycTransaction()
-                .setAccountId(AccountId.fromString(accountId))
-                .setMaxTransactionFee(Hbar.fromTinybars(maxTransactionFee))
-                .setTokenId(TokenId.fromString(tokenId));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

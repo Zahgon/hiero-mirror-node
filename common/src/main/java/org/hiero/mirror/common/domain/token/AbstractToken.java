@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.token;
 
 import com.google.common.collect.Range;
@@ -92,7 +91,8 @@ public class AbstractToken implements History {
     private Long tokenId;
 
     @UpsertColumn(coalesce = "case when {0} >= 0 then {0} else e_{0} + coalesce({0}, {1}) end")
-    private Long totalSupply; // Increment with initialSupply and mint amounts, decrement with burn amount
+    private Long // Increment with initialSupply and mint amounts, decrement with burn amount
+    totalSupply;
 
     @Convert(converter = EntityIdConverter.class)
     private EntityId treasuryAccountId;
@@ -106,23 +106,14 @@ public class AbstractToken implements History {
     private byte[] wipeKey;
 
     public void setName(String name) {
-        this.name = DomainUtils.sanitize(name);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public void setSymbol(String symbol) {
-        this.symbol = DomainUtils.sanitize(symbol);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public void setTotalSupply(Long newTotalSupply) {
-        if (newTotalSupply == null) {
-            return;
-        }
-
-        if (newTotalSupply < 0) {
-            // Negative from a token transfer of a token dissociate of a deleted token, so we aggregate the change.
-            totalSupply = totalSupply == null ? newTotalSupply : totalSupply + newTotalSupply;
-        } else {
-            totalSupply = newTotalSupply;
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

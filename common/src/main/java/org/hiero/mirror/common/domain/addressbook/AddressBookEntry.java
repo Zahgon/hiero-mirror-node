@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.addressbook;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -38,7 +37,8 @@ import org.springframework.data.domain.Persistable;
 @Data
 @Entity
 @NoArgsConstructor
-@AllArgsConstructor(access = AccessLevel.PRIVATE) // For builder
+// For builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class AddressBookEntry implements Persistable<AddressBookEntry.Id> {
 
     private String description;
@@ -69,20 +69,17 @@ public class AddressBookEntry implements Persistable<AddressBookEntry.Id> {
     @JoinColumn(name = "consensusTimestamp", referencedColumnName = "consensusTimestamp")
     @JoinColumn(name = "nodeId", referencedColumnName = "nodeId")
     @JsonIgnore
-    @OneToMany(
-            cascade = {CascadeType.ALL},
-            orphanRemoval = true,
-            fetch = FetchType.EAGER)
+    @OneToMany(cascade = { CascadeType.ALL }, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<AddressBookServiceEndpoint> serviceEndpoints = new HashSet<>();
 
     private Long stake;
 
     public long getConsensusTimestamp() {
-        return id.getConsensusTimestamp();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public long getNodeId() {
-        return id.getNodeId();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private PublicKey parsePublicKey() {
@@ -99,19 +96,18 @@ public class AddressBookEntry implements Persistable<AddressBookEntry.Id> {
     @JsonIgnore
     @Override
     public boolean isNew() {
-        return true; // Since we never update and use a natural ID, avoid Hibernate querying before insert
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     // We have to use @EmbeddedId due to a Hibernate bug, but to avoid changing code we still support flattened IDs.
     public static class AddressBookEntryBuilder {
+
         public AddressBookEntryBuilder consensusTimestamp(long consensusTimestamp) {
-            getId().setConsensusTimestamp(consensusTimestamp);
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         public AddressBookEntryBuilder nodeId(long nodeId) {
-            getId().setNodeId(nodeId);
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         private Id getId() {
@@ -129,6 +125,7 @@ public class AddressBookEntry implements Persistable<AddressBookEntry.Id> {
         private static final long serialVersionUID = -3761184325551298389L;
 
         private long consensusTimestamp;
+
         private long nodeId;
     }
 }

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.health;
 
 import jakarta.inject.Named;
@@ -21,35 +20,23 @@ final class PrometheusApiClient {
             final var factory = new DefaultUriBuilderFactory(lagProperties.getPrometheusBaseUrl());
             // PromQL includes braces, quotes, etc. We want to pass it through as-is.
             factory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.NONE);
-
             final var requestFactory = new SimpleClientHttpRequestFactory();
             requestFactory.setConnectTimeout(lagProperties.getTimeout());
             requestFactory.setReadTimeout(lagProperties.getTimeout());
-
-            this.prometheusClient = RestClient.builder()
-                    .baseUrl(lagProperties.getPrometheusBaseUrl())
-                    .uriBuilderFactory(factory)
-                    .requestFactory(requestFactory)
-                    .defaultHeaders(h -> {
-                        final var username = StringUtils.trimToNull(lagProperties.getPrometheusUsername());
-                        final var password = StringUtils.trimToNull(lagProperties.getPrometheusPassword());
-                        if (username != null && password != null) {
-                            h.setBasicAuth(username, password);
-                        }
-                    })
-                    .build();
+            this.prometheusClient = RestClient.builder().baseUrl(lagProperties.getPrometheusBaseUrl()).uriBuilderFactory(factory).requestFactory(requestFactory).defaultHeaders(h -> {
+                final var username = StringUtils.trimToNull(lagProperties.getPrometheusUsername());
+                final var password = StringUtils.trimToNull(lagProperties.getPrometheusPassword());
+                if (username != null && password != null) {
+                    h.setBasicAuth(username, password);
+                }
+            }).build();
         } else {
             this.prometheusClient = null;
         }
     }
 
     PrometheusQueryResponse query(final String query) {
-        final var encodedQuery = UriUtils.encodeQuery(query, StandardCharsets.UTF_8);
-        return prometheusClient
-                .get()
-                .uri(builder -> builder.queryParam("query", encodedQuery).build())
-                .retrieve()
-                .body(PrometheusQueryResponse.class);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     record PrometheusQueryResponse(String status, PrometheusData data) {
@@ -59,16 +46,16 @@ final class PrometheusApiClient {
         }
 
         List<PrometheusSeries> getSeries() {
-            if (!isValid()) {
-                return List.of();
-            }
-            return data.result();
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
     }
 
-    record PrometheusData(String resultType, List<PrometheusSeries> result) {}
+    record PrometheusData(String resultType, List<PrometheusSeries> result) {
+    }
 
-    record PrometheusSeries(PrometheusMetric metric, List<Object> value) {}
+    record PrometheusSeries(PrometheusMetric metric, List<Object> value) {
+    }
 
-    record PrometheusMetric(String cluster) {}
+    record PrometheusMetric(String cluster) {
+    }
 }

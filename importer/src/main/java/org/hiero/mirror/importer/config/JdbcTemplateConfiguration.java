@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.config;
 
 import javax.sql.DataSource;
@@ -16,13 +15,13 @@ class JdbcTemplateConfiguration {
     @Bean
     @Primary
     JdbcTemplate jdbcTemplate(DataSource dataSource, JdbcProperties properties) {
-        return createJdbcTemplate(dataSource, properties);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Bean
     @Owner
     JdbcTemplate jdbcTemplateOwner(Flyway flyway, JdbcProperties properties) {
-        return createJdbcTemplate(flyway.getConfiguration().getDataSource(), properties);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private JdbcTemplate createJdbcTemplate(DataSource dataSource, JdbcProperties properties) {

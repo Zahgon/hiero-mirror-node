@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.transaction;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -50,16 +49,13 @@ public class AssessedCustomFee implements Persistable<AssessedCustomFee.Id> {
     @JsonIgnore
     @Override
     public Id getId() {
-        var id = new Id();
-        id.setCollectorAccountId(collectorAccountId);
-        id.setConsensusTimestamp(consensusTimestamp);
-        return id;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @JsonIgnore
     @Override
     public boolean isNew() {
-        return true; // Since we never update and use a natural ID, avoid Hibernate querying before insert
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @AllArgsConstructor

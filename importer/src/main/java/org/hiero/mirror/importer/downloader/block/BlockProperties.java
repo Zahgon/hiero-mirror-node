@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.downloader.block;
 
 import jakarta.validation.Valid;
@@ -51,8 +50,6 @@ public final class BlockProperties {
     private boolean writeFiles = false;
 
     public String getBucketName() {
-        return StringUtils.isNotBlank(bucketName)
-                ? bucketName
-                : ImporterProperties.HederaNetwork.getBlockStreamBucketName(importerProperties.getNetwork());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

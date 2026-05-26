@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.reader.signature;
 
 import jakarta.inject.Named;
@@ -15,39 +14,16 @@ import org.hiero.mirror.importer.reader.ValidatedDataInputStream;
 @Named
 public class SignatureFileReaderV2 implements SignatureFileReader {
 
-    protected static final byte SIGNATURE_TYPE_SIGNATURE = 3; // the file content signature, should not be hashed
-    protected static final byte SIGNATURE_TYPE_FILE_HASH = 4; // next 48 bytes are SHA-384 of content of record file
+    // the file content signature, should not be hashed
+    protected static final byte SIGNATURE_TYPE_SIGNATURE = 3;
+
+    // next 48 bytes are SHA-384 of content of record file
+    protected static final byte SIGNATURE_TYPE_FILE_HASH = 4;
 
     private static final byte VERSION = 2;
 
     @Override
     public StreamFileSignature read(StreamFileData signatureFileData) {
-        String filename = signatureFileData.getFilename();
-
-        try (ValidatedDataInputStream vdis =
-                new ValidatedDataInputStream(signatureFileData.getInputStream(), filename)) {
-            vdis.readByte(SIGNATURE_TYPE_FILE_HASH, "hash delimiter");
-            byte[] fileHash = vdis.readNBytes(DigestAlgorithm.SHA_384.getSize(), "hash");
-
-            vdis.readByte(SIGNATURE_TYPE_SIGNATURE, "signature delimiter");
-            byte[] signature =
-                    vdis.readLengthAndBytes(1, SignatureType.SHA_384_WITH_RSA.getMaxLength(), false, "signature");
-
-            if (vdis.available() != 0) {
-                throw new SignatureFileParsingException("Extra data discovered in signature file " + filename);
-            }
-
-            StreamFileSignature streamFileSignature = new StreamFileSignature();
-            streamFileSignature.setBytes(signatureFileData.getBytes());
-            streamFileSignature.setFileHash(fileHash);
-            streamFileSignature.setFileHashSignature(signature);
-            streamFileSignature.setFilename(signatureFileData.getStreamFilename());
-            streamFileSignature.setSignatureType(SignatureType.SHA_384_WITH_RSA);
-            streamFileSignature.setVersion(VERSION);
-
-            return streamFileSignature;
-        } catch (InvalidStreamFileException | IOException e) {
-            throw new SignatureFileParsingException(e);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

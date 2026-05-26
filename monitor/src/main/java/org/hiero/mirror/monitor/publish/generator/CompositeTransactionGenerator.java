@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.publish.generator;
 
 import com.google.common.util.concurrent.RateLimiter;
@@ -36,57 +35,29 @@ public class CompositeTransactionGenerator implements TransactionGenerator {
     }
 
     private final PublishProperties properties;
+
     final AtomicReference<EnumeratedDistribution<TransactionGenerator>> distribution = new AtomicReference<>();
+
     final AtomicReference<RateLimiter> rateLimiter = new AtomicReference<>();
+
     final List<ConfigurableTransactionGenerator> transactionGenerators;
+
     final AtomicInteger batchSize = new AtomicInteger(1);
 
-    public CompositeTransactionGenerator(
-            ExpressionConverter expressionConverter,
-            MonitorProperties monitorProperties,
-            ScenarioPropertiesAggregator scenarioPropertiesAggregator,
-            PublishProperties properties) {
+    public CompositeTransactionGenerator(ExpressionConverter expressionConverter, MonitorProperties monitorProperties, ScenarioPropertiesAggregator scenarioPropertiesAggregator, PublishProperties properties) {
         this.properties = properties;
-        this.transactionGenerators = properties.getScenarios().values().stream()
-                .filter(PublishScenarioProperties::isEnabled)
-                .map(scenarioProperties -> new ConfigurableTransactionGenerator(
-                        expressionConverter, monitorProperties, scenarioPropertiesAggregator, scenarioProperties))
-                .collect(Collectors.toList());
+        this.transactionGenerators = properties.getScenarios().values().stream().filter(PublishScenarioProperties::isEnabled).map(scenarioProperties -> new ConfigurableTransactionGenerator(expressionConverter, monitorProperties, scenarioPropertiesAggregator, scenarioProperties)).collect(Collectors.toList());
         rebuild();
     }
 
     @Override
     public List<PublishRequest> next(int count) {
-        int permits = count > 0 ? count : batchSize.get();
-        rateLimiter.get().acquire(permits);
-
-        List<PublishRequest> publishRequests = new ArrayList<>();
-        int i = 0;
-        while (i < permits) {
-            try {
-                TransactionGenerator transactionGenerator = distribution.get().sample();
-                publishRequests.addAll(transactionGenerator.next());
-                i++;
-            } catch (ScenarioException e) {
-                log.warn(e.getMessage());
-                e.getScenario().getProperties().setEnabled(false);
-                e.getScenario().onComplete();
-                rebuild();
-                if (rateLimiter.get().equals(INACTIVE_RATE_LIMITER)) {
-                    break;
-                }
-            } catch (Exception e) {
-                log.error("Unable to generate a transaction", e);
-                throw e;
-            }
-        }
-
-        return publishRequests;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public Flux<PublishScenario> scenarios() {
-        return Flux.fromIterable(transactionGenerators).flatMap(TransactionGenerator::scenarios);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private synchronized void rebuild() {
@@ -102,7 +73,6 @@ public class CompositeTransactionGenerator implements TransactionGenerator {
                 iter.remove();
             }
         }
-
         if (!properties.isEnabled() || pairs.isEmpty() || total == 0.0) {
             batchSize.set(1);
             distribution.set(null);
@@ -110,14 +80,11 @@ public class CompositeTransactionGenerator implements TransactionGenerator {
             log.info("Publishing is disabled");
             return;
         }
-
         for (ConfigurableTransactionGenerator transactionGenerator : transactionGenerators) {
             log.info("Activated scenario: {}", transactionGenerator.getProperties());
         }
-
         batchSize.set(Math.max(1, (int) Math.ceil(total / properties.getBatchDivisor())));
         distribution.set(new EnumeratedDistribution<>(pairs));
-
         RateLimiter current = rateLimiter.get();
         if (current != null) {
             current.setRate(total);
@@ -130,7 +97,6 @@ public class CompositeTransactionGenerator implements TransactionGenerator {
         if (warmupPeriod.equals(Duration.ZERO)) {
             return RateLimiter.create(tps);
         }
-
         return RateLimiter.create(tps, properties.getWarmupPeriod());
     }
 }

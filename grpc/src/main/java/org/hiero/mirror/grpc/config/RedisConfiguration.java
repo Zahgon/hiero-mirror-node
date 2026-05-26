@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.grpc.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,31 +24,18 @@ import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @AutoConfigureBefore(DataRedisAutoConfiguration.class)
-@AutoConfigureAfter({MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class})
+@AutoConfigureAfter({ MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
 @Configuration(proxyBeanMethods = false)
 @SuppressWarnings("removal")
 class RedisConfiguration {
 
     @Bean
     RedisSerializer<TopicMessage> redisSerializer() {
-        var module = new SimpleModule();
-        module.addDeserializer(EntityId.class, EntityIdDeserializer.INSTANCE);
-        module.addSerializer(EntityIdSerializer.INSTANCE);
-
-        var objectMapper = new ObjectMapper(new MessagePackFactory());
-        objectMapper.registerModule(module);
-        return new Jackson2JsonRedisSerializer<>(objectMapper, TopicMessage.class);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Bean
-    ReactiveRedisOperations<String, TopicMessage> reactiveRedisOperations(
-            ReactiveRedisConnectionFactory connectionFactory) {
-        var serializationContext = RedisSerializationContext.<String, TopicMessage>newSerializationContext()
-                .key(StringRedisSerializer.UTF_8)
-                .value(redisSerializer())
-                .hashKey(StringRedisSerializer.UTF_8)
-                .hashValue(redisSerializer())
-                .build();
-        return new ReactiveRedisTemplate<>(connectionFactory, serializationContext);
+    ReactiveRedisOperations<String, TopicMessage> reactiveRedisOperations(ReactiveRedisConnectionFactory connectionFactory) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.grpc;
 
 import org.hiero.mirror.common.CommonConfiguration;
@@ -12,6 +11,6 @@ import org.springframework.context.annotation.Import;
 public class GrpcApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(GrpcApplication.class, args);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

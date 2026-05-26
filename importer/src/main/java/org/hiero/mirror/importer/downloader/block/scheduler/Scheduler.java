@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.downloader.block.scheduler;
 
 import org.hiero.mirror.common.domain.transaction.BlockFile;
@@ -27,6 +26,6 @@ public interface Scheduler extends AutoCloseable {
      * @return True if rescheduling is needed, otherwise false
      */
     default boolean shouldReschedule(BlockFile blockFile, BlockStream blockStream) {
-        return false;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

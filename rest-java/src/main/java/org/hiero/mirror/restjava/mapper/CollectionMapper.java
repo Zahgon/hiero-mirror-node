@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.restjava.mapper;
 
 import java.util.ArrayList;
@@ -13,15 +12,6 @@ public interface CollectionMapper<S, T> {
     T map(S source);
 
     default List<T> map(Collection<S> sources) {
-        if (CollectionUtils.isEmpty(sources)) {
-            return Collections.emptyList();
-        }
-
-        List<T> list = new ArrayList<>(sources.size());
-        for (S source : sources) {
-            list.add(map(source));
-        }
-
-        return list;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

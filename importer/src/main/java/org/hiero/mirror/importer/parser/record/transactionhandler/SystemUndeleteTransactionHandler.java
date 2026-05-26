@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.transactionhandler;
 
 import jakarta.inject.Named;
@@ -20,29 +19,11 @@ class SystemUndeleteTransactionHandler extends AbstractEntityCrudTransactionHand
 
     @Override
     public EntityId getEntity(RecordItem recordItem) {
-        var systemUndelete = recordItem.getTransactionBody().getSystemUndelete();
-
-        if (systemUndelete.hasContractID()) {
-            return entityIdService.lookup(systemUndelete.getContractID()).orElse(EntityId.EMPTY);
-        } else if (systemUndelete.hasFileID()) {
-            return EntityId.of(systemUndelete.getFileID());
-        }
-
-        return null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     protected void doUpdateEntity(Entity entity, RecordItem recordItem) {
-        var transactionBody = recordItem.getTransactionBody().getSystemUndelete();
-        EntityType entityType = null;
-
-        if (transactionBody.hasContractID()) {
-            entityType = EntityType.CONTRACT;
-        } else if (transactionBody.hasFileID()) {
-            entityType = EntityType.FILE;
-        }
-
-        entity.setType(entityType);
-        entityListener.onEntity(entity);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

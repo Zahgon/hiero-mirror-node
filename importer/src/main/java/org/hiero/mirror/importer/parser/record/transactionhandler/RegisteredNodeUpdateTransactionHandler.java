@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.transactionhandler;
 
 import com.google.common.collect.Range;
@@ -13,41 +12,17 @@ import org.springframework.context.ApplicationEventPublisher;
 @Named
 final class RegisteredNodeUpdateTransactionHandler extends AbstractRegisteredNodeTransactionHandler {
 
-    RegisteredNodeUpdateTransactionHandler(
-            ApplicationEventPublisher applicationEventPublisher, EntityListener entityListener) {
+    RegisteredNodeUpdateTransactionHandler(ApplicationEventPublisher applicationEventPublisher, EntityListener entityListener) {
         super(applicationEventPublisher, entityListener);
     }
 
     @Override
     public TransactionType getType() {
-        return TransactionType.REGISTEREDNODEUPDATE;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public RegisteredNode parseRegisteredNode(RecordItem recordItem) {
-        if (!recordItem.isSuccessful()) {
-            return null;
-        }
-
-        final var nodeUpdate = recordItem.getTransactionBody().getRegisteredNodeUpdate();
-        final var builder = RegisteredNode.builder();
-
-        if (nodeUpdate.hasAdminKey()) {
-            builder.adminKey(nodeUpdate.getAdminKey().toByteArray());
-        }
-
-        if (nodeUpdate.hasDescription()) {
-            builder.description(nodeUpdate.getDescription().getValue());
-        }
-
-        final var protoServiceEndpoints = nodeUpdate.getServiceEndpointList();
-        if (!protoServiceEndpoints.isEmpty()) {
-            parseServiceEndpoints(builder, protoServiceEndpoints);
-        }
-
-        return builder.deleted(false)
-                .registeredNodeId(nodeUpdate.getRegisteredNodeId())
-                .timestampRange(Range.atLeast(recordItem.getConsensusTimestamp()))
-                .build();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

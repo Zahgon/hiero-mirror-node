@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.restjava.controller;
 
 import static org.hiero.mirror.restjava.common.Constants.ACCOUNT_ID;
@@ -13,7 +12,6 @@ import static org.hiero.mirror.restjava.common.Constants.TOKEN_ID;
 import static org.hiero.mirror.restjava.dto.TokenAirdropRequest.AirdropRequestType.OUTSTANDING;
 import static org.hiero.mirror.restjava.dto.TokenAirdropRequest.AirdropRequestType.PENDING;
 import static org.hiero.mirror.restjava.jooq.domain.Tables.TOKEN_AIRDROP;
-
 import com.google.common.collect.ImmutableSortedMap;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Positive;
@@ -49,62 +47,34 @@ import org.springframework.web.bind.annotation.RestController;
 public class TokenAirdropsController {
 
     private static final String DEFAULT_SERIAL_NUMBER = "0L";
+
     private static final long DEFAULT_SERIAL_VALUE = 0L;
+
     private static final Function<TokenAirdrop, Map<String, String>> EXTRACTOR = tokenAirdrop -> {
         var serialNumber = tokenAirdrop.getSerialNumber();
-        return ImmutableSortedMap.of(
-                RECEIVER_ID, tokenAirdrop.getReceiverId(),
-                SENDER_ID, tokenAirdrop.getSenderId(),
-                SERIAL_NUMBER, serialNumber == null ? DEFAULT_SERIAL_NUMBER : serialNumber.toString(),
-                TOKEN_ID, tokenAirdrop.getTokenId());
+        return ImmutableSortedMap.of(RECEIVER_ID, tokenAirdrop.getReceiverId(), SENDER_ID, tokenAirdrop.getSenderId(), SERIAL_NUMBER, serialNumber == null ? DEFAULT_SERIAL_NUMBER : serialNumber.toString(), TOKEN_ID, tokenAirdrop.getTokenId());
     };
 
     private final LinkFactory linkFactory;
+
     private final TokenAirdropMapper tokenAirdropMapper;
+
     private final TokenAirdropService service;
 
     @GetMapping(value = "/outstanding")
-    TokenAirdropsResponse getOutstandingAirdrops(
-            @PathVariable EntityIdParameter id,
-            @RequestParam(defaultValue = DEFAULT_LIMIT) @Positive @Max(MAX_LIMIT) int limit,
-            @RequestParam(defaultValue = "asc") Sort.Direction order,
-            @RequestParam(name = RECEIVER_ID, required = false) @Size(max = 2) EntityIdRangeParameter[] receiverIds,
-            @RequestParam(name = SERIAL_NUMBER, required = false) @Size(max = 2) NumberRangeParameter[] serialNumbers,
-            @RequestParam(name = TOKEN_ID, required = false) @Size(max = 2) EntityIdRangeParameter[] tokenIds) {
-        return processRequest(id, receiverIds, limit, order, serialNumbers, tokenIds, OUTSTANDING);
+    TokenAirdropsResponse getOutstandingAirdrops(@PathVariable EntityIdParameter id, @RequestParam(defaultValue = DEFAULT_LIMIT) @Positive @Max(MAX_LIMIT) int limit, @RequestParam(defaultValue = "asc") Sort.Direction order, @RequestParam(name = RECEIVER_ID, required = false) @Size(max = 2) EntityIdRangeParameter[] receiverIds, @RequestParam(name = SERIAL_NUMBER, required = false) @Size(max = 2) NumberRangeParameter[] serialNumbers, @RequestParam(name = TOKEN_ID, required = false) @Size(max = 2) EntityIdRangeParameter[] tokenIds) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @GetMapping(value = "/pending")
-    TokenAirdropsResponse getPendingAirdrops(
-            @PathVariable EntityIdParameter id,
-            @RequestParam(defaultValue = DEFAULT_LIMIT) @Positive @Max(MAX_LIMIT) int limit,
-            @RequestParam(defaultValue = "asc") Sort.Direction order,
-            @RequestParam(name = SENDER_ID, required = false) @Size(max = 2) EntityIdRangeParameter[] senderIds,
-            @RequestParam(name = SERIAL_NUMBER, required = false) @Size(max = 2) NumberRangeParameter[] serialNumbers,
-            @RequestParam(name = TOKEN_ID, required = false) @Size(max = 2) EntityIdRangeParameter[] tokenIds) {
-        return processRequest(id, senderIds, limit, order, serialNumbers, tokenIds, PENDING);
+    TokenAirdropsResponse getPendingAirdrops(@PathVariable EntityIdParameter id, @RequestParam(defaultValue = DEFAULT_LIMIT) @Positive @Max(MAX_LIMIT) int limit, @RequestParam(defaultValue = "asc") Sort.Direction order, @RequestParam(name = SENDER_ID, required = false) @Size(max = 2) EntityIdRangeParameter[] senderIds, @RequestParam(name = SERIAL_NUMBER, required = false) @Size(max = 2) NumberRangeParameter[] serialNumbers, @RequestParam(name = TOKEN_ID, required = false) @Size(max = 2) EntityIdRangeParameter[] tokenIds) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @SuppressWarnings("java:S107")
-    private TokenAirdropsResponse processRequest(
-            EntityIdParameter id,
-            EntityIdRangeParameter[] entityIds,
-            int limit,
-            Sort.Direction order,
-            NumberRangeParameter[] serialNumbers,
-            EntityIdRangeParameter[] tokenIds,
-            AirdropRequestType type) {
+    private TokenAirdropsResponse processRequest(EntityIdParameter id, EntityIdRangeParameter[] entityIds, int limit, Sort.Direction order, NumberRangeParameter[] serialNumbers, EntityIdRangeParameter[] tokenIds, AirdropRequestType type) {
         var entityIdsBound = new Bound(entityIds, true, ACCOUNT_ID, type.getPrimaryField());
-        var request = TokenAirdropRequest.builder()
-                .accountId(id)
-                .entityIds(entityIdsBound)
-                .limit(limit)
-                .order(order)
-                .serialNumbers(new Bound(serialNumbers, false, SERIAL_NUMBER, TOKEN_AIRDROP.SERIAL_NUMBER))
-                .tokenIds(new Bound(tokenIds, false, TOKEN_ID, TOKEN_AIRDROP.TOKEN_ID))
-                .type(type)
-                .build();
-
+        var request = TokenAirdropRequest.builder().accountId(id).entityIds(entityIdsBound).limit(limit).order(order).serialNumbers(new Bound(serialNumbers, false, SERIAL_NUMBER, TOKEN_AIRDROP.SERIAL_NUMBER)).tokenIds(new Bound(tokenIds, false, TOKEN_ID, TOKEN_AIRDROP.TOKEN_ID)).type(type).build();
         var response = service.getAirdrops(request);
         var airdrops = tokenAirdropMapper.map(response);
         var sort = getSort(airdrops, order, type.getParameter());
@@ -121,7 +91,6 @@ public class TokenAirdropsController {
                 return Sort.by(order, primarySortField, TOKEN_ID);
             }
         }
-
         return Sort.by(order, primarySortField, TOKEN_ID, SERIAL_NUMBER);
     }
 }

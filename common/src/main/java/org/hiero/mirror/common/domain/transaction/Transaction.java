@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.transaction;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -27,7 +26,8 @@ import org.hiero.mirror.common.domain.token.NftTransfer;
 import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Persistable;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE) // For builder
+// For builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 @Data
 @Entity
@@ -109,51 +109,30 @@ public class Transaction implements Persistable<Long> {
     private Long validStartNs;
 
     public void addItemizedTransfer(@NonNull ItemizedTransfer itemizedTransfer) {
-        if (this.itemizedTransfer == null) {
-            this.itemizedTransfer = new ArrayList<>();
-        }
-
-        this.itemizedTransfer.add(itemizedTransfer);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public void addNftTransfer(@NonNull NftTransfer nftTransfer) {
-        if (this.nftTransfer == null) {
-            this.nftTransfer = new ArrayList<>();
-        }
-
-        this.nftTransfer.add(nftTransfer);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @JsonIgnore
     @Override
     public Long getId() {
-        return consensusTimestamp;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @JsonIgnore
     @Override
     public boolean isNew() {
-        return true; // Since we never update and use a natural ID, avoid Hibernate querying before insert
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public void addInnerTransaction(Transaction transaction) {
-        if (this.type != TransactionType.ATOMIC_BATCH.getProtoId()) {
-            throw new IllegalStateException("Inner transactions can only be added to atomic batch transaction");
-        }
-
-        if (innerTransactions == null) {
-            innerTransactions = new ArrayList<>();
-        }
-
-        innerTransactions.add(transaction.getPayerAccountId().getId());
-        innerTransactions.add(transaction.getValidStartNs());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public TransactionHash toTransactionHash() {
-        return TransactionHash.builder()
-                .consensusTimestamp(consensusTimestamp)
-                .hash(transactionHash)
-                .payerAccountId(payerAccountId.getId())
-                .build();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

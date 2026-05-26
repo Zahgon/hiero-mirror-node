@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.restjava.config;
 
 import java.util.List;
@@ -22,11 +21,11 @@ final class WebMvcConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(requestParameterArgumentResolver);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void addFormatters(FormatterRegistry registry) {
-        registry.addConverter(String.class, EntityIdParameter.class, EntityIdParameter::valueOf);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

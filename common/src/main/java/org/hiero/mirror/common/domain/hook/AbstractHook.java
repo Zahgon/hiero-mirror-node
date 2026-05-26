@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.hook;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -33,13 +32,14 @@ import org.hiero.mirror.common.domain.entity.EntityId;
 public abstract class AbstractHook implements History {
 
     private static final String UPSERTABLE_COLUMN_COALESCE = """
-                    case when created_timestamp = lower(timestamp_range) then {0}
-                         else coalesce({0}, e_{0})
-                    end""";
+        case when created_timestamp = lower(timestamp_range) then {0}
+             else coalesce({0}, e_{0})
+        end""";
+
     private static final String UPSERTABLE_COLUMN_WITH_DEFAULT_COALESCE = """
-                    case when created_timestamp = lower(timestamp_range) then coalesce({0}, {1})
-                         else coalesce({0}, e_{0}, {1})
-                    end""";
+        case when created_timestamp = lower(timestamp_range) then coalesce({0}, {1})
+             else coalesce({0}, e_{0}, {1})
+        end""";
 
     @ToString.Exclude
     @UpsertColumn(coalesce = UPSERTABLE_COLUMN_COALESCE)
@@ -75,25 +75,27 @@ public abstract class AbstractHook implements History {
 
     @JsonIgnore
     public Id getId() {
-        return new Id(hookId, ownerId);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public void setOwnerId(EntityId ownerId) {
-        this.ownerId = ownerId.getId();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public void setOwnerId(long ownerId) {
-        this.ownerId = ownerId;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @AllArgsConstructor
     @Data
     @NoArgsConstructor
     public static class Id implements Serializable {
+
         @Serial
         private static final long serialVersionUID = -8745629837592847563L;
 
         private long hookId;
+
         private long ownerId;
     }
 }

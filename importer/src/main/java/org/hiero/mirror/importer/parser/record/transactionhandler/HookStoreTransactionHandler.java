@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.transactionhandler;
 
 import jakarta.inject.Named;
@@ -19,37 +18,21 @@ import org.jspecify.annotations.NullMarked;
 final class HookStoreTransactionHandler extends AbstractTransactionHandler {
 
     private final EvmHookStorageHandler hookHandler;
+
     private final EntityIdService entityIdService;
 
     @Override
     public TransactionType getType() {
-        return TransactionType.HOOKSTORE;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public EntityId getEntity(RecordItem recordItem) {
-        final var hookEntityId =
-                recordItem.getTransactionBody().getHookStore().getHookId().getEntityId();
-
-        if (hookEntityId.hasAccountId()) {
-            return entityIdService.lookup(hookEntityId.getAccountId()).orElse(EntityId.EMPTY);
-        }
-
-        return entityIdService.lookup(hookEntityId.getContractId()).orElse(EntityId.EMPTY);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     protected void doUpdateTransaction(Transaction transaction, RecordItem recordItem) {
-        if (!recordItem.isSuccessful()) {
-            return;
-        }
-
-        final var transactionBody = recordItem.getTransactionBody().getHookStore();
-        final var ownerEntityId = transaction.getEntityId();
-        final var hookId = transactionBody.getHookId().getHookId();
-        final var consensusTimestamp = recordItem.getConsensusTimestamp();
-
-        hookHandler.processStorageUpdates(
-                consensusTimestamp, hookId, ownerEntityId, transactionBody.getStorageUpdatesList());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

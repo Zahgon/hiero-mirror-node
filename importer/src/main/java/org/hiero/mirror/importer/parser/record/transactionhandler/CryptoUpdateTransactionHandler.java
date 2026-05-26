@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.transactionhandler;
 
 import static com.hederahashgraph.api.proto.java.CryptoUpdateTransactionBody.StakedIdCase.STAKEDID_NOT_SET;
 import static org.hiero.mirror.common.domain.transaction.RecordFile.HAPI_VERSION_0_27_0;
-
 import jakarta.inject.Named;
 import org.hiero.mirror.common.domain.entity.AbstractEntity;
 import org.hiero.mirror.common.domain.entity.Entity;
@@ -22,72 +20,20 @@ class CryptoUpdateTransactionHandler extends AbstractEntityCrudTransactionHandle
 
     private final EVMHookHandler evmHookHandler;
 
-    CryptoUpdateTransactionHandler(
-            EntityIdService entityIdService, EntityListener entityListener, EVMHookHandler evmHookHandler) {
+    CryptoUpdateTransactionHandler(EntityIdService entityIdService, EntityListener entityListener, EVMHookHandler evmHookHandler) {
         super(entityIdService, entityListener, TransactionType.CRYPTOUPDATEACCOUNT);
         this.evmHookHandler = evmHookHandler;
     }
 
     @Override
     public EntityId getEntity(RecordItem recordItem) {
-        return EntityId.of(
-                recordItem.getTransactionBody().getCryptoUpdateAccount().getAccountIDToUpdate());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
-    @SuppressWarnings({"deprecation", "java:S1874"})
+    @SuppressWarnings({ "deprecation", "java:S1874" })
     protected void doUpdateEntity(Entity entity, RecordItem recordItem) {
-        var transactionBody = recordItem.getTransactionBody().getCryptoUpdateAccount();
-
-        if (transactionBody.hasAutoRenewPeriod()) {
-            entity.setAutoRenewPeriod(transactionBody.getAutoRenewPeriod().getSeconds());
-        }
-
-        if (transactionBody.hasExpirationTime()) {
-            entity.setExpirationTimestamp(DomainUtils.timestampInNanosMax(transactionBody.getExpirationTime()));
-        }
-
-        if (transactionBody.hasKey()) {
-            entity.setKey(transactionBody.getKey().toByteArray());
-        }
-
-        if (transactionBody.hasMaxAutomaticTokenAssociations()) {
-            entity.setMaxAutomaticTokenAssociations(
-                    transactionBody.getMaxAutomaticTokenAssociations().getValue());
-        }
-
-        if (transactionBody.hasMemo()) {
-            entity.setMemo(transactionBody.getMemo().getValue());
-        }
-
-        if (transactionBody.hasProxyAccountID()) {
-            var proxyAccountId = EntityId.of(transactionBody.getProxyAccountID());
-            entity.setProxyAccountId(proxyAccountId);
-            recordItem.addEntityId(proxyAccountId);
-        }
-
-        if (transactionBody.hasReceiverSigRequiredWrapper()) {
-            entity.setReceiverSigRequired(
-                    transactionBody.getReceiverSigRequiredWrapper().getValue());
-        } else if (transactionBody.getReceiverSigRequired()) {
-            // support old transactions
-            entity.setReceiverSigRequired(transactionBody.getReceiverSigRequired());
-        }
-
-        // If the delegation address is the zero-address, it means that we have the delegation address
-        // cleared, and we need to persist it as the zero-address in the DB.
-        if (!transactionBody.getDelegationAddress().isEmpty()) {
-            entity.setDelegationAddress(DomainUtils.toBytes(transactionBody.getDelegationAddress()));
-        }
-
-        updateStakingInfo(recordItem, entity);
-        entity.setType(EntityType.ACCOUNT);
-        entityListener.onEntity(entity);
-        evmHookHandler.process(
-                recordItem,
-                entity.getId(),
-                transactionBody.getHookCreationDetailsList(),
-                transactionBody.getHookIdsToDeleteList());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private void updateStakingInfo(RecordItem recordItem, Entity entity) {
@@ -95,12 +41,10 @@ class CryptoUpdateTransactionHandler extends AbstractEntityCrudTransactionHandle
             return;
         }
         var transactionBody = recordItem.getTransactionBody().getCryptoUpdateAccount();
-
         if (transactionBody.hasDeclineReward()) {
             entity.setDeclineReward(transactionBody.getDeclineReward().getValue());
         }
-
-        switch (transactionBody.getStakedIdCase()) {
+        switch(transactionBody.getStakedIdCase()) {
             case STAKEDID_NOT_SET:
                 break;
             case STAKED_NODE_ID:
@@ -114,7 +58,6 @@ class CryptoUpdateTransactionHandler extends AbstractEntityCrudTransactionHandle
                 recordItem.addEntityId(accountId);
                 break;
         }
-
         // If the stake node id or the decline reward value has changed, we start a new stake period.
         if (transactionBody.getStakedIdCase() != STAKEDID_NOT_SET || transactionBody.hasDeclineReward()) {
             entity.setStakePeriodStart(Utility.getEpochDay(recordItem.getConsensusTimestamp()));

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.retention;
 
 import com.google.common.base.Stopwatch;
@@ -29,38 +28,16 @@ import org.springframework.transaction.support.TransactionOperations;
 public class RetentionJob {
 
     private final RecordFileRepository recordFileRepository;
+
     private final RetentionProperties retentionProperties;
+
     private final Collection<RetentionRepository> retentionRepositories;
+
     private final TransactionOperations transactionOperations;
 
     @Scheduled(fixedDelayString = "#{@retentionProperties.getFrequency().toMillis()}", initialDelay = 120_000)
     public synchronized void prune() {
-        if (!retentionProperties.isEnabled()) {
-            log.info("Retention is disabled");
-            return;
-        }
-
-        var retentionPeriod = retentionProperties.getPeriod();
-        var latest = recordFileRepository.findLatestWithOffset(retentionPeriod.toNanos());
-        if (latest.isEmpty()) {
-            log.warn("Skipping since there is no data {} older than the latest data in database", retentionPeriod);
-            return;
-        }
-
-        var maxTimestamp = latest.get().getConsensusEnd();
-        var iterator = new RecordFileIterator(latest.get());
-        log.info(
-                "Using retention period {} to prune entries on or before {}", retentionPeriod, toInstant(maxTimestamp));
-
-        try {
-            while (iterator.hasNext()) {
-                prune(iterator);
-            }
-
-            log.info("Finished pruning tables in {}: {}", iterator.getStopwatch(), iterator.getCounters());
-        } catch (Exception e) {
-            log.error("Error pruning tables in {}: {}", iterator.getStopwatch(), iterator.getCounters(), e);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private void prune(RecordFileIterator iterator) {
@@ -69,16 +46,13 @@ public class RetentionJob {
         var stopwatch = iterator.getStopwatch();
         var next = iterator.next();
         long endTimestamp = next.getConsensusEnd();
-
         transactionOperations.executeWithoutResult(t -> retentionRepositories.forEach(repository -> {
             String table = getTableName(repository);
-
             if (retentionProperties.shouldPrune(table)) {
                 long count = repository.prune(endTimestamp);
                 counters.merge(table, count, Long::sum);
             }
         }));
-
         long countAfter = counters.values().stream().reduce(0L, Long::sum);
         long count = countAfter - countBefore;
         long elapsed = stopwatch.elapsed(TimeUnit.SECONDS);
@@ -100,55 +74,20 @@ public class RetentionJob {
     private class RecordFileIterator implements Iterator<RecordFile> {
 
         private final Map<String, Long> counters = new TreeMap<>();
+
         private final RecordFile max;
+
         private final Stopwatch stopwatch = Stopwatch.createStarted();
+
         private RecordFile current;
 
         public boolean hasNext() {
-            // Initialize with the earliest/minimum record file. This can incur an extra prune at the beginning but
-            // simplfies logic and is necessary in case there is only one record file in the database.
-            if (current == null) {
-                var next = recordFileRepository.findNextBetween(0, max.getConsensusEnd());
-                if (next.isEmpty()) {
-                    return false;
-                }
-
-                current = next.get();
-                return true;
-            }
-
-            // We pruned max in the last iteration, so skip it now
-            if (current == max) {
-                current = null;
-                return false;
-            }
-
-            long batchPeriod = retentionProperties.getBatchPeriod().toNanos();
-            long endTimestamp = current.getConsensusEnd() + batchPeriod;
-
-            // Ignore batchPeriod if it would put us past the max and just use max instead
-            if (endTimestamp >= max.getConsensusEnd()) {
-                current = max;
-                return true;
-            }
-
-            // Next record file is in between min and max
-            var next = recordFileRepository.findNextBetween(endTimestamp, max.getConsensusEnd());
-            if (next.isEmpty()) {
-                current = null;
-                return false;
-            }
-
-            current = next.get();
-            return true;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         @Override
         public RecordFile next() {
-            if (current == null) {
-                throw new NoSuchElementException("No more record files");
-            }
-            return current;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
     }
 }

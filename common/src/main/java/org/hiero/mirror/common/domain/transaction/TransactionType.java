@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.transaction;
 
 import java.util.Arrays;
@@ -13,6 +12,7 @@ import org.hiero.mirror.common.domain.entity.EntityOperation;
 @Getter
 @RequiredArgsConstructor
 public enum TransactionType {
+
     UNKNOWN(-1, EntityOperation.NONE),
     CONTRACTCALL(7, EntityOperation.NONE),
     CONTRACTCREATEINSTANCE(8, EntityOperation.CREATE),
@@ -74,13 +74,13 @@ public enum TransactionType {
     REGISTEREDNODEUPDATE(79, EntityOperation.UPDATE),
     REGISTEREDNODEDELETE(80, EntityOperation.DELETE);
 
-    private static final Map<Integer, TransactionType> idMap =
-            Arrays.stream(values()).collect(Collectors.toMap(TransactionType::getProtoId, Function.identity()));
+    private static final Map<Integer, TransactionType> idMap = Arrays.stream(values()).collect(Collectors.toMap(TransactionType::getProtoId, Function.identity()));
 
     private final int protoId;
+
     private final EntityOperation entityOperation;
 
     public static TransactionType of(int protoId) {
-        return idMap.getOrDefault(protoId, UNKNOWN);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

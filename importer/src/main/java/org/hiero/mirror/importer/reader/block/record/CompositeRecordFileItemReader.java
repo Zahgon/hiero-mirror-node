@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.reader.block.record;
 
 import com.hedera.hapi.block.stream.protoc.RecordFileItem;
@@ -11,7 +10,9 @@ import org.hiero.mirror.importer.parser.record.sidecar.SidecarProperties;
 public final class CompositeRecordFileItemReader implements RecordFileItemReader {
 
     private final RecordFileItemReaderV2 readerV2;
+
     private final RecordFileItemReaderV5 readerV5;
+
     private final RecordFileItemReaderV6 readerV6;
 
     public CompositeRecordFileItemReader(final SidecarProperties sidecarProperties) {
@@ -22,14 +23,6 @@ public final class CompositeRecordFileItemReader implements RecordFileItemReader
 
     @Override
     public RecordFile read(final RecordFileItem recordFileItem, final int version) {
-        final var reader =
-                switch (version) {
-                    case 2 -> readerV2;
-                    case 5 -> readerV5;
-                    case 6 -> readerV6;
-                    default -> throw new UnsupportedOperationException("Unsupported record file version " + version);
-                };
-
-        return reader.read(recordFileItem, version);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

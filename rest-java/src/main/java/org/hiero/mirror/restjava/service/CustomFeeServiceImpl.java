@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.restjava.service;
 
 import jakarta.inject.Named;
@@ -17,8 +16,6 @@ final class CustomFeeServiceImpl implements CustomFeeService {
 
     @Override
     public CustomFee findById(EntityId id) {
-        return customFeeRepository
-                .findById(id.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Custom fee for entity not found"));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

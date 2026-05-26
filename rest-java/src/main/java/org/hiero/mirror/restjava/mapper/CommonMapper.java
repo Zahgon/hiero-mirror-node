@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.restjava.mapper;
 
 import com.google.common.collect.Range;
@@ -29,135 +28,68 @@ import org.mapstruct.Named;
 @Mapper(mappingInheritanceStrategy = MappingInheritanceStrategy.AUTO_INHERIT_FROM_CONFIG)
 public interface CommonMapper {
 
-    byte[] IMMUTABILITY_SENTINEL_KEY = com.hederahashgraph.api.proto.java.Key.newBuilder()
-            .setKeyList(KeyList.getDefaultInstance())
-            .build()
-            .toByteArray();
+    byte[] IMMUTABILITY_SENTINEL_KEY = com.hederahashgraph.api.proto.java.Key.newBuilder().setKeyList(KeyList.getDefaultInstance()).build().toByteArray();
+
     String QUALIFIER_TIMESTAMP = "timestamp";
+
     String QUALIFIER_TIMESTAMP_RANGE = "timestampRange";
+
     int NANO_DIGITS = 9;
+
     int FRACTION_SCALE = 9;
+
     Pattern PATTERN_ECDSA = Pattern.compile("^(3a21|32250a233a21|2a29080112250a233a21)([A-Fa-f0-9]{66})$");
+
     Pattern PATTERN_ED25519 = Pattern.compile("^(1220|32240a221220|2a28080112240a221220)([A-Fa-f0-9]{64})$");
+
     long SECONDS_PER_DAY = 86400L;
+
     String TIMESTAMP_ZERO = "0.0";
 
     default String mapByteArrayToHexString(byte[] source) {
-        if (source == null) {
-            return null;
-        }
-        return "0x" + StringUtils.leftPad(Hex.encodeHexString(source), 64, '0');
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     default String mapEntityId(Long source) {
-        if (source == null || source == 0) {
-            return null;
-        }
-
-        var eid = EntityId.of(source);
-        return mapEntityId(eid);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     default String mapEntityId(EntityId source) {
-        return source != null ? source.toString() : null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     default Key mapKey(byte[] source) {
-        if (source == null || Arrays.equals(source, IMMUTABILITY_SENTINEL_KEY)) {
-            return null;
-        }
-
-        var hex = Hex.encodeHexString(source);
-        var ed25519 = PATTERN_ED25519.matcher(hex);
-
-        if (ed25519.matches()) {
-            return new Key().key(ed25519.group(2)).type(TypeEnum.ED25519);
-        }
-
-        var ecdsa = PATTERN_ECDSA.matcher(hex);
-
-        if (ecdsa.matches()) {
-            return new Key().key(ecdsa.group(2)).type(TypeEnum.ECDSA_SECP256_K1);
-        }
-
-        return new Key().key(hex).type(TypeEnum.PROTOBUF_ENCODED);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     default List<Key> mapKeyList(byte[] source) {
-        if (ArrayUtils.isEmpty(source)) {
-            return Collections.emptyList();
-        }
-
-        try {
-            var keyList = KeyList.parseFrom(source);
-            return keyList.getKeysList().stream()
-                    .map(key -> mapKey(key.toByteArray()))
-                    .toList();
-        } catch (InvalidProtocolBufferException e) {
-            throw new InvalidMappingException("Error parsing protobuf message", e);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     default String mapLowerRange(Range<Long> source) {
-        if (source == null || !source.hasLowerBound()) {
-            return null;
-        }
-
-        return mapTimestamp(source.lowerEndpoint());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     default TimestampRange mapRange(Range<Long> source) {
-        if (source == null) {
-            return null;
-        }
-
-        var target = new TimestampRange();
-        if (source.hasLowerBound()) {
-            target.setFrom(mapTimestamp(source.lowerEndpoint()));
-        }
-
-        if (source.hasUpperBound()) {
-            target.setTo(mapTimestamp(source.upperEndpoint()));
-        }
-
-        return target;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     default TimestampRangeNullable mapTimestampRangeNullable(Range<Long> source) {
-        if (source == null) {
-            return null;
-        }
-
-        var target = new TimestampRangeNullable();
-        if (source.hasLowerBound()) {
-            target.setFrom(mapTimestamp(source.lowerEndpoint()));
-        }
-
-        if (source.hasUpperBound()) {
-            target.setTo(mapTimestamp(source.upperEndpoint()));
-        }
-
-        return target;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Named(QUALIFIER_TIMESTAMP)
     default String mapTimestamp(Long timestamp) {
-        return timestamp != null ? DomainUtils.toTimestamp(timestamp) : null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     default Long mapTimestampSeconds(TimestampSeconds source) {
-        if (source == null) {
-            return null;
-        }
-        return source.getSeconds();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Named(QUALIFIER_TIMESTAMP_RANGE)
     default TimestampRange mapTimestampRange(long stakingPeriod) {
-        final long fromNs = stakingPeriod + 1;
-        final long toNs = fromNs + (SECONDS_PER_DAY * DomainUtils.NANOS_PER_SECOND);
-
-        return new TimestampRange().from(mapTimestamp(fromNs)).to(mapTimestamp(toNs));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -169,12 +101,6 @@ public interface CommonMapper {
      * @return the result of numerator / denominator as a float, or 0.0f if denominator is 0
      */
     default float mapFraction(long numerator, long denominator) {
-        if (denominator == 0L) {
-            return 0f;
-        }
-
-        return BigDecimal.valueOf(numerator)
-                .divide(BigDecimal.valueOf(denominator), FRACTION_SCALE, RoundingMode.HALF_UP)
-                .floatValue();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

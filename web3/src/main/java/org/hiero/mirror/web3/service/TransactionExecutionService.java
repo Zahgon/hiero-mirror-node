@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.service;
 
 import static com.hedera.hapi.node.base.ResponseCodeEnum.PAYER_ACCOUNT_NOT_FOUND;
@@ -11,7 +10,6 @@ import static com.hedera.services.utils.EntityIdUtils.accountIdFromEvmAddress;
 import static org.hiero.mirror.web3.convert.BytesDecoder.maybeDecodeSolidityErrorStringToReadableMessage;
 import static org.hiero.mirror.web3.state.Utils.DEFAULT_KEY;
 import static org.hiero.mirror.web3.validation.HexValidator.HEX_PREFIX;
-
 import com.hedera.hapi.node.base.AccountID;
 import com.hedera.hapi.node.base.ContractID;
 import com.hedera.hapi.node.base.Duration;
@@ -58,84 +56,50 @@ import org.hyperledger.besu.datatypes.Address;
 public class TransactionExecutionService {
 
     private static final Duration TRANSACTION_DURATION = new Duration(15);
+
     private static final long CONTRACT_CREATE_TX_FEES = 1_000_000_000L;
+
     private static final String SENDER_NOT_FOUND = "Sender account not found.";
 
     private final AccountReadableKVState accountReadableKVState;
+
     private final AliasesReadableKVState aliasesReadableKVState;
+
     private final CommonProperties commonProperties;
+
     private final EvmProperties evmProperties;
+
     private final OpcodeActionTracer opcodeActionTracer;
+
     private final MirrorOperationActionTracer mirrorOperationActionTracer;
+
     private final SystemEntity systemEntity;
+
     private final TransactionExecutorFactory transactionExecutorFactory;
 
     public EvmTransactionResult execute(final CallServiceParameters params, final long estimatedGas) {
-        final var isContractCreate = params.getReceiver().isZero();
-        final var configuration = evmProperties.getVersionedConfiguration();
-        final var maxLifetime =
-                configuration.getConfigData(EntitiesConfig.class).maxLifetime();
-        final var executor = transactionExecutorFactory.get();
-
-        final TransactionBody transactionBody;
-        final EvmTransactionResult result;
-        if (params instanceof ContractDebugParameters debugParams
-                && debugParams.getEthereumData() != null
-                && debugParams.getEthereumData().length > 0) {
-            transactionBody = buildEthereumTransactionBody(debugParams);
-        } else if (isContractCreate) {
-            transactionBody = buildContractCreateTransactionBody(params, estimatedGas, maxLifetime);
-        } else {
-            transactionBody = buildContractCallTransactionBody(params, estimatedGas);
-        }
-
-        final var singleTransactionRecords = executor.execute(transactionBody, Instant.now(), getOperationTracers());
-        final var parentTransactionStatus = singleTransactionRecords
-                .getFirst()
-                .transactionRecord()
-                .receiptOrThrow()
-                .status();
-        if (parentTransactionStatus == SUCCESS) {
-            result = buildSuccessResult(isContractCreate, singleTransactionRecords);
-        } else {
-            result = handleFailedResult(singleTransactionRecords, isContractCreate);
-        }
-        return result;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    private ContractFunctionResult getTransactionResult(
-            final TransactionRecord transactionRecord, final boolean isContractCreate) {
-        return isContractCreate
-                ? transactionRecord.contractCreateResultOrThrow()
-                : transactionRecord.contractCallResultOrThrow();
+    private ContractFunctionResult getTransactionResult(final TransactionRecord transactionRecord, final boolean isContractCreate) {
+        return isContractCreate ? transactionRecord.contractCreateResultOrThrow() : transactionRecord.contractCallResultOrThrow();
     }
 
-    private EvmTransactionResult buildSuccessResult(
-            final boolean isContractCreate, final List<SingleTransactionRecord> transactionRecords) {
+    private EvmTransactionResult buildSuccessResult(final boolean isContractCreate, final List<SingleTransactionRecord> transactionRecords) {
         final var parentTransaction = transactionRecords.getFirst().transactionRecord();
         final var childTransactionErrors = populateChildTransactionErrors(transactionRecords);
-
         final var result = getTransactionResult(parentTransaction, isContractCreate);
-
         if (!childTransactionErrors.isEmpty()) {
             // there are some child transactions that failed but parent is SUCCESS, logging a warning
             final var contractId = result.contractID();
-            log.warn(
-                    "Child transaction errors present for contract: {} with successful parent transaction, errors: {}",
-                    contractId.hasContractNum() ? contractId.contractNum() : contractId.evmAddress(),
-                    childTransactionErrors);
+            log.warn("Child transaction errors present for contract: {} with successful parent transaction, errors: {}", contractId.hasContractNum() ? contractId.contractNum() : contractId.evmAddress(), childTransactionErrors);
         }
-
         return new EvmTransactionResult(parentTransaction.receipt().status(), result);
     }
 
-    private EvmTransactionResult handleFailedResult(
-            final List<SingleTransactionRecord> transactionRecords, final boolean isContractCreate)
-            throws MirrorEvmTransactionException {
+    private EvmTransactionResult handleFailedResult(final List<SingleTransactionRecord> transactionRecords, final boolean isContractCreate) throws MirrorEvmTransactionException {
         final var parentTransactionRecord = transactionRecords.getFirst().transactionRecord();
-        final var result = isContractCreate
-                ? parentTransactionRecord.contractCreateResult()
-                : parentTransactionRecord.contractCallResult();
+        final var result = isContractCreate ? parentTransactionRecord.contractCreateResult() : parentTransactionRecord.contractCallResult();
         final var status = parentTransactionRecord.receiptOrThrow().status();
         if (result == null) {
             // No result - the call did not reach the EVM and probably failed at pre-checks. No metric to update in this
@@ -143,14 +107,11 @@ public class TransactionExecutionService {
             throw new MirrorEvmTransactionException(status, StringUtils.EMPTY, StringUtils.EMPTY);
         } else {
             final var childTransactionErrors = populateChildTransactionErrors(transactionRecords);
-
             if (ContractCallContext.get().getOpcodeContext() == null) {
                 var processingResult = new EvmTransactionResult(status, result);
-
                 final var errorMessageHex = processingResult.getErrorMessage().orElse(HEX_PREFIX);
                 final var detail = maybeDecodeSolidityErrorStringToReadableMessage(errorMessageHex);
-                throw new MirrorEvmTransactionException(
-                        status, detail, errorMessageHex, processingResult, childTransactionErrors);
+                throw new MirrorEvmTransactionException(status, detail, errorMessageHex, processingResult, childTransactionErrors);
             } else {
                 // If we are in an opcode trace scenario, we need to return a failed result in order to get the
                 // opcode list from the ContractCallContext. If we throw an exception instead of returning a result,
@@ -161,52 +122,20 @@ public class TransactionExecutionService {
     }
 
     private TransactionBody.Builder defaultTransactionBodyBuilder(final CallServiceParameters params) {
-        return TransactionBody.newBuilder()
-                .transactionID(TransactionID.newBuilder()
-                        .transactionValidStart(new Timestamp(Instant.now().getEpochSecond(), 0))
-                        .accountID(getSenderAccountID(params))
-                        .build())
-                .nodeAccountID(EntityIdUtils.toAccountId(systemEntity.treasuryAccount()))
-                .transactionValidDuration(TRANSACTION_DURATION);
+        return TransactionBody.newBuilder().transactionID(TransactionID.newBuilder().transactionValidStart(new Timestamp(Instant.now().getEpochSecond(), 0)).accountID(getSenderAccountID(params)).build()).nodeAccountID(EntityIdUtils.toAccountId(systemEntity.treasuryAccount())).transactionValidDuration(TRANSACTION_DURATION);
     }
 
-    private TransactionBody buildContractCreateTransactionBody(
-            final CallServiceParameters params, final long estimatedGas, final long maxLifetime) {
-        return defaultTransactionBodyBuilder(params)
-                .contractCreateInstance(ContractCreateTransactionBody.newBuilder()
-                        .initcode(Bytes.wrap(params.getCallData()))
-                        .gas(estimatedGas)
-                        .autoRenewPeriod(new Duration(maxLifetime))
-                        .build())
-                .transactionFee(CONTRACT_CREATE_TX_FEES)
-                .build();
+    private TransactionBody buildContractCreateTransactionBody(final CallServiceParameters params, final long estimatedGas, final long maxLifetime) {
+        return defaultTransactionBodyBuilder(params).contractCreateInstance(ContractCreateTransactionBody.newBuilder().initcode(Bytes.wrap(params.getCallData())).gas(estimatedGas).autoRenewPeriod(new Duration(maxLifetime)).build()).transactionFee(CONTRACT_CREATE_TX_FEES).build();
     }
 
-    private TransactionBody buildContractCallTransactionBody(
-            final CallServiceParameters params, final long estimatedGas) {
-        return defaultTransactionBodyBuilder(params)
-                .contractCall(ContractCallTransactionBody.newBuilder()
-                        .contractID(ContractID.newBuilder()
-                                .shardNum(commonProperties.getShard())
-                                .realmNum(commonProperties.getRealm())
-                                .evmAddress(Bytes.wrap(params.getReceiver().toArrayUnsafe()))
-                                .build())
-                        .functionParameters(Bytes.wrap(params.getCallData()))
-                        .amount(params.getValue()) // tinybars sent to contract
-                        .gas(estimatedGas)
-                        .build())
-                .build();
+    private TransactionBody buildContractCallTransactionBody(final CallServiceParameters params, final long estimatedGas) {
+        return defaultTransactionBodyBuilder(params).contractCall(ContractCallTransactionBody.newBuilder().contractID(ContractID.newBuilder().shardNum(commonProperties.getShard()).realmNum(commonProperties.getRealm()).evmAddress(Bytes.wrap(params.getReceiver().toArrayUnsafe())).build()).functionParameters(Bytes.wrap(params.getCallData())).amount(// tinybars sent to contract
+        params.getValue()).gas(estimatedGas).build()).build();
     }
 
     private TransactionBody buildEthereumTransactionBody(final ContractDebugParameters params) {
-        final var txnBody = defaultTransactionBodyBuilder(params)
-                .ethereumTransaction(EthereumTransactionBody.newBuilder()
-                        .ethereumData(Bytes.wrap(params.getEthereumData()))
-                        .maxGasAllowance(Long.MAX_VALUE)
-                        .build())
-                .transactionFee(CONTRACT_CREATE_TX_FEES)
-                .build();
-
+        final var txnBody = defaultTransactionBodyBuilder(params).ethereumTransaction(EthereumTransactionBody.newBuilder().ethereumData(Bytes.wrap(params.getEthereumData())).maxGasAllowance(Long.MAX_VALUE).build()).transactionFee(CONTRACT_CREATE_TX_FEES).build();
         patchSenderNonce(params);
         return txnBody;
     }
@@ -224,16 +153,12 @@ public class TransactionExecutionService {
         final var account = accountReadableKVState.get(senderId);
         if (account != null && account.ethereumNonce() != nonce) {
             final var writableCache = ContractCallContext.get().getWriteCacheState(AccountReadableKVState.STATE_ID);
-            writableCache.put(
-                    account.accountId(),
-                    account.copyBuilder().ethereumNonce(nonce).build());
+            writableCache.put(account.accountId(), account.copyBuilder().ethereumNonce(nonce).build());
         }
     }
 
     private ProtoBytes convertAddressToProtoBytes(final Address address) {
-        return ProtoBytes.newBuilder()
-                .value(Bytes.wrap(address.toArrayUnsafe()))
-                .build();
+        return ProtoBytes.newBuilder().value(Bytes.wrap(address.toArrayUnsafe())).build();
     }
 
     private AccountID getSenderAccountID(final CallServiceParameters params) {
@@ -243,7 +168,6 @@ public class TransactionExecutionService {
         }
         final var senderAddress = params.getSender();
         final var accountIDNum = getSenderAccountIDAsNum(senderAddress);
-
         final var account = accountReadableKVState.get(accountIDNum);
         if (account == null) {
             throwPayerAccountNotFoundException(SENDER_NOT_FOUND);
@@ -255,12 +179,10 @@ public class TransactionExecutionService {
             // transaction executor directly skips this account completion and
             // this results in failed transactions that would otherwise succeed
             // against the consensus node.
-            final var writableAccountCache =
-                    ContractCallContext.get().getWriteCacheState(AccountReadableKVState.STATE_ID);
+            final var writableAccountCache = ContractCallContext.get().getWriteCacheState(AccountReadableKVState.STATE_ID);
             final var completedAccount = account.copyBuilder().key(DEFAULT_KEY).build();
             writableAccountCache.put(account.accountId(), completedAccount);
         }
-
         return accountIDNum;
     }
 
@@ -275,11 +197,7 @@ public class TransactionExecutionService {
         } else {
             final var senderAccountID = accountIdFromEvmAddress(senderAddress);
             // If the address was passed as a long-zero address we need to convert it to the correct AccountID type.
-            accountIDNum = AccountID.newBuilder()
-                    .accountNum(senderAccountID.getAccountNum())
-                    .shardNum(senderAccountID.getShardNum())
-                    .realmNum(senderAccountID.getRealmNum())
-                    .build();
+            accountIDNum = AccountID.newBuilder().accountNum(senderAccountID.getAccountNum()).shardNum(senderAccountID.getShardNum()).realmNum(senderAccountID.getRealmNum()).build();
         }
         return accountIDNum;
     }
@@ -291,32 +209,24 @@ public class TransactionExecutionService {
     }
 
     private ActionSidecarContentTracer[] getOperationTracers() {
-        return ContractCallContext.get().getOpcodeContext() != null
-                ? new ActionSidecarContentTracer[] {opcodeActionTracer}
-                : new ActionSidecarContentTracer[] {mirrorOperationActionTracer};
+        return ContractCallContext.get().getOpcodeContext() != null ? new ActionSidecarContentTracer[] { opcodeActionTracer } : new ActionSidecarContentTracer[] { mirrorOperationActionTracer };
     }
 
-    private SequencedCollection<String> populateChildTransactionErrors(
-            List<SingleTransactionRecord> singleTransactionRecords) {
+    private SequencedCollection<String> populateChildTransactionErrors(List<SingleTransactionRecord> singleTransactionRecords) {
         SequencedCollection<String> childTransactionErrors = null;
-
         // skipping parent transaction
         final var iterator = singleTransactionRecords.listIterator(1);
         while (iterator.hasNext()) {
             final var record = iterator.next().transactionRecord();
-
             final var status = record.receiptOrThrow().status();
             if (status == SUCCESS || status == REVERTED_SUCCESS) {
                 continue;
             }
-
             if (childTransactionErrors == null) {
                 childTransactionErrors = new LinkedHashSet<>();
             }
-
             childTransactionErrors.add(status.protoName());
         }
-
         return childTransactionErrors != null ? childTransactionErrors : List.of();
     }
 }

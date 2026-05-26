@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.subscribe.rest;
 
 import jakarta.validation.constraints.Max;
@@ -30,6 +29,6 @@ public class RestSubscriberProperties extends AbstractSubscriberProperties {
 
     @Override
     public long getLimit() {
-        return limit > 0 ? limit : Long.MAX_VALUE;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

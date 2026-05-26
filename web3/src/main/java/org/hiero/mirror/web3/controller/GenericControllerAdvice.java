@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.controller;
 
 import static com.hedera.hapi.node.base.ResponseCodeEnum.FAIL_BALANCE;
@@ -17,7 +16,6 @@ import static org.springframework.http.HttpStatus.NOT_IMPLEMENTED;
 import static org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE;
 import static org.springframework.http.HttpStatus.TOO_MANY_REQUESTS;
 import static org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST;
-
 import com.hedera.hapi.node.base.ResponseCodeEnum;
 import java.util.EnumSet;
 import java.util.Set;
@@ -59,24 +57,13 @@ import org.springframework.web.util.WebUtils;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 class GenericControllerAdvice extends ResponseEntityExceptionHandler {
 
-    static final Set<ResponseCodeEnum> SERVER_RESPONSE_CODES = EnumSet.of(
-            FAIL_INVALID,
-            FAIL_FEE,
-            FAIL_BALANCE,
-            PLATFORM_NOT_ACTIVE,
-            PLATFORM_TRANSACTION_NOT_CREATED,
-            UNKNOWN,
-            WAITING_FOR_LEDGER_ID);
+    static final Set<ResponseCodeEnum> SERVER_RESPONSE_CODES = EnumSet.of(FAIL_INVALID, FAIL_FEE, FAIL_BALANCE, PLATFORM_NOT_ACTIVE, PLATFORM_TRANSACTION_NOT_CREATED, UNKNOWN, WAITING_FOR_LEDGER_ID);
 
     @Bean
-    @SuppressWarnings("java:S5122") // Make sure that enabling CORS is safe here.
+    // Make sure that enabling CORS is safe here.
+    @SuppressWarnings("java:S5122")
     public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/api/v1/contracts/**").allowedOrigins("*");
-            }
-        };
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @ExceptionHandler
@@ -86,28 +73,19 @@ class GenericControllerAdvice extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(e, null, headers, INTERNAL_SERVER_ERROR, request);
     }
 
-    @ExceptionHandler({HttpMessageConversionException.class, IllegalArgumentException.class, InvalidInputException.class
-    })
+    @ExceptionHandler({ HttpMessageConversionException.class, IllegalArgumentException.class, InvalidInputException.class })
     private ResponseEntity<?> badRequest(final Exception e, final WebRequest request) {
         return handleExceptionInternal(e, null, null, BAD_REQUEST, request);
     }
 
     @ExceptionHandler
-    private ResponseEntity<?> mirrorEvmTransactionError(
-            final MirrorEvmTransactionException e, final WebRequest request) {
+    private ResponseEntity<?> mirrorEvmTransactionError(final MirrorEvmTransactionException e, final WebRequest request) {
         request.setAttribute(WebUtils.ERROR_EXCEPTION_ATTRIBUTE, e, SCOPE_REQUEST);
-        final var childTransactionErrors = e.getChildTransactionErrors().stream()
-                .map(message -> new ErrorMessage(message, StringUtils.EMPTY, StringUtils.EMPTY))
-                .toList();
-
+        final var childTransactionErrors = e.getChildTransactionErrors().stream().map(message -> new ErrorMessage(message, StringUtils.EMPTY, StringUtils.EMPTY)).toList();
         if (SERVER_RESPONSE_CODES.contains(e.getResponseCode())) {
-            return new ResponseEntity<>(
-                    new GenericErrorResponse(e.getMessage(), e.getDetail(), e.getData(), childTransactionErrors),
-                    INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new GenericErrorResponse(e.getMessage(), e.getDetail(), e.getData(), childTransactionErrors), INTERNAL_SERVER_ERROR);
         } else {
-            return new ResponseEntity<>(
-                    new GenericErrorResponse(e.getMessage(), e.getDetail(), e.getData(), childTransactionErrors),
-                    BAD_REQUEST);
+            return new ResponseEntity<>(new GenericErrorResponse(e.getMessage(), e.getDetail(), e.getData(), childTransactionErrors), BAD_REQUEST);
         }
     }
 
@@ -124,10 +102,9 @@ class GenericControllerAdvice extends ResponseEntityExceptionHandler {
     /**
      * Temporary handler, intended for dealing with forthcoming features that are not yet available, such as the absence
      * of a precompile
-     **/
+     */
     @ExceptionHandler
-    private ResponseEntity<?> precompileNotSupportedException(
-            final PrecompileNotSupportedException e, WebRequest request) {
+    private ResponseEntity<?> precompileNotSupportedException(final PrecompileNotSupportedException e, WebRequest request) {
         return handleExceptionInternal(e, null, null, NOT_IMPLEMENTED, request);
     }
 
@@ -143,39 +120,27 @@ class GenericControllerAdvice extends ResponseEntityExceptionHandler {
 
     @Nullable
     @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(
-            MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-        var messages = ex.getAllErrors().stream().map(this::formatErrorMessage).toList();
-        request.setAttribute(WebUtils.ERROR_EXCEPTION_ATTRIBUTE, ex, SCOPE_REQUEST);
-        return new ResponseEntity<>(new GenericErrorResponse(messages), headers, status);
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Nullable
     @Override
-    protected ResponseEntity<Object> handleTypeMismatch(
-            TypeMismatchException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-        final var cause = ex.getRootCause() instanceof Exception rc ? rc : ex;
-        return handleExceptionInternal(cause, null, headers, status, request);
+    protected ResponseEntity<Object> handleTypeMismatch(TypeMismatchException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Nullable
     @Override
-    protected ResponseEntity<Object> handleExceptionInternal(
-            Exception ex, @Nullable Object body, HttpHeaders headers, HttpStatusCode statusCode, WebRequest request) {
-        var message = statusCode instanceof HttpStatus hs ? hs.getReasonPhrase() : statusCode.toString();
-        var detail = !statusCode.is5xxServerError() ? ex.getMessage() : StringUtils.EMPTY; // Don't leak server errors
-        var genericErrorResponse = new GenericErrorResponse(message, detail, StringUtils.EMPTY);
-        request.setAttribute(WebUtils.ERROR_EXCEPTION_ATTRIBUTE, ex, SCOPE_REQUEST);
-        return new ResponseEntity<>(genericErrorResponse, headers, statusCode);
+    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, @Nullable Object body, HttpHeaders headers, HttpStatusCode statusCode, WebRequest request) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private ErrorMessage formatErrorMessage(ObjectError error) {
         var detail = error.getDefaultMessage();
-
         if (error instanceof FieldError fieldError) {
             detail = fieldError.getField() + " field " + fieldError.getDefaultMessage();
         }
-
         return new ErrorMessage(BAD_REQUEST.getReasonPhrase(), detail, StringUtils.EMPTY);
     }
 }

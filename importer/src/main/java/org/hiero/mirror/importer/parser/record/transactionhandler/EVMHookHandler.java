@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.transactionhandler;
 
 import static org.hiero.mirror.common.util.DomainUtils.leftPadBytes;
 import static org.hiero.mirror.common.util.DomainUtils.toBytes;
-
 import com.google.common.collect.Range;
 import com.hedera.hapi.node.hooks.legacy.EvmHookMappingEntries;
 import com.hedera.hapi.node.hooks.legacy.EvmHookStorageSlot;
@@ -37,17 +35,15 @@ import org.springframework.util.CollectionUtils;
 final class EVMHookHandler implements EvmHookStorageHandler {
 
     private final EntityListener entityListener;
+
     private final EntityIdService entityIdService;
 
     static byte[] keccak256(byte[] input) {
-        final var d = new Digest256();
-        return d.digest(input);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     static byte[] keccak256(byte[] key, byte[] mappingSlot) {
-        final var d = new Digest256();
-        d.update(key);
-        return d.digest(mappingSlot);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -60,40 +56,18 @@ final class EVMHookHandler implements EvmHookStorageHandler {
      * @param hookCreationDetailsList the list of hooks to create, can be null or empty
      * @param hookIdsToDeleteList     the list of hook IDs to delete, can be null or empty
      */
-    void process(
-            RecordItem recordItem,
-            long entityId,
-            List<HookCreationDetails> hookCreationDetailsList,
-            List<Long> hookIdsToDeleteList) {
-        processHookDeletion(recordItem, entityId, hookIdsToDeleteList);
-        processHookCreationDetails(recordItem, entityId, hookCreationDetailsList);
+    void process(RecordItem recordItem, long entityId, List<HookCreationDetails> hookCreationDetailsList, List<Long> hookIdsToDeleteList) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
-    public void processStorageUpdates(
-            long consensusTimestamp, long hookId, EntityId ownerId, List<EvmHookStorageUpdate> storageUpdates) {
-        final var context = new StorageUpdateContext(consensusTimestamp, hookId, ownerId);
-        context.process(storageUpdates);
+    public void processStorageUpdates(long consensusTimestamp, long hookId, EntityId ownerId, List<EvmHookStorageUpdate> storageUpdates) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
-    public void processStorageUpdatesForSidecar(
-            long consensusTimestamp, long hookId, long ownerId, List<StorageChange> storageUpdates) {
-        for (var storageChange : storageUpdates) {
-            byte[] valueWritten = storageChange.hasValueWritten()
-                    ? toBytes(storageChange.getValueWritten().getValue())
-                    : null;
-            var hookStorageChange = HookStorageChange.builder()
-                    .consensusTimestamp(consensusTimestamp)
-                    .hookId(hookId)
-                    .ownerId(ownerId)
-                    .key(toBytes(storageChange.getSlot()))
-                    .valueRead(toBytes(storageChange.getValueRead()))
-                    .valueWritten(valueWritten)
-                    .build();
-
-            entityListener.onHookStorageChange(hookStorageChange);
-        }
+    public void processStorageUpdatesForSidecar(long consensusTimestamp, long hookId, long ownerId, List<StorageChange> storageUpdates) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -104,61 +78,34 @@ final class EVMHookHandler implements EvmHookStorageHandler {
      * @param entityId                the entity ID that owns the hooks
      * @param hookCreationDetailsList the list of hook creation details from the transaction
      */
-    private void processHookCreationDetails(
-            RecordItem recordItem, long entityId, List<HookCreationDetails> hookCreationDetailsList) {
-        hookCreationDetailsList.forEach(
-                hookCreationDetails -> processHookCreationDetail(recordItem, entityId, hookCreationDetails));
+    private void processHookCreationDetails(RecordItem recordItem, long entityId, List<HookCreationDetails> hookCreationDetailsList) {
+        hookCreationDetailsList.forEach(hookCreationDetails -> processHookCreationDetail(recordItem, entityId, hookCreationDetails));
     }
 
-    private void processHookCreationDetail(
-            RecordItem recordItem, long entityId, HookCreationDetails hookCreationDetails) {
+    private void processHookCreationDetail(RecordItem recordItem, long entityId, HookCreationDetails hookCreationDetails) {
         // Check if evm_hook oneof field is set
         if (!hookCreationDetails.hasEvmHook()) {
-            Utility.handleRecoverableError(
-                    "Skipping hook creation for hookId {} - evm_hook not set in transaction at {}",
-                    hookCreationDetails.getHookId(),
-                    recordItem.getConsensusTimestamp());
+            Utility.handleRecoverableError("Skipping hook creation for hookId {} - evm_hook not set in transaction at {}", hookCreationDetails.getHookId(), recordItem.getConsensusTimestamp());
             return;
         }
-
         final var evmHook = hookCreationDetails.getEvmHook();
         final var spec = evmHook.getSpec();
-
         // Check if contract ID is set in spec
         if (!spec.hasContractId()) {
-            Utility.handleRecoverableError(
-                    "Skipping hook creation for hookId {} - contract_id not set in hook spec in transaction at {}",
-                    hookCreationDetails.getHookId(),
-                    recordItem.getConsensusTimestamp());
+            Utility.handleRecoverableError("Skipping hook creation for hookId {} - contract_id not set in hook spec in transaction at {}", hookCreationDetails.getHookId(), recordItem.getConsensusTimestamp());
             return;
         }
-
-        final var hookBuilder = Hook.builder()
-                .contractId(entityIdService.lookup(spec.getContractId()).orElse(EntityId.EMPTY))
-                .createdTimestamp(recordItem.getConsensusTimestamp())
-                .deleted(false)
-                .extensionPoint(translateHookExtensionPoint(hookCreationDetails.getExtensionPoint()))
-                .hookId(hookCreationDetails.getHookId())
-                .ownerId(entityId)
-                .timestampRange(Range.atLeast(recordItem.getConsensusTimestamp()))
-                .type(translateHookType(hookCreationDetails.getHookCase()));
-
+        final var hookBuilder = Hook.builder().contractId(entityIdService.lookup(spec.getContractId()).orElse(EntityId.EMPTY)).createdTimestamp(recordItem.getConsensusTimestamp()).deleted(false).extensionPoint(translateHookExtensionPoint(hookCreationDetails.getExtensionPoint())).hookId(hookCreationDetails.getHookId()).ownerId(entityId).timestampRange(Range.atLeast(recordItem.getConsensusTimestamp())).type(translateHookType(hookCreationDetails.getHookCase()));
         // Check if adminKey is set before accessing it
         if (hookCreationDetails.hasAdminKey()) {
             hookBuilder.adminKey(hookCreationDetails.getAdminKey().toByteArray());
         }
-
         final var hook = hookBuilder.build();
         recordItem.addEntityId(hook.getContractId());
         entityListener.onHook(hook);
-
         // Process storage updates if present
         if (!CollectionUtils.isEmpty(evmHook.getStorageUpdatesList())) {
-            processStorageUpdates(
-                    recordItem.getConsensusTimestamp(),
-                    hookCreationDetails.getHookId(),
-                    EntityId.of(entityId),
-                    evmHook.getStorageUpdatesList());
+            processStorageUpdates(recordItem.getConsensusTimestamp(), hookCreationDetails.getHookId(), EntityId.of(entityId), evmHook.getStorageUpdatesList());
         }
     }
 
@@ -172,12 +119,7 @@ final class EVMHookHandler implements EvmHookStorageHandler {
      */
     private void processHookDeletion(RecordItem recordItem, long entityId, List<Long> hookIdsToDeleteList) {
         hookIdsToDeleteList.forEach(hookId -> {
-            final var hook = Hook.builder()
-                    .deleted(true)
-                    .hookId(hookId)
-                    .ownerId(entityId)
-                    .timestampRange(Range.atLeast(recordItem.getConsensusTimestamp()))
-                    .build();
+            final var hook = Hook.builder().deleted(true).hookId(hookId).ownerId(entityId).timestampRange(Range.atLeast(recordItem.getConsensusTimestamp())).build();
             entityListener.onHook(hook);
         });
     }
@@ -188,16 +130,15 @@ final class EVMHookHandler implements EvmHookStorageHandler {
      * @param protoExtensionPoint the HookExtensionPoint from the transaction protobuf
      * @return the corresponding domain HookExtensionPoint
      */
-    private HookExtensionPoint translateHookExtensionPoint(
-            com.hedera.hapi.node.hooks.legacy.HookExtensionPoint protoExtensionPoint) {
-        return switch (protoExtensionPoint) {
-            case ACCOUNT_ALLOWANCE_HOOK -> HookExtensionPoint.ACCOUNT_ALLOWANCE_HOOK;
-            default -> {
-                Utility.handleRecoverableError(
-                        "Unrecognized HookExtensionPoint: {}, defaulting to ACCOUNT_ALLOWANCE_HOOK",
-                        protoExtensionPoint);
-                yield HookExtensionPoint.ACCOUNT_ALLOWANCE_HOOK;
-            }
+    private HookExtensionPoint translateHookExtensionPoint(com.hedera.hapi.node.hooks.legacy.HookExtensionPoint protoExtensionPoint) {
+        return switch(protoExtensionPoint) {
+            case ACCOUNT_ALLOWANCE_HOOK ->
+                HookExtensionPoint.ACCOUNT_ALLOWANCE_HOOK;
+            default ->
+                {
+                    Utility.handleRecoverableError("Unrecognized HookExtensionPoint: {}, defaulting to ACCOUNT_ALLOWANCE_HOOK", protoExtensionPoint);
+                    yield HookExtensionPoint.ACCOUNT_ALLOWANCE_HOOK;
+                }
         };
     }
 
@@ -208,12 +149,14 @@ final class EVMHookHandler implements EvmHookStorageHandler {
      * @return the corresponding domain HookType
      */
     private HookType translateHookType(HookCase hookCase) {
-        return switch (hookCase) {
-            case EVM_HOOK -> HookType.EVM;
-            default -> {
-                Utility.handleRecoverableError("Unrecognized HookCase: {}, defaulting to EVM", hookCase);
-                yield HookType.EVM;
-            }
+        return switch(hookCase) {
+            case EVM_HOOK ->
+                HookType.EVM;
+            default ->
+                {
+                    Utility.handleRecoverableError("Unrecognized HookCase: {}, defaulting to EVM", hookCase);
+                    yield HookType.EVM;
+                }
         };
     }
 
@@ -221,53 +164,32 @@ final class EVMHookHandler implements EvmHookStorageHandler {
     private class StorageUpdateContext {
 
         private final long consensusTimestamp;
+
         private final long hookId;
+
         private final EntityId ownerId;
 
         private final Set<ByteBuffer> processed = new HashSet<>();
 
         void process(final List<EvmHookStorageUpdate> storageUpdates) {
-            for (int index = storageUpdates.size() - 1; index >= 0; index--) {
-                // process the storage updates in reversed order to honor the last value in case of duplicate slot keys
-                final var update = storageUpdates.get(index);
-                switch (update.getUpdateCase()) {
-                    case MAPPING_ENTRIES -> process(update.getMappingEntries());
-                    case STORAGE_SLOT -> process(update.getStorageSlot());
-                    default ->
-                        Utility.handleRecoverableError(
-                                "Ignoring EvmHookStorageUpdate={} at consensus_timestamp={}",
-                                update.getUpdateCase(),
-                                consensusTimestamp);
-                }
-            }
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         private void persistChange(final byte[] key, final byte[] valueWritten) {
             if (!processed.add(ByteBuffer.wrap(key))) {
                 return;
             }
-
-            final var change = HookStorageChange.builder()
-                    .consensusTimestamp(consensusTimestamp)
-                    .hookId(hookId)
-                    .key(key)
-                    .ownerId(ownerId.getId())
-                    .valueRead(valueWritten)
-                    .valueWritten(valueWritten)
-                    .build();
+            final var change = HookStorageChange.builder().consensusTimestamp(consensusTimestamp).hookId(hookId).key(key).ownerId(ownerId.getId()).valueRead(valueWritten).valueWritten(valueWritten).build();
             entityListener.onHookStorageChange(change);
         }
 
         private void process(final EvmHookMappingEntries mappingEntries) {
             final var mappingSlot = leftPadBytes(toBytes(mappingEntries.getMappingSlot()), 32);
             final var entries = mappingEntries.getEntriesList();
-
             for (int index = entries.size() - 1; index >= 0; index--) {
                 // process the entries in reversed order to honor the last value in case of duplicate slot keys
                 final var entry = entries.get(index);
-                final var mappingKey = entry.hasKey()
-                        ? leftPadBytes(toBytes(entry.getKey()), 32)
-                        : keccak256(toBytes(entry.getPreimage()));
+                final var mappingKey = entry.hasKey() ? leftPadBytes(toBytes(entry.getKey()), 32) : keccak256(toBytes(entry.getPreimage()));
                 final var derivedSlot = keccak256(mappingKey, mappingSlot);
                 final var valueWritten = toBytes(entry.getValue());
                 persistChange(derivedSlot, valueWritten);

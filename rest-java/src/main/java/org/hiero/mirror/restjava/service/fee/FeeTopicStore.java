@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.restjava.service.fee;
 
 import com.hedera.hapi.node.base.TopicID;
@@ -21,39 +20,26 @@ import org.springframework.util.CollectionUtils;
 final class FeeTopicStore implements ReadableTopicStore {
 
     private final TopicRepository topicRepository;
+
     private final CustomFeeRepository customFeeRepository;
 
     @Override
     @Nullable
     public Topic getTopic(@NonNull final TopicID id) {
-        return topicRepository
-                .findById(id.topicNum())
-                .map(topic -> toTopic(id, topic, customFeeRepository))
-                .orElse(null);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public long sizeOfState() {
-        return 0;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    private static Topic toTopic(
-            final TopicID id,
-            final org.hiero.mirror.common.domain.topic.Topic topic,
-            final CustomFeeRepository customFeeRepository) {
-        return Topic.newBuilder()
-                .topicId(id)
-                .customFees(getCustomFees(topic.getId(), customFeeRepository))
-                .build();
+    private static Topic toTopic(final TopicID id, final org.hiero.mirror.common.domain.topic.Topic topic, final CustomFeeRepository customFeeRepository) {
+        return Topic.newBuilder().topicId(id).customFees(getCustomFees(topic.getId(), customFeeRepository)).build();
     }
 
     // Calculator only checks isEmpty(); FixedCustomFee.DEFAULT is a safe placeholder.
-    private static List<FixedCustomFee> getCustomFees(
-            final long topicId, final CustomFeeRepository customFeeRepository) {
-        return customFeeRepository
-                .findById(topicId)
-                .filter(customFee -> !CollectionUtils.isEmpty(customFee.getFixedFees()))
-                .map(customFee -> Collections.nCopies(customFee.getFixedFees().size(), FixedCustomFee.DEFAULT))
-                .orElseGet(List::of);
+    private static List<FixedCustomFee> getCustomFees(final long topicId, final CustomFeeRepository customFeeRepository) {
+        return customFeeRepository.findById(topicId).filter(customFee -> !CollectionUtils.isEmpty(customFee.getFixedFees())).map(customFee -> Collections.nCopies(customFee.getFixedFees().size(), FixedCustomFee.DEFAULT)).orElseGet(List::of);
     }
 }

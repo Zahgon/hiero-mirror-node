@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.transaction;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -31,11 +30,17 @@ import org.springframework.data.util.Version;
 public class RecordFile implements StreamFile<RecordItem> {
 
     public static final RecordFile EMPTY = new RecordFile();
+
     public static final Version HAPI_VERSION_NOT_SET = new Version(0, 0, 0);
+
     public static final Version HAPI_VERSION_0_23_0 = new Version(0, 23, 0);
+
     public static final Version HAPI_VERSION_0_27_0 = new Version(0, 27, 0);
+
     public static final Version HAPI_VERSION_0_47_0 = new Version(0, 47, 0);
+
     public static final Version HAPI_VERSION_0_49_0 = new Version(0, 49, 0);
+
     public static final Version HAPI_VERSION_0_53_0 = new Version(0, 53, 0);
 
     @ToString.Exclude
@@ -58,7 +63,9 @@ public class RecordFile implements StreamFile<RecordItem> {
     private long gasUsed = 0L;
 
     private Integer hapiVersionMajor;
+
     private Integer hapiVersionMinor;
+
     private Integer hapiVersionPatch;
 
     @Getter(lazy = true)
@@ -116,7 +123,9 @@ public class RecordFile implements StreamFile<RecordItem> {
     private Integer size;
 
     private Integer softwareVersionMajor;
+
     private Integer softwareVersionMinor;
+
     private Integer softwareVersionPatch;
 
     private int version;
@@ -126,33 +135,29 @@ public class RecordFile implements StreamFile<RecordItem> {
 
     @Override
     public RecordFile clear() {
-        StreamFile.super.clear();
-        setLogsBloom(null);
-        setSidecars(List.of());
-        return this;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public StreamFile<RecordItem> copy() {
-        return this.toBuilder().build();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     @JsonIgnore
     public StreamType getType() {
-        return StreamType.RECORD;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @JsonIgnore
     public boolean isEmpty() {
-        return this == EMPTY;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private Version hapiVersion() {
         if (hapiVersionMajor == null || hapiVersionMinor == null || hapiVersionPatch == null) {
             return HAPI_VERSION_NOT_SET;
         }
-
         return new Version(hapiVersionMajor, hapiVersionMinor, hapiVersionPatch);
     }
 }

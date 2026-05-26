@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.config;
 
 import io.fabric8.kubernetes.client.KubernetesClient;
@@ -40,15 +39,20 @@ final class MonitorConfiguration {
     }
 
     private final MirrorSubscriber mirrorSubscriber;
+
     private final PublishMetrics publishMetrics;
+
     private final PublishProperties publishProperties;
+
     private final SubscribeMetrics subscribeMetrics;
+
     private final TransactionGenerator transactionGenerator;
+
     private final TransactionPublisher transactionPublisher;
 
     @Bean
     KubernetesClient kubernetesClient() {
-        return new KubernetesClientBuilder().build();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -63,25 +67,7 @@ final class MonitorConfiguration {
     @Bean(destroyMethod = "dispose")
     @ConditionalOnProperty(value = "hiero.mirror.monitor.publish.enabled", havingValue = "true", matchIfMissing = true)
     Disposable publish() {
-        return Flux.<List<PublishRequest>>generate(sink -> sink.next(transactionGenerator.next(0)))
-                .flatMapIterable(Function.identity())
-                .retry()
-                .name("generate")
-                .parallel(publishProperties.getClients())
-                .runOn(Schedulers.newParallel("publisher", publishProperties.getClients()))
-                .map(transactionPublisher::publish)
-                .sequential()
-                .parallel(publishProperties.getResponseThreads())
-                .runOn(Schedulers.newParallel("resolver", publishProperties.getResponseThreads()))
-                .flatMap(Function.identity())
-                .sequential()
-                .doOnNext(mirrorSubscriber::onPublish)
-                .onErrorContinue(PublishException.class, (t, r) -> publishMetrics.onError((PublishException) t))
-                .onErrorContinue((t, r) -> log.error("Unexpected error during publish flow: ", t))
-                .doFinally(s -> log.warn("Stopped publisher after {} signal", s))
-                .doOnSubscribe(s -> log.info("Starting publisher flow"))
-                .subscribeOn(Schedulers.single())
-                .subscribe(publishMetrics::onSuccess);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -90,18 +76,8 @@ final class MonitorConfiguration {
      * @return the subscribing flow's Disposable
      */
     @Bean(destroyMethod = "dispose")
-    @ConditionalOnProperty(
-            value = "hiero.mirror.monitor.subscribe.enabled",
-            havingValue = "true",
-            matchIfMissing = true)
+    @ConditionalOnProperty(value = "hiero.mirror.monitor.subscribe.enabled", havingValue = "true", matchIfMissing = true)
     Disposable subscribe() {
-        return mirrorSubscriber
-                .subscribe()
-                .name("subscribe")
-                .onErrorContinue((t, r) -> log.error("Unexpected error during subscribe: ", t))
-                .doFinally(s -> log.warn("Stopped subscribe after {} signal", s))
-                .doOnSubscribe(s -> log.info("Starting subscribe flow"))
-                .subscribeOn(Schedulers.parallel())
-                .subscribe(subscribeMetrics::onNext);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

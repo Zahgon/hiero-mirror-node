@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.publish.transaction.schedule;
 
 import com.hedera.hashgraph.sdk.AccountId;
@@ -43,17 +42,6 @@ public class ScheduleCreateTransactionSupplier implements TransactionSupplier<Sc
 
     @Override
     public ScheduleCreateTransaction get() {
-        Hbar maxHbarTransactionFee = Hbar.fromTinybars(getMaxTransactionFee());
-        TransferTransaction innerTransaction = new TransferTransaction()
-                .setMaxTransactionFee(maxHbarTransactionFee)
-                .addHbarTransfer(getOperatorId(), Hbar.fromTinybars(1L).negated())
-                .addHbarTransfer(getPayerAccountId(), Hbar.fromTinybars(1L));
-
-        return new ScheduleCreateTransaction()
-                .setAdminKey(getAdminPublicKey())
-                .setMaxTransactionFee(maxHbarTransactionFee)
-                .setPayerAccountId(getPayerAccountId())
-                .setScheduleMemo(Utility.getMemo("Mirror node created test schedule"))
-                .setScheduledTransaction(innerTransaction);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

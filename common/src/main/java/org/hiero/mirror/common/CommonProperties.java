@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common;
 
 import jakarta.annotation.PostConstruct;
@@ -35,7 +34,7 @@ public class CommonProperties {
 
     @PostConstruct
     public void init() {
-        INSTANCE.set(this);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -46,13 +45,7 @@ public class CommonProperties {
      * @throws IllegalStateException if CommonProperties has not been initialized
      */
     public static CommonProperties getInstance() {
-        var instance = INSTANCE.get();
-
-        if (instance == null) {
-            throw new IllegalStateException("CommonProperties has not been initialized");
-        }
-
-        return instance;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Data

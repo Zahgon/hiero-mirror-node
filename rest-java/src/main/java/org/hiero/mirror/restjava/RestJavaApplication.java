@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.restjava;
 
 import org.hiero.mirror.common.CommonConfiguration;
@@ -16,6 +15,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class RestJavaApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(RestJavaApplication.class, args);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

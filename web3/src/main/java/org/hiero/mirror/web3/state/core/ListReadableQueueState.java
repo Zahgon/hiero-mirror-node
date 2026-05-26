@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.state.core;
 
 import com.swirlds.state.spi.ReadableQueueStateBase;
@@ -11,7 +10,9 @@ import org.jspecify.annotations.Nullable;
 
 public class ListReadableQueueState<E> extends ReadableQueueStateBase<E> {
 
-    /** Represents the backing storage for this state */
+    /**
+     * Represents the backing storage for this state
+     */
     private final Queue<E> backingStore;
 
     /**
@@ -23,8 +24,7 @@ public class ListReadableQueueState<E> extends ReadableQueueStateBase<E> {
      * @param stateId The state id for this state
      * @param backingStore The backing store to use
      */
-    public ListReadableQueueState(
-            @NonNull final String serviceName, final int stateId, @NonNull final Queue<E> backingStore) {
+    public ListReadableQueueState(@NonNull final String serviceName, final int stateId, @NonNull final Queue<E> backingStore) {
         super(stateId, serviceName);
         this.backingStore = Objects.requireNonNull(backingStore);
     }
@@ -32,12 +32,12 @@ public class ListReadableQueueState<E> extends ReadableQueueStateBase<E> {
     @Nullable
     @Override
     protected E peekOnDataSource() {
-        return backingStore.peek();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @NonNull
     @Override
     protected Iterator<E> iterateOnDataSource() {
-        return backingStore.iterator();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

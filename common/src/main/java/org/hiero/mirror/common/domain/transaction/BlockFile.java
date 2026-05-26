@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.transaction;
 
 import static org.apache.commons.lang3.StringUtils.leftPad;
-
 import com.hedera.hapi.block.stream.output.protoc.BlockHeader;
 import com.hedera.hapi.block.stream.protoc.BlockProof;
 import java.util.List;
@@ -28,11 +26,14 @@ import org.hiero.mirror.common.domain.StreamType;
 public final class BlockFile implements StreamFile<BlockTransaction> {
 
     private static final int BASENAME_LENGTH = 19;
+
     private static final char BASENAME_PADDING = '0';
+
     private static final String COMPRESSED_FILE_SUFFIX = ".blk.zstd";
+
     private static final String FILE_SUFFIX = ".blk";
-    private static final Predicate<String> STREAMED_FILENAME_PREDICATE =
-            Pattern.compile("^\\d{19}.blk$").asPredicate();
+
+    private static final Predicate<String> STREAMED_FILENAME_PREDICATE = Pattern.compile("^\\d{19}.blk$").asPredicate();
 
     @ToString.Exclude
     private BlockHeader blockHeader;
@@ -94,71 +95,45 @@ public final class BlockFile implements StreamFile<BlockTransaction> {
 
     @Override
     public Long getConsensusEnd() {
-        if (hasRecordFile()) {
-            return recordFile.getConsensusEnd();
-        }
-
-        return consensusEnd;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public Long getConsensusStart() {
-        if (hasRecordFile()) {
-            return recordFile.getConsensusStart();
-        }
-
-        return consensusStart;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public static String getFilename(final long blockNumber, final boolean compressed) {
-        if (blockNumber < 0) {
-            throw new IllegalArgumentException("Block number must be non-negative");
-        }
-
-        var filename = leftPad(Long.toString(blockNumber), BASENAME_LENGTH, BASENAME_PADDING);
-        return compressed ? filename + COMPRESSED_FILE_SUFFIX : filename + FILE_SUFFIX;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public StreamFile<BlockTransaction> copy() {
-        return this.toBuilder().build();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public String getFileHash() {
-        return StringUtils.EMPTY;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public BlockSourceType getSourceType() {
-        if (StringUtils.isBlank(name)) {
-            return null;
-        }
-
-        if (STREAMED_FILENAME_PREDICATE.test(name)) {
-            return BlockSourceType.BLOCK_NODE;
-        }
-
-        return BlockSourceType.FILE;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public StreamType getType() {
-        return StreamType.BLOCK;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public boolean hasRecordFile() {
-        return recordFile != null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public static class BlockFileBuilder {
 
         public BlockFileBuilder onNewRound(final long roundNumber) {
-            if (roundStart == null) {
-                roundStart = roundNumber;
-            }
-
-            roundEnd = roundNumber;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
     }
 }

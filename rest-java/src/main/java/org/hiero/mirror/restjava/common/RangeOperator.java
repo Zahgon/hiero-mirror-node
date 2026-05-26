@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.restjava.common;
 
 import java.util.function.BiFunction;
@@ -11,8 +10,9 @@ import org.jooq.Field;
 
 @Getter
 @RequiredArgsConstructor
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public enum RangeOperator {
+
     EQ("=", Field::eq),
     GT(">", Field::gt),
     GTE(">=", Field::ge),
@@ -22,44 +22,28 @@ public enum RangeOperator {
     UNKNOWN("unknown", null);
 
     private final String operator;
+
     private final BiFunction<Field, Object, Condition> function;
 
     public boolean isInclusive() {
-        return this == RangeOperator.EQ || this == RangeOperator.LTE || this == RangeOperator.GTE;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public String toString() {
-        return name().toLowerCase();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public static RangeOperator of(String rangeOperator) {
-        try {
-            if (StringUtils.isBlank(rangeOperator)) {
-                throw invalidOperator(rangeOperator);
-            }
-
-            final var operator = RangeOperator.valueOf(rangeOperator.toUpperCase());
-            if (operator == UNKNOWN) {
-                throw invalidOperator(rangeOperator);
-            }
-            return operator;
-        } catch (IllegalArgumentException e) {
-            throw invalidOperator(rangeOperator);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public RangeOperator toInclusive() {
-        return switch (this) {
-            case GT -> GTE;
-            case LT -> LTE;
-            default -> this;
-        };
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private static IllegalArgumentException invalidOperator(String rangeOperator) {
         final var name = rangeOperator != null ? rangeOperator.toLowerCase() : null;
-        return new IllegalArgumentException(
-                "Invalid range operator %s. Valid values: eq, gt, gte, lt, lte, ne".formatted(name));
+        return new IllegalArgumentException("Invalid range operator %s. Valid values: eq, gt, gte, lt, lte, ne".formatted(name));
     }
 }

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.downloader.block;
 
 import lombok.RequiredArgsConstructor;
@@ -18,40 +17,29 @@ import org.slf4j.LoggerFactory;
 abstract class AbstractBlockSource implements BlockSource {
 
     protected final BlockStreamReader blockStreamReader;
+
     protected final BlockStreamVerifier blockStreamVerifier;
+
     protected final CommonDownloaderProperties commonDownloaderProperties;
+
     protected final CutoverService cutoverService;
+
     protected final Logger log = LoggerFactory.getLogger(getClass());
+
     protected final BlockProperties properties;
 
     @Override
     public final void get() {
-        final long blockNumber = cutoverService.getNextBlockNumber();
-        final var endBlockNumber =
-                commonDownloaderProperties.getImporterProperties().getEndBlockNumber();
-        if (shouldGetBlock(blockNumber, endBlockNumber)) {
-            doGet(blockNumber, endBlockNumber);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    protected static boolean shouldGetBlock(final long blockNumber, final @Nullable Long endBlockNumber) {
-        return endBlockNumber == null || blockNumber <= endBlockNumber;
+    protected static boolean shouldGetBlock(final long blockNumber, @Nullable final Long endBlockNumber) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     protected abstract void doGet(final long blockNumber, final Long endBlockNumber);
 
     protected final BlockFile onBlockStream(final BlockStream blockStream, final String blockNode) {
-        var blockFile = blockStreamReader.read(blockStream);
-        if (!properties.isPersistBytes()) {
-            blockFile.setBytes(null);
-
-            if (blockFile.hasRecordFile()) {
-                blockFile.getRecordFile().setBytes(null);
-            }
-        }
-
-        blockFile.setNode(blockNode);
-        blockStreamVerifier.verify(blockFile);
-        return blockFile;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package com.hedera.hapi.node.state.token;
 
 import static java.util.Objects.requireNonNull;
 import static org.hiero.mirror.web3.utils.Suppliers.areSuppliersEqual;
-
 import com.hedera.hapi.node.base.AccountID;
 import com.hedera.hapi.node.base.Key;
 import com.hedera.hapi.node.base.TokenID;
@@ -75,46 +73,23 @@ import java.util.function.Supplier;
  * @param metadataKey <b>(28)</b> The key which can change the metadata of a token
  *                    (token definition and individual NFTs).
  */
-public record Token(
-        @jakarta.annotation.Nullable TokenID tokenId,
-        @Nonnull String name,
-        @Nonnull String symbol,
-        int decimals,
-        Supplier<Long> totalSupplySupplier,
-        @Nullable AccountID treasuryAccountId,
-        @Nullable Key adminKey,
-        @Nullable Key kycKey,
-        @Nullable Key freezeKey,
-        @Nullable Key wipeKey,
-        @Nullable Key supplyKey,
-        @Nullable Key feeScheduleKey,
-        @Nullable Key pauseKey,
-        long lastUsedSerialNumber,
-        boolean deleted,
-        TokenType tokenType,
-        TokenSupplyType supplyType,
-        @Nullable AccountID autoRenewAccountId,
-        long autoRenewSeconds,
-        long expirationSecond,
-        @Nonnull String memo,
-        long maxSupply,
-        boolean paused,
-        boolean accountsFrozenByDefault,
-        boolean accountsKycGrantedByDefault,
-        @Nonnull Supplier<List<CustomFee>> customFeesSupplier,
-        @Nonnull Bytes metadata,
-        @Nullable Key metadataKey) {
-    /** Protobuf codec for reading and writing in protobuf format */
+public record Token(@jakarta.annotation.Nullable TokenID tokenId, @Nonnull String name, @Nonnull String symbol, int decimals, Supplier<Long> totalSupplySupplier, @Nullable AccountID treasuryAccountId, @Nullable Key adminKey, @Nullable Key kycKey, @Nullable Key freezeKey, @Nullable Key wipeKey, @Nullable Key supplyKey, @Nullable Key feeScheduleKey, @Nullable Key pauseKey, long lastUsedSerialNumber, boolean deleted, TokenType tokenType, TokenSupplyType supplyType, @Nullable AccountID autoRenewAccountId, long autoRenewSeconds, long expirationSecond, @Nonnull String memo, long maxSupply, boolean paused, boolean accountsFrozenByDefault, boolean accountsKycGrantedByDefault, @Nonnull Supplier<List<CustomFee>> customFeesSupplier, @Nonnull Bytes metadata, @Nullable Key metadataKey) {
+
+    /**
+     * Protobuf codec for reading and writing in protobuf format
+     */
     public static final Codec<Token> PROTOBUF = new com.hedera.hapi.node.state.token.codec.TokenProtoCodec();
-    /** JSON codec for reading and writing in JSON format */
+
+    /**
+     * JSON codec for reading and writing in JSON format
+     */
     public static final JsonCodec<Token> JSON = new com.hedera.hapi.node.state.token.codec.TokenJsonCodec();
 
-    /** Default instance with all fields set to default values */
-    public static final Token DEFAULT = newBuilder()
-            .totalSupply(0L)
-            .autoRenewAccountId(null)
-            .treasuryAccountId(null)
-            .build();
+    /**
+     * Default instance with all fields set to default values
+     */
+    public static final Token DEFAULT = newBuilder().totalSupply(0L).autoRenewAccountId(null).treasuryAccountId(null).build();
+
     /**
      * Create a pre-populated Token.
      *
@@ -166,64 +141,8 @@ public record Token(
      * @param metadataKey <b>(28)</b> The key which can change the metadata of a token
      *                    (token definition and individual NFTs).
      */
-    public Token(
-            TokenID tokenId,
-            String name,
-            String symbol,
-            int decimals,
-            long totalSupply,
-            AccountID treasuryAccountId,
-            Key adminKey,
-            Key kycKey,
-            Key freezeKey,
-            Key wipeKey,
-            Key supplyKey,
-            Key feeScheduleKey,
-            Key pauseKey,
-            long lastUsedSerialNumber,
-            boolean deleted,
-            TokenType tokenType,
-            TokenSupplyType supplyType,
-            AccountID autoRenewAccountId,
-            long autoRenewSeconds,
-            long expirationSecond,
-            String memo,
-            long maxSupply,
-            boolean paused,
-            boolean accountsFrozenByDefault,
-            boolean accountsKycGrantedByDefault,
-            List<CustomFee> customFees,
-            Bytes metadata,
-            Key metadataKey) {
-        this(
-                tokenId,
-                name,
-                symbol,
-                decimals,
-                () -> totalSupply,
-                treasuryAccountId,
-                adminKey,
-                kycKey,
-                freezeKey,
-                wipeKey,
-                supplyKey,
-                feeScheduleKey,
-                pauseKey,
-                lastUsedSerialNumber,
-                deleted,
-                tokenType,
-                supplyType,
-                autoRenewAccountId,
-                autoRenewSeconds,
-                expirationSecond,
-                memo,
-                maxSupply,
-                paused,
-                accountsFrozenByDefault,
-                accountsKycGrantedByDefault,
-                () -> customFees,
-                metadata,
-                metadataKey);
+    public Token(TokenID tokenId, String name, String symbol, int decimals, long totalSupply, AccountID treasuryAccountId, Key adminKey, Key kycKey, Key freezeKey, Key wipeKey, Key supplyKey, Key feeScheduleKey, Key pauseKey, long lastUsedSerialNumber, boolean deleted, TokenType tokenType, TokenSupplyType supplyType, AccountID autoRenewAccountId, long autoRenewSeconds, long expirationSecond, String memo, long maxSupply, boolean paused, boolean accountsFrozenByDefault, boolean accountsKycGrantedByDefault, List<CustomFee> customFees, Bytes metadata, Key metadataKey) {
+        this(tokenId, name, symbol, decimals, () -> totalSupply, treasuryAccountId, adminKey, kycKey, freezeKey, wipeKey, supplyKey, feeScheduleKey, pauseKey, lastUsedSerialNumber, deleted, tokenType, supplyType, autoRenewAccountId, autoRenewSeconds, expirationSecond, memo, maxSupply, paused, accountsFrozenByDefault, accountsKycGrantedByDefault, () -> customFees, metadata, metadataKey);
     }
 
     /**
@@ -232,7 +151,7 @@ public record Token(
      * @return a new builder
      */
     public static Builder newBuilder() {
-        return new Builder();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -241,113 +160,7 @@ public record Token(
      */
     @Override
     public int hashCode() {
-        int result = 1;
-        if (tokenId != null && !tokenId.equals(DEFAULT.tokenId)) {
-            result = 31 * result + tokenId.hashCode();
-        }
-        if (name != null && !name.equals(DEFAULT.name)) {
-            result = 31 * result + name.hashCode();
-        }
-        if (symbol != null && !symbol.equals(DEFAULT.symbol)) {
-            result = 31 * result + symbol.hashCode();
-        }
-        if (decimals != DEFAULT.decimals) {
-            result = 31 * result + Integer.hashCode(decimals);
-        }
-        if (totalSupplySupplier != null) {
-            Long currentValue = totalSupplySupplier.get();
-            Long defaultValue = (DEFAULT.totalSupplySupplier != null) ? DEFAULT.totalSupplySupplier.get() : null;
-
-            if (currentValue != null && !currentValue.equals(defaultValue)) {
-                result = 31 * result + Long.hashCode(currentValue);
-            }
-        }
-        if (treasuryAccountId != null && !treasuryAccountId.equals(DEFAULT.treasuryAccountId)) {
-            result = 31 * result + treasuryAccountId.hashCode();
-        }
-        if (adminKey != null && !adminKey.equals(DEFAULT.adminKey)) {
-            result = 31 * result + adminKey.hashCode();
-        }
-        if (kycKey != null && !kycKey.equals(DEFAULT.kycKey)) {
-            result = 31 * result + kycKey.hashCode();
-        }
-        if (freezeKey != null && !freezeKey.equals(DEFAULT.freezeKey)) {
-            result = 31 * result + freezeKey.hashCode();
-        }
-        if (wipeKey != null && !wipeKey.equals(DEFAULT.wipeKey)) {
-            result = 31 * result + wipeKey.hashCode();
-        }
-        if (supplyKey != null && !supplyKey.equals(DEFAULT.supplyKey)) {
-            result = 31 * result + supplyKey.hashCode();
-        }
-        if (feeScheduleKey != null && !feeScheduleKey.equals(DEFAULT.feeScheduleKey)) {
-            result = 31 * result + feeScheduleKey.hashCode();
-        }
-        if (pauseKey != null && !pauseKey.equals(DEFAULT.pauseKey)) {
-            result = 31 * result + pauseKey.hashCode();
-        }
-        if (lastUsedSerialNumber != DEFAULT.lastUsedSerialNumber) {
-            result = 31 * result + Long.hashCode(lastUsedSerialNumber);
-        }
-        if (deleted != DEFAULT.deleted) {
-            result = 31 * result + Boolean.hashCode(deleted);
-        }
-        if (tokenType != null && !tokenType.equals(DEFAULT.tokenType)) {
-            result = 31 * result + Integer.hashCode(tokenType.protoOrdinal());
-        }
-        if (supplyType != null && !supplyType.equals(DEFAULT.supplyType)) {
-            result = 31 * result + Integer.hashCode(supplyType.protoOrdinal());
-        }
-        if (autoRenewAccountId != null && !autoRenewAccountId.equals(DEFAULT.autoRenewAccountId)) {
-            result = 31 * result + autoRenewAccountId.hashCode();
-        }
-        if (autoRenewSeconds != DEFAULT.autoRenewSeconds) {
-            result = 31 * result + Long.hashCode(autoRenewSeconds);
-        }
-        if (expirationSecond != DEFAULT.expirationSecond) {
-            result = 31 * result + Long.hashCode(expirationSecond);
-        }
-        if (memo != null && !memo.equals(DEFAULT.memo)) {
-            result = 31 * result + memo.hashCode();
-        }
-        if (maxSupply != DEFAULT.maxSupply) {
-            result = 31 * result + Long.hashCode(maxSupply);
-        }
-        if (paused != DEFAULT.paused) {
-            result = 31 * result + Boolean.hashCode(paused);
-        }
-        if (accountsFrozenByDefault != DEFAULT.accountsFrozenByDefault) {
-            result = 31 * result + Boolean.hashCode(accountsFrozenByDefault);
-        }
-        if (accountsKycGrantedByDefault != DEFAULT.accountsKycGrantedByDefault) {
-            result = 31 * result + Boolean.hashCode(accountsKycGrantedByDefault);
-        }
-        for (Object o : customFeesSupplier.get()) {
-            if (o != null) {
-                result = 31 * result + o.hashCode();
-            } else {
-                result = 31 * result;
-            }
-        }
-        if (metadata != null && !metadata.equals(DEFAULT.metadata)) {
-            result = 31 * result + metadata.hashCode();
-        }
-        if (metadataKey != null && !metadataKey.equals(DEFAULT.metadataKey)) {
-            result = 31 * result + metadataKey.hashCode();
-        }
-        long hashCode = result;
-        // Shifts: 30, 27, 16, 20, 5, 18, 10, 24, 30
-        hashCode += hashCode << 30;
-        hashCode ^= hashCode >>> 27;
-        hashCode += hashCode << 16;
-        hashCode ^= hashCode >>> 20;
-        hashCode += hashCode << 5;
-        hashCode ^= hashCode >>> 18;
-        hashCode += hashCode << 10;
-        hashCode ^= hashCode >>> 24;
-        hashCode += hashCode << 30;
-
-        return (int) hashCode;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -355,153 +168,16 @@ public record Token(
      */
     @Override
     public boolean equals(Object that) {
-        if (that == null || this.getClass() != that.getClass()) {
-            return false;
-        }
-        Token thatObj = (Token) that;
-        if (tokenId == null && thatObj.tokenId != null) {
-            return false;
-        }
-        if (tokenId != null && !tokenId.equals(thatObj.tokenId)) {
-            return false;
-        }
-        if (name == null && thatObj.name != null) {
-            return false;
-        }
-        if (name != null && !name.equals(thatObj.name)) {
-            return false;
-        }
-        if (symbol == null && thatObj.symbol != null) {
-            return false;
-        }
-        if (symbol != null && !symbol.equals(thatObj.symbol)) {
-            return false;
-        }
-        if (decimals != thatObj.decimals) {
-            return false;
-        }
-        if (!areSuppliersEqual(totalSupplySupplier, thatObj.totalSupplySupplier)) {
-            return false;
-        }
-        if (treasuryAccountId == null && thatObj.treasuryAccountId != null) {
-            return false;
-        }
-        if (treasuryAccountId != null && !treasuryAccountId.equals(thatObj.treasuryAccountId)) {
-            return false;
-        }
-        if (adminKey == null && thatObj.adminKey != null) {
-            return false;
-        }
-        if (adminKey != null && !adminKey.equals(thatObj.adminKey)) {
-            return false;
-        }
-        if (kycKey == null && thatObj.kycKey != null) {
-            return false;
-        }
-        if (kycKey != null && !kycKey.equals(thatObj.kycKey)) {
-            return false;
-        }
-        if (freezeKey == null && thatObj.freezeKey != null) {
-            return false;
-        }
-        if (freezeKey != null && !freezeKey.equals(thatObj.freezeKey)) {
-            return false;
-        }
-        if (wipeKey == null && thatObj.wipeKey != null) {
-            return false;
-        }
-        if (wipeKey != null && !wipeKey.equals(thatObj.wipeKey)) {
-            return false;
-        }
-        if (supplyKey == null && thatObj.supplyKey != null) {
-            return false;
-        }
-        if (supplyKey != null && !supplyKey.equals(thatObj.supplyKey)) {
-            return false;
-        }
-        if (feeScheduleKey == null && thatObj.feeScheduleKey != null) {
-            return false;
-        }
-        if (feeScheduleKey != null && !feeScheduleKey.equals(thatObj.feeScheduleKey)) {
-            return false;
-        }
-        if (pauseKey == null && thatObj.pauseKey != null) {
-            return false;
-        }
-        if (pauseKey != null && !pauseKey.equals(thatObj.pauseKey)) {
-            return false;
-        }
-        if (lastUsedSerialNumber != thatObj.lastUsedSerialNumber) {
-            return false;
-        }
-        if (deleted != thatObj.deleted) {
-            return false;
-        }
-        if (tokenType == null && thatObj.tokenType != null) {
-            return false;
-        }
-        if (tokenType != null && !tokenType.equals(thatObj.tokenType)) {
-            return false;
-        }
-        if (supplyType == null && thatObj.supplyType != null) {
-            return false;
-        }
-        if (supplyType != null && !supplyType.equals(thatObj.supplyType)) {
-            return false;
-        }
-        if (autoRenewAccountId == null && thatObj.autoRenewAccountId != null) {
-            return false;
-        }
-        if (autoRenewAccountId != null && !autoRenewAccountId.equals(thatObj.autoRenewAccountId)) {
-            return false;
-        }
-        if (autoRenewSeconds != thatObj.autoRenewSeconds) {
-            return false;
-        }
-        if (expirationSecond != thatObj.expirationSecond) {
-            return false;
-        }
-        if (memo == null && thatObj.memo != null) {
-            return false;
-        }
-        if (memo != null && !memo.equals(thatObj.memo)) {
-            return false;
-        }
-        if (maxSupply != thatObj.maxSupply) {
-            return false;
-        }
-        if (paused != thatObj.paused) {
-            return false;
-        }
-        if (accountsFrozenByDefault != thatObj.accountsFrozenByDefault) {
-            return false;
-        }
-        if (accountsKycGrantedByDefault != thatObj.accountsKycGrantedByDefault) {
-            return false;
-        }
-
-        if (!customFeesSupplier.get().equals(thatObj.customFeesSupplier.get())) {
-            return false;
-        }
-
-        if (metadata == null && thatObj.metadata != null) {
-            return false;
-        }
-        if (metadata != null && !metadata.equals(thatObj.metadata)) {
-            return false;
-        }
-        if (metadataKey == null && thatObj.metadataKey != null) {
-            return false;
-        }
-        return metadataKey == null || metadataKey.equals(thatObj.metadataKey);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
+
     /**
      * Convenience method to check if the tokenId has a value
      *
      * @return true of the tokenId has a value
      */
     public boolean hasTokenId() {
-        return tokenId != null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -512,7 +188,7 @@ public record Token(
      * @return the value for tokenId if it has a value, or else returns the default value
      */
     public TokenID tokenIdOrElse(@Nonnull final TokenID defaultValue) {
-        return hasTokenId() ? tokenId : defaultValue;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -522,8 +198,9 @@ public record Token(
      * @return the value for tokenId if it has a value
      * @throws NullPointerException if tokenId is null
      */
-    public @Nonnull TokenID tokenIdOrThrow() {
-        return requireNonNull(tokenId, "Field tokenId is null");
+    @Nonnull
+    public TokenID tokenIdOrThrow() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -532,9 +209,7 @@ public record Token(
      * @param ifPresent the {@link Consumer} to execute
      */
     public void ifTokenId(@Nonnull final Consumer<TokenID> ifPresent) {
-        if (hasTokenId()) {
-            ifPresent.accept(tokenId);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -543,7 +218,7 @@ public record Token(
      * @return true of the treasuryAccountId has a value
      */
     public boolean hasTreasuryAccountId() {
-        return treasuryAccountId != null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -554,7 +229,7 @@ public record Token(
      * @return the value for treasuryAccountId if it has a value, or else returns the default value
      */
     public AccountID treasuryAccountIdOrElse(@Nonnull final AccountID defaultValue) {
-        return hasTreasuryAccountId() ? treasuryAccountId : defaultValue;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -564,8 +239,9 @@ public record Token(
      * @return the value for treasuryAccountId if it has a value
      * @throws NullPointerException if treasuryAccountId is null
      */
-    public @Nonnull AccountID treasuryAccountIdOrThrow() {
-        return requireNonNull(treasuryAccountId, "Field treasuryAccountId is null");
+    @Nonnull
+    public AccountID treasuryAccountIdOrThrow() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -574,9 +250,7 @@ public record Token(
      * @param ifPresent the {@link Consumer} to execute
      */
     public void ifTreasuryAccountId(@Nonnull final Consumer<AccountID> ifPresent) {
-        if (hasTreasuryAccountId()) {
-            ifPresent.accept(treasuryAccountId);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -585,7 +259,7 @@ public record Token(
      * @return true of the adminKey has a value
      */
     public boolean hasAdminKey() {
-        return adminKey != null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -596,7 +270,7 @@ public record Token(
      * @return the value for adminKey if it has a value, or else returns the default value
      */
     public Key adminKeyOrElse(@Nonnull final Key defaultValue) {
-        return hasAdminKey() ? adminKey : defaultValue;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -606,8 +280,9 @@ public record Token(
      * @return the value for adminKey if it has a value
      * @throws NullPointerException if adminKey is null
      */
-    public @Nonnull Key adminKeyOrThrow() {
-        return requireNonNull(adminKey, "Field adminKey is null");
+    @Nonnull
+    public Key adminKeyOrThrow() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -616,9 +291,7 @@ public record Token(
      * @param ifPresent the {@link Consumer} to execute
      */
     public void ifAdminKey(@Nonnull final Consumer<Key> ifPresent) {
-        if (hasAdminKey()) {
-            ifPresent.accept(adminKey);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -627,7 +300,7 @@ public record Token(
      * @return true of the kycKey has a value
      */
     public boolean hasKycKey() {
-        return kycKey != null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -638,7 +311,7 @@ public record Token(
      * @return the value for kycKey if it has a value, or else returns the default value
      */
     public Key kycKeyOrElse(@Nonnull final Key defaultValue) {
-        return hasKycKey() ? kycKey : defaultValue;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -648,8 +321,9 @@ public record Token(
      * @return the value for kycKey if it has a value
      * @throws NullPointerException if kycKey is null
      */
-    public @Nonnull Key kycKeyOrThrow() {
-        return requireNonNull(kycKey, "Field kycKey is null");
+    @Nonnull
+    public Key kycKeyOrThrow() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -658,9 +332,7 @@ public record Token(
      * @param ifPresent the {@link Consumer} to execute
      */
     public void ifKycKey(@Nonnull final Consumer<Key> ifPresent) {
-        if (hasKycKey()) {
-            ifPresent.accept(kycKey);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -669,7 +341,7 @@ public record Token(
      * @return true of the freezeKey has a value
      */
     public boolean hasFreezeKey() {
-        return freezeKey != null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -680,7 +352,7 @@ public record Token(
      * @return the value for freezeKey if it has a value, or else returns the default value
      */
     public Key freezeKeyOrElse(@Nonnull final Key defaultValue) {
-        return hasFreezeKey() ? freezeKey : defaultValue;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -690,8 +362,9 @@ public record Token(
      * @return the value for freezeKey if it has a value
      * @throws NullPointerException if freezeKey is null
      */
-    public @Nonnull Key freezeKeyOrThrow() {
-        return requireNonNull(freezeKey, "Field freezeKey is null");
+    @Nonnull
+    public Key freezeKeyOrThrow() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -700,9 +373,7 @@ public record Token(
      * @param ifPresent the {@link Consumer} to execute
      */
     public void ifFreezeKey(@Nonnull final Consumer<Key> ifPresent) {
-        if (hasFreezeKey()) {
-            ifPresent.accept(freezeKey);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -711,7 +382,7 @@ public record Token(
      * @return true of the wipeKey has a value
      */
     public boolean hasWipeKey() {
-        return wipeKey != null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -722,7 +393,7 @@ public record Token(
      * @return the value for wipeKey if it has a value, or else returns the default value
      */
     public Key wipeKeyOrElse(@Nonnull final Key defaultValue) {
-        return hasWipeKey() ? wipeKey : defaultValue;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -732,8 +403,9 @@ public record Token(
      * @return the value for wipeKey if it has a value
      * @throws NullPointerException if wipeKey is null
      */
-    public @Nonnull Key wipeKeyOrThrow() {
-        return requireNonNull(wipeKey, "Field wipeKey is null");
+    @Nonnull
+    public Key wipeKeyOrThrow() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -742,9 +414,7 @@ public record Token(
      * @param ifPresent the {@link Consumer} to execute
      */
     public void ifWipeKey(@Nonnull final Consumer<Key> ifPresent) {
-        if (hasWipeKey()) {
-            ifPresent.accept(wipeKey);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -753,7 +423,7 @@ public record Token(
      * @return true of the supplyKey has a value
      */
     public boolean hasSupplyKey() {
-        return supplyKey != null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -764,7 +434,7 @@ public record Token(
      * @return the value for supplyKey if it has a value, or else returns the default value
      */
     public Key supplyKeyOrElse(@Nonnull final Key defaultValue) {
-        return hasSupplyKey() ? supplyKey : defaultValue;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -774,8 +444,9 @@ public record Token(
      * @return the value for supplyKey if it has a value
      * @throws NullPointerException if supplyKey is null
      */
-    public @Nonnull Key supplyKeyOrThrow() {
-        return requireNonNull(supplyKey, "Field supplyKey is null");
+    @Nonnull
+    public Key supplyKeyOrThrow() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -784,9 +455,7 @@ public record Token(
      * @param ifPresent the {@link Consumer} to execute
      */
     public void ifSupplyKey(@Nonnull final Consumer<Key> ifPresent) {
-        if (hasSupplyKey()) {
-            ifPresent.accept(supplyKey);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -795,7 +464,7 @@ public record Token(
      * @return true of the feeScheduleKey has a value
      */
     public boolean hasFeeScheduleKey() {
-        return feeScheduleKey != null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -806,7 +475,7 @@ public record Token(
      * @return the value for feeScheduleKey if it has a value, or else returns the default value
      */
     public Key feeScheduleKeyOrElse(@Nonnull final Key defaultValue) {
-        return hasFeeScheduleKey() ? feeScheduleKey : defaultValue;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -816,8 +485,9 @@ public record Token(
      * @return the value for feeScheduleKey if it has a value
      * @throws NullPointerException if feeScheduleKey is null
      */
-    public @Nonnull Key feeScheduleKeyOrThrow() {
-        return requireNonNull(feeScheduleKey, "Field feeScheduleKey is null");
+    @Nonnull
+    public Key feeScheduleKeyOrThrow() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -826,9 +496,7 @@ public record Token(
      * @param ifPresent the {@link Consumer} to execute
      */
     public void ifFeeScheduleKey(@Nonnull final Consumer<Key> ifPresent) {
-        if (hasFeeScheduleKey()) {
-            ifPresent.accept(feeScheduleKey);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -837,7 +505,7 @@ public record Token(
      * @return true of the pauseKey has a value
      */
     public boolean hasPauseKey() {
-        return pauseKey != null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -848,7 +516,7 @@ public record Token(
      * @return the value for pauseKey if it has a value, or else returns the default value
      */
     public Key pauseKeyOrElse(@Nonnull final Key defaultValue) {
-        return hasPauseKey() ? pauseKey : defaultValue;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -858,8 +526,9 @@ public record Token(
      * @return the value for pauseKey if it has a value
      * @throws NullPointerException if pauseKey is null
      */
-    public @Nonnull Key pauseKeyOrThrow() {
-        return requireNonNull(pauseKey, "Field pauseKey is null");
+    @Nonnull
+    public Key pauseKeyOrThrow() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -868,9 +537,7 @@ public record Token(
      * @param ifPresent the {@link Consumer} to execute
      */
     public void ifPauseKey(@Nonnull final Consumer<Key> ifPresent) {
-        if (hasPauseKey()) {
-            ifPresent.accept(pauseKey);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -879,7 +546,7 @@ public record Token(
      * @return true of the autoRenewAccountId has a value
      */
     public boolean hasAutoRenewAccountId() {
-        return autoRenewAccountId != null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -890,7 +557,7 @@ public record Token(
      * @return the value for autoRenewAccountId if it has a value, or else returns the default value
      */
     public AccountID autoRenewAccountIdOrElse(@Nonnull final AccountID defaultValue) {
-        return hasAutoRenewAccountId() ? autoRenewAccountId : defaultValue;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -900,8 +567,9 @@ public record Token(
      * @return the value for autoRenewAccountId if it has a value
      * @throws NullPointerException if autoRenewAccountId is null
      */
-    public @Nonnull AccountID autoRenewAccountIdOrThrow() {
-        return requireNonNull(autoRenewAccountId, "Field autoRenewAccountId is null");
+    @Nonnull
+    public AccountID autoRenewAccountIdOrThrow() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -910,9 +578,7 @@ public record Token(
      * @param ifPresent the {@link Consumer} to execute
      */
     public void ifAutoRenewAccountId(@Nonnull final Consumer<AccountID> ifPresent) {
-        if (hasAutoRenewAccountId()) {
-            ifPresent.accept(autoRenewAccountId);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -921,7 +587,7 @@ public record Token(
      * @return true of the metadataKey has a value
      */
     public boolean hasMetadataKey() {
-        return metadataKey != null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -932,7 +598,7 @@ public record Token(
      * @return the value for metadataKey if it has a value, or else returns the default value
      */
     public Key metadataKeyOrElse(@Nonnull final Key defaultValue) {
-        return hasMetadataKey() ? metadataKey : defaultValue;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -942,8 +608,9 @@ public record Token(
      * @return the value for metadataKey if it has a value
      * @throws NullPointerException if metadataKey is null
      */
-    public @Nonnull Key metadataKeyOrThrow() {
-        return requireNonNull(metadataKey, "Field metadataKey is null");
+    @Nonnull
+    public Key metadataKeyOrThrow() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -952,23 +619,21 @@ public record Token(
      * @param ifPresent the {@link Consumer} to execute
      */
     public void ifMetadataKey(@Nonnull final Consumer<Key> ifPresent) {
-        if (hasMetadataKey()) {
-            ifPresent.accept(metadataKey);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
      * @return The custom fees of this token
      */
     public List<CustomFee> customFees() {
-        return customFeesSupplier.get();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
      * @return The total supply of this token
      */
     public long totalSupply() {
-        return totalSupplySupplier.get();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -978,35 +643,7 @@ public record Token(
      * @return a pre-populated builder
      */
     public Builder copyBuilder() {
-        return new Builder(
-                tokenId,
-                name,
-                symbol,
-                decimals,
-                totalSupplySupplier,
-                treasuryAccountId,
-                adminKey,
-                kycKey,
-                freezeKey,
-                wipeKey,
-                supplyKey,
-                feeScheduleKey,
-                pauseKey,
-                lastUsedSerialNumber,
-                deleted,
-                tokenType,
-                supplyType,
-                autoRenewAccountId,
-                autoRenewSeconds,
-                expirationSecond,
-                memo,
-                maxSupply,
-                paused,
-                accountsFrozenByDefault,
-                accountsKycGrantedByDefault,
-                customFeesSupplier,
-                metadata,
-                metadataKey);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -1014,6 +651,7 @@ public record Token(
      * paths use the constructor directly.
      */
     public static final class Builder {
+
         @Nullable
         private TokenID tokenId = null;
 
@@ -1053,22 +691,29 @@ public record Token(
         private Key pauseKey = null;
 
         private long lastUsedSerialNumber = 0;
+
         private boolean deleted = false;
+
         private TokenType tokenType = TokenType.fromProtobufOrdinal(0);
+
         private TokenSupplyType supplyType = TokenSupplyType.fromProtobufOrdinal(0);
 
         @Nullable
         private AccountID autoRenewAccountId = null;
 
         private long autoRenewSeconds = 0;
+
         private long expirationSecond = 0;
 
         @Nonnull
         private String memo = "";
 
         private long maxSupply = 0;
+
         private boolean paused = false;
+
         private boolean accountsFrozenByDefault = false;
+
         private boolean accountsKycGrantedByDefault = false;
 
         @Nullable
@@ -1083,7 +728,8 @@ public record Token(
         /**
          * Create an empty builder
          */
-        public Builder() {}
+        public Builder() {
+        }
 
         /**
          * Create a pre-populated Builder.
@@ -1163,35 +809,7 @@ public record Token(
          *                                    (token definition and individual NFTs).
          */
         @SuppressWarnings("java:S107")
-        public Builder(
-                TokenID tokenId,
-                String name,
-                String symbol,
-                int decimals,
-                Supplier<Long> totalSupplySupplier,
-                AccountID treasuryAccountId,
-                Key adminKey,
-                Key kycKey,
-                Key freezeKey,
-                Key wipeKey,
-                Key supplyKey,
-                Key feeScheduleKey,
-                Key pauseKey,
-                long lastUsedSerialNumber,
-                boolean deleted,
-                TokenType tokenType,
-                TokenSupplyType supplyType,
-                AccountID autoRenewAccountId,
-                long autoRenewSeconds,
-                long expirationSecond,
-                String memo,
-                long maxSupply,
-                boolean paused,
-                boolean accountsFrozenByDefault,
-                boolean accountsKycGrantedByDefault,
-                Supplier<List<CustomFee>> customFeesSupplier,
-                Bytes metadata,
-                Key metadataKey) {
+        public Builder(TokenID tokenId, String name, String symbol, int decimals, Supplier<Long> totalSupplySupplier, AccountID treasuryAccountId, Key adminKey, Key kycKey, Key freezeKey, Key wipeKey, Key supplyKey, Key feeScheduleKey, Key pauseKey, long lastUsedSerialNumber, boolean deleted, TokenType tokenType, TokenSupplyType supplyType, AccountID autoRenewAccountId, long autoRenewSeconds, long expirationSecond, String memo, long maxSupply, boolean paused, boolean accountsFrozenByDefault, boolean accountsKycGrantedByDefault, Supplier<List<CustomFee>> customFeesSupplier, Bytes metadata, Key metadataKey) {
             this.tokenId = tokenId;
             this.name = name != null ? name : "";
             this.symbol = symbol != null ? symbol : "";
@@ -1228,35 +846,7 @@ public record Token(
          * @return new model record with data set
          */
         public Token build() {
-            return new Token(
-                    tokenId,
-                    name,
-                    symbol,
-                    decimals,
-                    totalSupplySupplier,
-                    treasuryAccountId,
-                    adminKey,
-                    kycKey,
-                    freezeKey,
-                    wipeKey,
-                    supplyKey,
-                    feeScheduleKey,
-                    pauseKey,
-                    lastUsedSerialNumber,
-                    deleted,
-                    tokenType,
-                    supplyType,
-                    autoRenewAccountId,
-                    autoRenewSeconds,
-                    expirationSecond,
-                    memo,
-                    maxSupply,
-                    paused,
-                    accountsFrozenByDefault,
-                    accountsKycGrantedByDefault,
-                    customFeesSupplier,
-                    metadata,
-                    metadataKey);
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1266,8 +856,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder tokenId(@Nullable TokenID tokenId) {
-            this.tokenId = tokenId;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1277,8 +866,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder tokenId(TokenID.Builder builder) {
-            this.tokenId = builder.build();
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1288,8 +876,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder name(@Nonnull String name) {
-            this.name = name;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1300,8 +887,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder symbol(@Nonnull String symbol) {
-            this.symbol = symbol;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1314,8 +900,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder decimals(int decimals) {
-            this.decimals = decimals;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1325,8 +910,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder totalSupply(long totalSupply) {
-            this.totalSupplySupplier = () -> totalSupply;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1336,8 +920,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder totalSupply(Supplier<Long> totalSupplySupplier) {
-            this.totalSupplySupplier = totalSupplySupplier;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1349,8 +932,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder treasuryAccountId(@Nullable AccountID treasuryAccountId) {
-            this.treasuryAccountId = treasuryAccountId;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1361,8 +943,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder adminKey(@Nullable Key adminKey) {
-            this.adminKey = adminKey;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1373,8 +954,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder adminKey(Key.Builder builder) {
-            this.adminKey = builder.build();
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1385,8 +965,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder kycKey(@Nullable Key kycKey) {
-            this.kycKey = kycKey;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1397,8 +976,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder kycKey(Key.Builder builder) {
-            this.kycKey = builder.build();
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1409,8 +987,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder freezeKey(@Nullable Key freezeKey) {
-            this.freezeKey = freezeKey;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1421,8 +998,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder freezeKey(Key.Builder builder) {
-            this.freezeKey = builder.build();
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1433,8 +1009,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder wipeKey(@Nullable Key wipeKey) {
-            this.wipeKey = wipeKey;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1445,8 +1020,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder wipeKey(Key.Builder builder) {
-            this.wipeKey = builder.build();
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1457,8 +1031,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder supplyKey(@Nullable Key supplyKey) {
-            this.supplyKey = supplyKey;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1469,8 +1042,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder supplyKey(Key.Builder builder) {
-            this.supplyKey = builder.build();
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1482,8 +1054,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder feeScheduleKey(@Nullable Key feeScheduleKey) {
-            this.feeScheduleKey = feeScheduleKey;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1495,8 +1066,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder feeScheduleKey(Key.Builder builder) {
-            this.feeScheduleKey = builder.build();
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1507,8 +1077,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder pauseKey(@Nullable Key pauseKey) {
-            this.pauseKey = pauseKey;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1519,8 +1088,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder pauseKey(Key.Builder builder) {
-            this.pauseKey = builder.build();
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1530,8 +1098,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder lastUsedSerialNumber(long lastUsedSerialNumber) {
-            this.lastUsedSerialNumber = lastUsedSerialNumber;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1541,8 +1108,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder deleted(boolean deleted) {
-            this.deleted = deleted;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1553,8 +1119,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder tokenType(TokenType tokenType) {
-            this.tokenType = tokenType;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1565,8 +1130,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder supplyType(TokenSupplyType supplyType) {
-            this.supplyType = supplyType;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1577,8 +1141,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder autoRenewAccountId(@Nullable AccountID autoRenewAccountId) {
-            this.autoRenewAccountId = autoRenewAccountId;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1591,8 +1154,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder autoRenewSeconds(long autoRenewSeconds) {
-            this.autoRenewSeconds = autoRenewSeconds;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1602,8 +1164,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder expirationSecond(long expirationSecond) {
-            this.expirationSecond = expirationSecond;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1613,8 +1174,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder memo(@Nonnull String memo) {
-            this.memo = memo;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1624,8 +1184,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder maxSupply(long maxSupply) {
-            this.maxSupply = maxSupply;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1635,8 +1194,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder paused(boolean paused) {
-            this.paused = paused;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1646,8 +1204,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder accountsFrozenByDefault(boolean accountsFrozenByDefault) {
-            this.accountsFrozenByDefault = accountsFrozenByDefault;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1658,8 +1215,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder accountsKycGrantedByDefault(boolean accountsKycGrantedByDefault) {
-            this.accountsKycGrantedByDefault = accountsKycGrantedByDefault;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1669,8 +1225,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder customFees(@Nonnull List<CustomFee> customFees) {
-            this.customFeesSupplier = () -> customFees;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1680,8 +1235,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder customFees(@Nonnull Supplier<List<CustomFee>> customFeesSupplier) {
-            this.customFeesSupplier = customFeesSupplier;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1691,8 +1245,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder metadata(@Nonnull Bytes metadata) {
-            this.metadata = metadata;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1703,8 +1256,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder metadataKey(@Nullable Key metadataKey) {
-            this.metadataKey = metadataKey;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1715,8 +1267,7 @@ public record Token(
          * @return builder to continue building with
          */
         public Builder metadataKey(Key.Builder builder) {
-            this.metadataKey = builder.build();
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
     }
 }

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.converter;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -18,15 +17,11 @@ public class EntityIdSerializer extends JsonSerializer<EntityId> {
 
     @Override
     public Class<EntityId> handledType() {
-        return EntityId.class;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void serialize(EntityId value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-        if (!EntityId.isEmpty(value)) {
-            gen.writeNumber(value.getId());
-        } else {
-            gen.writeNull();
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

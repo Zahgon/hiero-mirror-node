@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.schedule;
 
 import jakarta.persistence.Column;
@@ -16,7 +15,8 @@ import org.hiero.mirror.common.converter.EntityIdConverter;
 import org.hiero.mirror.common.domain.Upsertable;
 import org.hiero.mirror.common.domain.entity.EntityId;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE) // For Builder
+// For Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 @Data
 @Entity
@@ -51,10 +51,10 @@ public class Schedule {
     private boolean waitForExpiry;
 
     public void setScheduleId(EntityId scheduleId) {
-        this.scheduleId = scheduleId != null ? scheduleId.getId() : null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public void setScheduleId(Long scheduleId) {
-        this.scheduleId = scheduleId;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

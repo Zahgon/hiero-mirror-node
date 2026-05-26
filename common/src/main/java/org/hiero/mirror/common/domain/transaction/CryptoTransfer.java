@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.transaction;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -50,17 +49,13 @@ public class CryptoTransfer implements Persistable<CryptoTransfer.Id> {
     @JsonIgnore
     @Override
     public Id getId() {
-        Id id = new Id();
-        id.setConsensusTimestamp(consensusTimestamp);
-        id.setAmount(amount);
-        id.setEntityId(entityId);
-        return id;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @JsonIgnore
     @Override
     public boolean isNew() {
-        return true; // Since we never update and use a natural ID, avoid Hibernate querying before insert
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /*
@@ -78,7 +73,9 @@ public class CryptoTransfer implements Persistable<CryptoTransfer.Id> {
         private static final long serialVersionUID = 6187276796581956587L;
 
         private long amount;
+
         private long consensusTimestamp;
+
         private long entityId;
     }
 }

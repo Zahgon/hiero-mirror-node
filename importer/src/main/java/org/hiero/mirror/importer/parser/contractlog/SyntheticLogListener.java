@@ -1,11 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.contractlog;
 
 import static org.hiero.mirror.common.util.DomainUtils.fromTrimmedEvmAddress;
 import static org.hiero.mirror.common.util.DomainUtils.trim;
 import static org.hiero.mirror.importer.parser.contractlog.SyntheticContractLogServiceImpl.CONTRACT_LOG_MARKER;
-
 import com.github.benmanes.caffeine.cache.CacheLoader;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
@@ -47,120 +45,84 @@ import org.springframework.core.annotation.Order;
 @CustomLog
 @RequiredArgsConstructor
 final class SyntheticLogListener implements EntityListener, RecordStreamFileListener {
+
     static final int MAX_CACHE_LOAD_ENTRIES = 30000;
 
     @Getter(lazy = true)
     private final LoadingCache<Long, byte[]> evmCache = buildCache();
 
     private final ParserContext parserContext;
+
     private final CacheProperties cacheProperties;
+
     private final EntityRepository entityRepository;
+
     private final EntityProperties entityProperties;
 
     @Override
     public boolean isEnabled() {
-        return entityProperties.getPersist().isSyntheticContractLogEvmAddressLookup();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     @Timed
     public void onEnd(RecordFile recordFile) {
-        if (!isEnabled()) {
-            return;
-        }
-        final var logUpdaters = parserContext.getTransient(SyntheticLogUpdater.class);
-        final var keys = parserContext.getEvmAddressLookupIds();
-        final var entityMap = getEvmCache().getAll(keys);
-        final var updatedContractResults = new HashMap<Long, ContractResult>();
-
-        for (final var updater : logUpdaters) {
-            updater.updateContractLog(entityMap);
-
-            final var contractLog = updater.getContractLog();
-
-            if (contractLog != null) {
-                final var contractResult = contractLog.getContractResult();
-
-                if (contractResult != null && contractLog.getBloom() != null) {
-                    updatedContractResults.put(contractResult.getConsensusTimestamp(), contractResult);
-                }
-            }
-        }
-
-        updateRecordFileBloom(recordFile, updatedContractResults.values());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private void updateRecordFileBloom(final RecordFile recordFile, final Collection<ContractResult> contractResults) {
         if (contractResults.isEmpty()) {
             return;
         }
-
         final var aggregatedBloom = aggregateRecordFileBloom(recordFile, contractResults);
-
         if (aggregatedBloom.length == LogsBloomFilter.BYTE_SIZE) {
             recordFile.setLogsBloom(aggregatedBloom);
         }
     }
 
-    private byte[] aggregateRecordFileBloom(
-            final RecordFile recordFile, final Collection<ContractResult> contractResults) {
-        var aggregatedBloom =
-                recordFile.getLogsBloom() != null ? recordFile.getLogsBloom() : new byte[LogsBloomFilter.BYTE_SIZE];
-
+    private byte[] aggregateRecordFileBloom(final RecordFile recordFile, final Collection<ContractResult> contractResults) {
+        var aggregatedBloom = recordFile.getLogsBloom() != null ? recordFile.getLogsBloom() : new byte[LogsBloomFilter.BYTE_SIZE];
         for (final var contractResult : contractResults) {
             aggregatedBloom = LogsBloomFilter.or(contractResult.getBloom(), aggregatedBloom);
         }
-
         return aggregatedBloom;
     }
 
     @Override
     public void onContractLog(ContractLog contractLog) {
-        if (contractLog.isSynthetic()) {
-            var contractId = contractLog.getContractId();
-            var senderId = fromTrimmedEvmAddress(contractLog.getTopic1());
-            var receiverId = fromTrimmedEvmAddress(contractLog.getTopic2());
-            if (!(EntityId.isEmpty(contractId) && EntityId.isEmpty(senderId) && EntityId.isEmpty(receiverId))) {
-                final var updater = new SyntheticLogUpdater(contractId, senderId, receiverId, contractLog);
-                updater.populateSearchIds();
-                parserContext.addTransient(updater);
-            }
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private LoadingCache<Long, byte[]> buildCache() {
-        return Caffeine.from(CaffeineSpec.parse(cacheProperties.getEvmAddress()))
-                .build(new CacheLoader<>() {
-                    @Override
-                    public byte[] load(Long key) {
-                        return loadAll(Collections.singleton(key)).get(key);
-                    }
+        return Caffeine.from(CaffeineSpec.parse(cacheProperties.getEvmAddress())).build(new CacheLoader<>() {
 
-                    @Override
-                    public Map<Long, byte[]> loadAll(Set<? extends Long> keys) {
-                        return getCacheMisses(keys);
-                    }
-                });
+            @Override
+            public byte[] load(Long key) {
+                throw new UnsupportedOperationException("STUB: not implemented");
+            }
+
+            @Override
+            public Map<Long, byte[]> loadAll(Set<? extends Long> keys) {
+                throw new UnsupportedOperationException("STUB: not implemented");
+            }
+        });
     }
 
     private Map<Long, byte[]> getCacheMisses(Set<? extends Long> keys) {
         if (keys.isEmpty()) {
             return Collections.emptyMap();
         }
-
         Map<Long, byte[]> loadedFromDb = new HashMap<>(keys.size());
         if (keys.size() <= MAX_CACHE_LOAD_ENTRIES) {
             processBatch(loadedFromDb, entityRepository.findEvmAddressesByIds(keys));
         } else {
             final var keyIterator = keys.iterator();
             final var batches = Iterators.partition(keyIterator, MAX_CACHE_LOAD_ENTRIES);
-
             while (batches.hasNext()) {
                 List<? extends Long> batch = batches.next();
                 processBatch(loadedFromDb, entityRepository.findEvmAddressesByIds(batch));
             }
         }
-
         return loadedFromDb;
     }
 
@@ -173,33 +135,21 @@ final class SyntheticLogListener implements EntityListener, RecordStreamFileList
     @Getter(AccessLevel.PACKAGE)
     @RequiredArgsConstructor
     class SyntheticLogUpdater {
+
         private final EntityId contractId;
+
         private final EntityId sender;
+
         private final EntityId receiver;
+
         private final ContractLog contractLog;
 
         public void populateSearchIds() {
-            if (!EntityId.isEmpty(contractId)) {
-                parserContext.addEvmAddressLookupId(contractId.getId());
-            }
-
-            if (!EntityId.isEmpty(receiver)) {
-                parserContext.addEvmAddressLookupId(receiver.getId());
-            }
-
-            if (!EntityId.isEmpty(sender)) {
-                parserContext.addEvmAddressLookupId(sender.getId());
-            }
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         public void updateContractLog(Map<Long, byte[]> entityEvmAddresses) {
-            updateTopicField(sender, entityEvmAddresses, contractLog::setTopic1, contractLog.getTopic1());
-            updateTopicField(receiver, entityEvmAddresses, contractLog::setTopic2, contractLog.getTopic2());
-
-            var contractAddress = getContractAddress(contractId, entityEvmAddresses);
-            if (Arrays.equals(CONTRACT_LOG_MARKER, contractLog.getBloom())) {
-                contractLog.setBloom(createBloom(contractAddress));
-            }
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -214,19 +164,16 @@ final class SyntheticLogListener implements EntityListener, RecordStreamFileList
             if (EntityId.isEmpty(contractEntityId)) {
                 return DomainUtils.toEvmAddress(contractLog.getContractId());
             }
-
             var cachedEvmAddress = entityEvmAddresses.get(contractEntityId.getId());
             if (cachedEvmAddress != null) {
                 return cachedEvmAddress;
             }
-
             var contextEntity = parserContext.get(Entity.class, contractEntityId.getId());
             if (contextEntity != null && !ArrayUtils.isEmpty(contextEntity.getEvmAddress())) {
                 var trimmedEvmAddress = trim(contextEntity.getEvmAddress());
                 getEvmCache().put(contractEntityId.getId(), trimmedEvmAddress);
                 return trimmedEvmAddress;
             }
-
             var longZeroAddress = DomainUtils.toEvmAddress(contractEntityId);
             getEvmCache().put(contractEntityId.getId(), longZeroAddress);
             return longZeroAddress;
@@ -248,31 +195,8 @@ final class SyntheticLogListener implements EntityListener, RecordStreamFileList
             return logsBloomFilter.toArrayUnsafe();
         }
 
-        public void updateTopicField(
-                final EntityId key,
-                final Map<Long, byte[]> entityEvmAddresses,
-                final Consumer<byte[]> setter,
-                final byte[] defaultValue) {
-            if (!EntityId.isEmpty(key)) {
-                var cachedResult = entityEvmAddresses.get(key.getId());
-                if (cachedResult != null) {
-                    setter.accept(cachedResult);
-                } else {
-                    var contextEntity = parserContext.get(Entity.class, key.getId());
-                    if (contextEntity != null && !ArrayUtils.isEmpty(contextEntity.getEvmAddress())) {
-                        var trimmedEvmAddress = trim(contextEntity.getEvmAddress());
-                        getEvmCache().put(key.getId(), trimmedEvmAddress);
-                        setter.accept(trimmedEvmAddress);
-                    } else {
-                        /* The entity repository only returns rows that have a non-empty evm address
-                        and the entity was not created in this block so we can safely assume the
-                        entity does not have an evm address. In addition, we know the default value here
-                        will be non-null as the key is derived from this value and is checked to be non-empty
-                        */
-                        getEvmCache().put(key.getId(), defaultValue);
-                    }
-                }
-            }
+        public void updateTopicField(final EntityId key, final Map<Long, byte[]> entityEvmAddresses, final Consumer<byte[]> setter, final byte[] defaultValue) {
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
     }
 }

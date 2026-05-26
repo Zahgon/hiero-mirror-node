@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.publish.transaction.token;
 
 import com.hedera.hashgraph.sdk.Hbar;
@@ -38,22 +37,6 @@ public class TokenMintTransactionSupplier implements TransactionSupplier<TokenMi
 
     @Override
     public TokenMintTransaction get() {
-
-        TokenMintTransaction transaction = new TokenMintTransaction()
-                .setMaxTransactionFee(Hbar.fromTinybars(maxTransactionFee))
-                .setTokenId(TokenId.fromString(tokenId));
-
-        if (type == TokenType.NON_FUNGIBLE_UNIQUE) {
-            for (int i = 0; i < amount; i++) {
-                transaction.addMetadata(
-                        !metadata.isEmpty()
-                                ? metadata.getBytes(StandardCharsets.UTF_8)
-                                : Utility.generateMessage(metadataSize));
-            }
-        } else {
-            transaction.setAmount(amount);
-        }
-
-        return transaction;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

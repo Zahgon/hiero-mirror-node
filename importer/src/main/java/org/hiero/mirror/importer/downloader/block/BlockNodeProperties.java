@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.downloader.block;
 
 import jakarta.validation.constraints.Max;
@@ -13,11 +12,7 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public final class BlockNodeProperties implements Comparable<BlockNodeProperties> {
 
-    private static final Comparator<BlockNodeProperties> COMPARATOR = Comparator.comparing(
-                    BlockNodeProperties::getPriority)
-            .thenComparing(BlockNodeProperties::getHost)
-            .thenComparing(BlockNodeProperties::getPort)
-            .thenComparing(BlockNodeProperties::isRequiresTls);
+    private static final Comparator<BlockNodeProperties> COMPARATOR = Comparator.comparing(BlockNodeProperties::getPriority).thenComparing(BlockNodeProperties::getHost).thenComparing(BlockNodeProperties::getPort).thenComparing(BlockNodeProperties::isRequiresTls);
 
     @NotBlank
     private String host;
@@ -33,11 +28,11 @@ public final class BlockNodeProperties implements Comparable<BlockNodeProperties
 
     @Override
     public int compareTo(final BlockNodeProperties other) {
-        return COMPARATOR.compare(this, other);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public String getEndpoint() {
-        return host + ":" + port;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -45,6 +40,6 @@ public final class BlockNodeProperties implements Comparable<BlockNodeProperties
      * Two configurations are considered the same when both the endpoint (host+port) and requiresTls match.
      */
     public String getMergeKey() {
-        return getEndpoint() + "|" + requiresTls;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

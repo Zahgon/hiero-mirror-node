@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.util;
 
 import com.google.protobuf.ByteString;
@@ -12,8 +11,11 @@ import org.bouncycastle.crypto.digests.KeccakDigest;
 @NoArgsConstructor
 public final class LogsBloomFilter {
 
-    public static final int BYTE_SIZE = 256; // 2048 bits
+    // 2048 bits
+    public static final int BYTE_SIZE = 256;
+
     public static final byte[] EMPTY = new byte[0];
+
     private static final int TOPIC_SIZE_BYTES = 32;
 
     @Getter(value = AccessLevel.PRIVATE, lazy = true)
@@ -28,76 +30,42 @@ public final class LogsBloomFilter {
     }
 
     public boolean couldContain(final byte[] bloom) {
-        if (bloom == null) {
-            // other implementations accept null values as positive matches.
-            return true;
-        }
-
-        if (bloom.length != BYTE_SIZE) {
-            return false;
-        }
-
-        final var dataArray = getData();
-        for (int i = 0; i < bloom.length; i++) {
-            if ((bloom[i] & dataArray[i]) != bloom[i]) {
-                return false;
-            }
-        }
-
-        return true;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
      * Utility method that mutates the target array by aggregating its content with a passed source that
      * should have a matching length
-     * */
+     */
     public static byte[] or(final byte[] source, final byte[] target) {
-        if (target != null && source == null && target.length == BYTE_SIZE) {
-            return target;
-        }
-
-        if (source == null || target == null || source.length > target.length) {
-            throw new IllegalArgumentException("Invalid parameter");
-        }
-
-        for (int i = 0; i < source.length; i++) {
-            target[i] |= source[i];
-        }
-
-        if (target.length == BYTE_SIZE) {
-            return target;
-        } else {
-            return new byte[BYTE_SIZE];
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public void insertAddress(final byte[] input) {
-        insert(input);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public void insertTopic(final ByteString input) {
-        insertTopic(DomainUtils.toBytes(input));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public void insertTopic(final byte[] input) {
-        insert(DomainUtils.leftPadBytes(input, TOPIC_SIZE_BYTES));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private void insert(final byte[] input) {
         if (ArrayUtils.isEmpty(input)) {
             return;
         }
-
         final var hash = keccakHash(input);
         final var dataArray = getData();
-
         // Per the Ethereum spec: use the lowest 3 pairs of bytes
         // to determine the 3-bit positions in the 2048-bit filter
         for (int i = 0; i < 3; i++) {
             int lo = hash[2 * i + 1] & 0xFF;
             int hi = hash[2 * i] & 0xFF;
-            int bitIndex = (hi << 8 | lo) & 0x7FF; // mod 2048
-
+            // mod 2048
+            int bitIndex = (hi << 8 | lo) & 0x7FF;
             int byteIndex = BYTE_SIZE - 1 - (bitIndex >> 3);
             int bitShift = bitIndex & 0x7;
             dataArray[byteIndex] |= (byte) (1 << bitShift);
@@ -105,33 +73,18 @@ public final class LogsBloomFilter {
     }
 
     public void or(final LogsBloomFilter other) {
-        if (other == null) {
-            throw new IllegalArgumentException("Invalid LogsBloomFilter parameter");
-        }
-
-        or(other.getData());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public void or(final byte[] other) {
-        if (other == null || other.length > getData().length) {
-            throw new IllegalArgumentException("Invalid parameter");
-        }
-
-        final var dataArray = getData();
-        for (int i = 0; i < other.length; i++) {
-            dataArray[i] |= other[i];
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public byte[] toArrayUnsafe() {
-        if (data.get() instanceof byte[] bloom) {
-            return bloom;
-        }
-
-        return EMPTY;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public ByteString toByteString() {
-        return DomainUtils.fromBytes(toArrayUnsafe());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.restjava;
 
 import jakarta.annotation.PostConstruct;
@@ -30,22 +29,13 @@ public class RestJavaProperties {
      */
     @PostConstruct
     void mergeHeaders() {
-        for (var pathHeaders : response.headers.path.entrySet()) {
-            var mergedHeaders = Stream.concat(
-                            response.headers.defaults.entrySet().stream(), pathHeaders.getValue().entrySet().stream())
-                    .collect(Collectors.toMap(
-                            Entry::getKey,
-                            Entry::getValue,
-                            (v1, v2) -> v2,
-                            () -> new TreeMap<>(String.CASE_INSENSITIVE_ORDER)));
-
-            pathHeaders.setValue(mergedHeaders);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Data
     @Validated
     public static class ResponseConfig {
+
         @NotNull
         @Valid
         private ResponseHeadersConfig headers = new ResponseHeadersConfig();
@@ -54,6 +44,7 @@ public class RestJavaProperties {
     @Data
     @Validated
     public static class ResponseHeadersConfig {
+
         @NotNull
         private Map<String, String> defaults = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
@@ -61,7 +52,7 @@ public class RestJavaProperties {
         private Map<String, Map<String, String>> path = new HashMap<>();
 
         public Map<String, String> getHeadersForPath(String apiPath) {
-            return apiPath == null ? defaults : path.getOrDefault(apiPath, defaults);
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
     }
 }

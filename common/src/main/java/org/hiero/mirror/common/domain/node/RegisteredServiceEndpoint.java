@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.node;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -19,15 +18,23 @@ import lombok.Data;
 public class RegisteredServiceEndpoint {
 
     private BlockNodeEndpoint blockNode;
+
     private String domainName;
+
     private GeneralServiceEndpoint generalService;
+
     private String ipAddress;
+
     private MirrorNodeEndpoint mirrorNode;
+
     private int port;
+
     private boolean requiresTls;
+
     private RpcRelayEndpoint rpcRelay;
 
     public enum BlockNodeApi {
+
         OTHER,
         STATUS,
         PUBLISH,
@@ -39,39 +46,33 @@ public class RegisteredServiceEndpoint {
     @Data
     @Builder
     public static class BlockNodeEndpoint {
+
         private List<BlockNodeApi> endpointApis;
     }
 
     @Data
     @Builder
     public static class GeneralServiceEndpoint {
+
         private String description;
     }
 
     @Data
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class MirrorNodeEndpoint {
+
         public static final MirrorNodeEndpoint INSTANCE = new MirrorNodeEndpoint();
     }
 
     @Data
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class RpcRelayEndpoint {
+
         public static final RpcRelayEndpoint INSTANCE = new RpcRelayEndpoint();
     }
 
     @JsonIgnore
     public RegisteredNodeType getType() {
-        if (blockNode != null) {
-            return RegisteredNodeType.BLOCK_NODE;
-        } else if (generalService != null) {
-            return RegisteredNodeType.GENERAL_SERVICE;
-        } else if (mirrorNode != null) {
-            return RegisteredNodeType.MIRROR_NODE;
-        } else if (rpcRelay != null) {
-            return RegisteredNodeType.RPC_RELAY;
-        }
-
-        return RegisteredNodeType.UNKNOWN;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

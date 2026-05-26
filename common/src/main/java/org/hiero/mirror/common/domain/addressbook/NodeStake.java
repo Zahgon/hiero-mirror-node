@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.addressbook;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -14,7 +13,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Persistable;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE) // For builder
+// For builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
 @Data
 @Entity
@@ -77,24 +77,23 @@ public class NodeStake implements Persistable<NodeStake.Id> {
     @JsonIgnore
     @Override
     public Id getId() {
-        Id id = new Id();
-        id.setConsensusTimestamp(consensusTimestamp);
-        id.setNodeId(nodeId);
-        return id;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @JsonIgnore
     @Override
     public boolean isNew() {
-        return true; // Since we never update and use a natural ID, avoid Hibernate querying before insert
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Data
     public static class Id implements Serializable {
+
         @Serial
         private static final long serialVersionUID = -2513526593205520365L;
 
         private long consensusTimestamp;
+
         private long nodeId;
     }
 }

@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.state.singleton;
 
 import static com.hedera.node.app.fees.schemas.V0490FeeSchema.MIDNIGHT_RATES_STATE_ID;
-
 import com.hedera.hapi.node.base.FileID;
 import com.hedera.hapi.node.transaction.ExchangeRateSet;
 import com.hedera.node.app.fees.FeeService;
@@ -18,6 +16,7 @@ import org.hiero.mirror.web3.state.Utils;
 final class MidnightRatesSingleton implements SingletonState<ExchangeRateSet> {
 
     private final FileID exchangeRateFileId;
+
     private final SystemFileLoader systemFileLoader;
 
     MidnightRatesSingleton(final SystemEntity systemEntity, final SystemFileLoader systemFileLoader) {
@@ -27,19 +26,17 @@ final class MidnightRatesSingleton implements SingletonState<ExchangeRateSet> {
 
     @Override
     public int getStateId() {
-        return MIDNIGHT_RATES_STATE_ID;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public String getServiceName() {
-        return FeeService.NAME;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @SneakyThrows
     @Override
     public ExchangeRateSet get() {
-        long timestamp = ContractCallContext.get().getTimestamp().orElse(Utils.getCurrentTimestamp());
-        final var file = systemFileLoader.load(exchangeRateFileId, timestamp);
-        return ExchangeRateSet.PROTOBUF.parse(file.contents());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

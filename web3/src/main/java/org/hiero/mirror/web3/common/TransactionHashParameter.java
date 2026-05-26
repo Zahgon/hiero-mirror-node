@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.common;
 
 import java.util.regex.Matcher;
@@ -12,17 +11,13 @@ public record TransactionHashParameter(Bytes hash) implements TransactionIdOrHas
     private static final Pattern ETH_HASH_PATTERN = Pattern.compile("^(0x)?([0-9A-Fa-f]{64})$");
 
     public static TransactionHashParameter valueOf(String hash) {
-        if (!isValidEthHash(hash)) {
-            return null;
-        }
-        return new TransactionHashParameter(Bytes.fromHexString(hash));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private static boolean isValidEthHash(String hash) {
         if (!StringUtils.hasText(hash)) {
             return false;
         }
-
         Matcher matcher = ETH_HASH_PATTERN.matcher(hash);
         return matcher.matches();
     }

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -34,8 +33,9 @@ import org.jspecify.annotations.Nullable;
 public abstract class AbstractEntity implements History {
 
     public static final long ACCOUNT_ID_CLEARED = 0L;
-    public static final long DEFAULT_EXPIRY_TIMESTAMP =
-            TimeUnit.MILLISECONDS.toNanos(Date.valueOf("2100-1-1").getTime());
+
+    public static final long DEFAULT_EXPIRY_TIMESTAMP = TimeUnit.MILLISECONDS.toNanos(Date.valueOf("2100-1-1").getTime());
+
     public static final long NODE_ID_CLEARED = -1L;
 
     private static final String CLEAR_PUBLIC_KEY = StringUtils.EMPTY;
@@ -49,9 +49,9 @@ public abstract class AbstractEntity implements History {
     private Long autoRenewPeriod;
 
     @UpsertColumn(coalesce = """
-                            case when coalesce(e_type, type) in (''ACCOUNT'', ''CONTRACT'') then coalesce(e_{0}, 0) + coalesce({0}, 0)
-                                 when e_{0} is not null then e_{0} + coalesce({0}, 0)
-                            end""")
+        case when coalesce(e_type, type) in (''ACCOUNT'', ''CONTRACT'') then coalesce(e_{0}, 0) + coalesce({0}, 0)
+             when e_{0} is not null then e_{0} + coalesce({0}, 0)
+        end""")
     private Long balance;
 
     private Long balanceTimestamp;
@@ -67,9 +67,9 @@ public abstract class AbstractEntity implements History {
     private byte[] delegationAddress;
 
     @UpsertColumn(coalesce = """
-                            case when coalesce(e_type, type) = ''ACCOUNT'' then coalesce({0}, e_{0}, {1})
-                                 else coalesce({0}, e_{0})
-                            end""")
+        case when coalesce(e_type, type) = ''ACCOUNT'' then coalesce({0}, e_{0}, {1})
+             else coalesce({0}, e_{0})
+        end""")
     private Long ethereumNonce;
 
     @Column(updatable = false)
@@ -101,9 +101,9 @@ public abstract class AbstractEntity implements History {
 
     @ToString.Exclude
     @UpsertColumn(coalesce = """
-                            case when {0} is not null and length({0}) = 0 then null
-                                 else coalesce({0}, e_{0}, null)
-                            end""")
+        case when {0} is not null and length({0}) = 0 then null
+             else coalesce({0}, e_{0}, null)
+        end""")
     private String publicKey;
 
     @Column(updatable = false)
@@ -127,15 +127,7 @@ public abstract class AbstractEntity implements History {
     private EntityType type;
 
     public void addBalance(Long balance) {
-        if (balance == null) {
-            return;
-        }
-
-        if (this.balance == null) {
-            this.balance = balance;
-        } else {
-            this.balance += balance;
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -147,53 +139,40 @@ public abstract class AbstractEntity implements History {
      * @param key - The protobuf key bytes
      */
     public void setKey(byte[] key) {
-        this.key = key;
-        publicKey = getPublicKey(key);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public void setMemo(String memo) {
-        this.memo = DomainUtils.sanitize(memo);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public EntityId toEntityId() {
-        return EntityId.of(shard, realm, num);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @JsonIgnore
     public long getEffectiveExpiration() {
-        if (expirationTimestamp != null) {
-            return expirationTimestamp;
-        }
-
-        if (createdTimestamp != null && autoRenewPeriod != null) {
-            return createdTimestamp + TimeUnit.SECONDS.toNanos(autoRenewPeriod);
-        }
-
-        return DEFAULT_EXPIRY_TIMESTAMP;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private static String getPublicKey(@Nullable byte[] protobufKey) {
         if (protobufKey == null) {
             return null;
         }
-
         var publicKey = DomainUtils.getPublicKey(protobufKey);
         return publicKey != null ? publicKey : CLEAR_PUBLIC_KEY;
     }
 
     @SuppressWarnings("java:S1610")
-    // Necessary since Lombok doesn't use our setters for builders
-    public abstract static class AbstractEntityBuilder<
-            C extends AbstractEntity, B extends AbstractEntityBuilder<C, B>> {
+    public abstract static class // Necessary since Lombok doesn't use our setters for builders
+    AbstractEntityBuilder<C extends AbstractEntity, B extends AbstractEntityBuilder<C, B>> {
+
         public B key(byte[] key) {
-            this.key = key;
-            this.publicKey = getPublicKey(key);
-            return self();
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         public B memo(String memo) {
-            this.memo = DomainUtils.sanitize(memo);
-            return self();
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
     }
 }

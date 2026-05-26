@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.transactionhandler;
 
 import lombok.Getter;
@@ -25,27 +24,7 @@ abstract class AbstractEntityCrudTransactionHandler extends AbstractTransactionH
 
     @Override
     protected final void updateEntity(Transaction transaction, RecordItem recordItem) {
-        var entityId = transaction.getEntityId();
-        var entityOperation = type.getEntityOperation();
-
-        if (entityOperation == EntityOperation.NONE || EntityId.isEmpty(entityId) || !recordItem.isSuccessful()) {
-            return;
-        }
-
-        long consensusTimestamp = recordItem.getConsensusTimestamp();
-        var entity = entityId.toEntity();
-
-        if (entityOperation == EntityOperation.CREATE) {
-            entity.setCreatedTimestamp(consensusTimestamp);
-            entity.setDeleted(false);
-        } else if (entityOperation == EntityOperation.UPDATE) {
-            entity.setDeleted(false);
-        } else if (entityOperation == EntityOperation.DELETE) {
-            entity.setDeleted(true);
-        }
-
-        entity.setTimestampLower(consensusTimestamp);
-        doUpdateEntity(entity, recordItem);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     protected abstract void doUpdateEntity(Entity entity, RecordItem recordItem);

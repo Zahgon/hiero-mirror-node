@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.downloader.block;
 
 import com.github.luben.zstd.ZstdInputStream;
@@ -15,16 +14,16 @@ final class ZstdCodec implements Codec {
 
     @Override
     public String getMessageEncoding() {
-        return "zstd";
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public OutputStream compress(OutputStream os) throws IOException {
-        return new ZstdOutputStream(os);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public InputStream decompress(InputStream is) throws IOException {
-        return new ZstdInputStream(is);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

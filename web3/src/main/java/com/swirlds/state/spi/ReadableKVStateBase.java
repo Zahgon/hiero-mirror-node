@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package com.swirlds.state.spi;
 
 import java.util.Map;
@@ -22,7 +21,9 @@ public abstract class ReadableKVStateBase<K, V> implements ReadableKVState<K, V>
 
     private static final Object marker = new Object();
 
-    /** The state ID */
+    /**
+     * The state ID
+     */
     protected final int stateId;
 
     /**
@@ -48,25 +49,21 @@ public abstract class ReadableKVStateBase<K, V> implements ReadableKVState<K, V>
         this.stateId = stateId;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final int getStateId() {
-        return stateId;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Nullable
     public V get(@NonNull K key) {
-        // We need to cache the item because somebody may perform business logic basic on this
-        // contains call, even if they never need the value itself!
-        Objects.requireNonNull(key);
-        if (!hasBeenRead(key)) {
-            final var value = readFromDataSource(key);
-            markRead(key, value);
-        }
-        final var value = getReadCache().get(key);
-        return (value == marker) ? null : (V) value;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -76,13 +73,15 @@ public abstract class ReadableKVStateBase<K, V> implements ReadableKVState<K, V>
      */
     @NonNull
     public final Set<K> readKeys() {
-        return (Set<K>) getReadCache().keySet();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    /** Clears all cached data, including the set of all read keys. */
+    /**
+     * Clears all cached data, including the set of all read keys.
+     */
     /*@OverrideMustCallSuper*/
     public void reset() {
-        getReadCache().clear();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -101,11 +100,7 @@ public abstract class ReadableKVStateBase<K, V> implements ReadableKVState<K, V>
      * @param value The value
      */
     protected final void markRead(@NonNull K key, @Nullable V value) {
-        if (value == null) {
-            getReadCache().put(key, (V) marker);
-        } else {
-            getReadCache().put(key, value);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -115,7 +110,7 @@ public abstract class ReadableKVStateBase<K, V> implements ReadableKVState<K, V>
      * @return Whether it has been read
      */
     protected final boolean hasBeenRead(@NonNull K key) {
-        return getReadCache().containsKey(key);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private Map<Object, Object> getReadCache() {

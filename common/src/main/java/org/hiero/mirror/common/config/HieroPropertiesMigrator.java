@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.config;
 
 import java.util.LinkedHashMap;
@@ -29,30 +28,22 @@ public class HieroPropertiesMigrator implements ApplicationListener<ApplicationE
     // For a SystemEnvironmentPropertySource, only when its name is "systemEnvironment" or ends with
     // "-systemEnvironment", spring will use `SystemEnvironmentPropertyMapper` to map the environment variables
     // and bind the properties to configuration property beans
-    private static final String SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME_SUFFIX =
-            "-hiero-" + StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME;
+    private static final String SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME_SUFFIX = "-hiero-" + StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME;
 
     @Override
     public int getOrder() {
-        return Ordered.LOWEST_PRECEDENCE;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
-        var propertySources = event.getEnvironment().getPropertySources();
-
-        for (var propertySource : propertySources) {
-            if (propertySource instanceof EnumerablePropertySource<?> enumerableSource) {
-                migrate(enumerableSource).ifPresent(p -> propertySources.addAfter(propertySource.getName(), p));
-            }
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private Optional<EnumerablePropertySource<?>> migrate(EnumerablePropertySource<?> propertySource) {
         var properties = new LinkedHashMap<String, Object>();
         boolean environment = propertySource instanceof SystemEnvironmentPropertySource;
         Function<String, String> replacer = environment ? this::convertEnvironmentVariable : this::convertPropertyName;
-
         for (var name : propertySource.getPropertyNames()) {
             if (Strings.CI.startsWith(name, "hedera")) {
                 var value = propertySource.getProperty(name);
@@ -60,19 +51,12 @@ public class HieroPropertiesMigrator implements ApplicationListener<ApplicationE
                 properties.put(migratedName, value);
             }
         }
-
         if (!properties.isEmpty()) {
-            var sourceName = propertySource.getName()
-                    + (environment
-                            ? SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME_SUFFIX
-                            : DEFAULT_PROPERTY_SOURCE_NAME_SUFFIX);
-            var migratedPropertySource = environment
-                    ? new SystemEnvironmentPropertySource(sourceName, properties)
-                    : new MapPropertySource(sourceName, properties);
+            var sourceName = propertySource.getName() + (environment ? SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME_SUFFIX : DEFAULT_PROPERTY_SOURCE_NAME_SUFFIX);
+            var migratedPropertySource = environment ? new SystemEnvironmentPropertySource(sourceName, properties) : new MapPropertySource(sourceName, properties);
             log.warn("Deprecated 'hedera' properties automatically migrated to 'hiero': {}", properties.keySet());
             return Optional.of(migratedPropertySource);
         }
-
         return Optional.empty();
     }
 

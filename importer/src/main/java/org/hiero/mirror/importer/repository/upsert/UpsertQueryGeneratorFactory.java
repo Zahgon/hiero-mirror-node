@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.repository.upsert;
 
 import jakarta.inject.Named;
@@ -15,11 +14,13 @@ import lombok.RequiredArgsConstructor;
 public class UpsertQueryGeneratorFactory {
 
     private final EntityMetadataRegistry entityMetadataRegistry;
+
     private final Collection<UpsertQueryGenerator> existingGenerators;
+
     private final Map<Class<?>, UpsertQueryGenerator> upsertQueryGenerators = new ConcurrentHashMap<>();
 
     public UpsertQueryGenerator get(Class<?> domainClass) {
-        return upsertQueryGenerators.computeIfAbsent(domainClass, this::findOrCreate);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -28,10 +29,7 @@ public class UpsertQueryGeneratorFactory {
      */
     private UpsertQueryGenerator findOrCreate(Class<?> domainClass) {
         String className = domainClass.getSimpleName() + UpsertQueryGenerator.class.getSimpleName();
-        return existingGenerators.stream()
-                .filter(u -> u.getClass().getSimpleName().equals(className))
-                .findFirst()
-                .orElseGet(() -> create(domainClass));
+        return existingGenerators.stream().filter(u -> u.getClass().getSimpleName().equals(className)).findFirst().orElseGet(() -> create(domainClass));
     }
 
     private UpsertQueryGenerator create(Class<?> domainClass) {

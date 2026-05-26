@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.evm.contracts.execution.traceability;
 
 import com.hedera.node.app.service.contract.impl.state.RootProxyWorldUpdater;
@@ -52,6 +51,6 @@ public final class OpcodeContext {
     }
 
     public void addOpcodes(Opcode opcode) {
-        opcodes.add(opcode);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

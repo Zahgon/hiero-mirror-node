@@ -1,11 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.state.keyvalue;
 
 import static com.hedera.node.app.service.token.impl.schemas.V0490TokenSchema.ACCOUNTS_STATE_ID;
 import static org.hiero.mirror.common.domain.entity.EntityType.ACCOUNT;
 import static org.hiero.mirror.common.domain.entity.EntityType.CONTRACT;
-
 import com.hedera.hapi.node.base.AccountID;
 import com.hedera.hapi.node.state.token.Account;
 import com.hedera.node.app.service.token.TokenService;
@@ -33,7 +31,6 @@ import org.jspecify.annotations.NonNull;
  * <p>
  * The object, which is read from DB is converted to the PBJ generated format, so that it can properly be utilized by
  * the hedera app components
- *
  */
 @Named
 public class AccountReadableKVState extends AbstractAliasedAccountReadableKVState<AccountID, Account> {
@@ -41,59 +38,21 @@ public class AccountReadableKVState extends AbstractAliasedAccountReadableKVStat
     public static final int STATE_ID = ACCOUNTS_STATE_ID;
 
     private final CommonEntityAccessor commonEntityAccessor;
+
     private final AliasedAccountCacheManager aliasedAccountCacheManager;
+
     private final Set<AccountID> systemAccounts;
 
-    public AccountReadableKVState(
-            @NonNull CommonEntityAccessor commonEntityAccessor,
-            @NonNull NftAllowanceRepository nftAllowanceRepository,
-            @NonNull NftRepository nftRepository,
-            @NonNull SystemEntity systemEntity,
-            @NonNull TokenAllowanceRepository tokenAllowanceRepository,
-            @NonNull CryptoAllowanceRepository cryptoAllowanceRepository,
-            @NonNull TokenAccountRepository tokenAccountRepository,
-            @NonNull AccountBalanceRepository accountBalanceRepository,
-            @NonNull EvmProperties evmProperties,
-            @NonNull AliasedAccountCacheManager aliasedAccountCacheManager) {
-        super(
-                STATE_ID,
-                accountBalanceRepository,
-                cryptoAllowanceRepository,
-                nftAllowanceRepository,
-                nftRepository,
-                systemEntity,
-                tokenAccountRepository,
-                tokenAllowanceRepository,
-                evmProperties);
+    public AccountReadableKVState(@NonNull CommonEntityAccessor commonEntityAccessor, @NonNull NftAllowanceRepository nftAllowanceRepository, @NonNull NftRepository nftRepository, @NonNull SystemEntity systemEntity, @NonNull TokenAllowanceRepository tokenAllowanceRepository, @NonNull CryptoAllowanceRepository cryptoAllowanceRepository, @NonNull TokenAccountRepository tokenAccountRepository, @NonNull AccountBalanceRepository accountBalanceRepository, @NonNull EvmProperties evmProperties, @NonNull AliasedAccountCacheManager aliasedAccountCacheManager) {
+        super(STATE_ID, accountBalanceRepository, cryptoAllowanceRepository, nftAllowanceRepository, nftRepository, systemEntity, tokenAccountRepository, tokenAllowanceRepository, evmProperties);
         this.commonEntityAccessor = commonEntityAccessor;
         this.aliasedAccountCacheManager = aliasedAccountCacheManager;
-        this.systemAccounts = Set.of(
-                EntityIdUtils.toAccountId(systemEntity.feeCollectionAccount()),
-                EntityIdUtils.toAccountId(systemEntity.networkAdminFeeAccount()),
-                EntityIdUtils.toAccountId(systemEntity.nodeRewardAccount()),
-                EntityIdUtils.toAccountId(systemEntity.stakingRewardAccount()));
+        this.systemAccounts = Set.of(EntityIdUtils.toAccountId(systemEntity.feeCollectionAccount()), EntityIdUtils.toAccountId(systemEntity.networkAdminFeeAccount()), EntityIdUtils.toAccountId(systemEntity.nodeRewardAccount()), EntityIdUtils.toAccountId(systemEntity.stakingRewardAccount()));
     }
 
     @Override
     protected Account readFromDataSource(@NonNull AccountID key) {
-        if (!ContractCallContext.isBalanceCallSafe() && systemAccounts.contains(key)) {
-            return getDummySystemAccountIfApplicable(key).orElse(null);
-        }
-
-        final var timestamp = ContractCallContext.get().getTimestamp();
-        return commonEntityAccessor
-                .get(key, timestamp)
-                .filter(entity -> entity.getType() == ACCOUNT || entity.getType() == CONTRACT)
-                .map(entity -> {
-                    final var account = accountFromEntity(entity, timestamp);
-                    // Associate the account alias with this entity in the cache, if any.
-                    if (account.alias().length() > 0) {
-                        aliasedAccountCacheManager.putAccountAlias(account.alias(), key);
-                    }
-                    return account;
-                })
-                .or(() -> getDummySystemAccountIfApplicable(key))
-                .orElse(null);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -103,18 +62,13 @@ public class AccountReadableKVState extends AbstractAliasedAccountReadableKVStat
     private Optional<Account> getDummySystemAccountIfApplicable(AccountID accountID) {
         if (accountID != null && accountID.hasAccountNum()) {
             final var accountNum = accountID.accountNum();
-            return AccountDetector.isStrictSystem(accountNum) && accountNum != 0
-                    ? Optional.of(Account.newBuilder()
-                            .accountId(accountID)
-                            .key(getDefaultKey())
-                            .build())
-                    : Optional.empty();
+            return AccountDetector.isStrictSystem(accountNum) && accountNum != 0 ? Optional.of(Account.newBuilder().accountId(accountID).key(getDefaultKey()).build()) : Optional.empty();
         }
         return Optional.empty();
     }
 
     @Override
     public String getServiceName() {
-        return TokenService.NAME;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

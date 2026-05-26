@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -42,10 +41,7 @@ public abstract class AbstractCryptoAllowance implements FungibleAllowance {
 
     @JsonIgnore
     public Id getId() {
-        Id id = new Id();
-        id.setOwner(owner);
-        id.setSpender(spender);
-        return id;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Data
@@ -55,6 +51,7 @@ public abstract class AbstractCryptoAllowance implements FungibleAllowance {
         private static final long serialVersionUID = 4078820027811154183L;
 
         private long owner;
+
         private long spender;
     }
 }

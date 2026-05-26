@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.publish.generator;
 
 import static org.hiero.mirror.monitor.OperatorProperties.DEFAULT_OPERATOR_ACCOUNT_ID;
-
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,29 +33,28 @@ import reactor.core.publisher.Flux;
 @CustomLog
 public class ConfigurableTransactionGenerator implements TransactionGenerator {
 
-    private static final ObjectMapper OBJECT_MAPPER = JsonMapper.builder()
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
-            .build();
+    private static final ObjectMapper OBJECT_MAPPER = JsonMapper.builder().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true).build();
 
     private final ExpressionConverter expressionConverter;
+
     private final MonitorProperties monitorProperties;
+
     private final ScenarioPropertiesAggregator scenarioPropertiesAggregator;
 
     @Getter
     private final PublishScenarioProperties properties;
 
     private final Supplier<TransactionSupplier<?>> transactionSupplier;
+
     private final AtomicLong remaining;
+
     private final long stopTime;
+
     private final PublishRequest.PublishRequestBuilder builder;
+
     private final PublishScenario scenario;
 
-    public ConfigurableTransactionGenerator(
-            ExpressionConverter expressionConverter,
-            MonitorProperties monitorProperties,
-            ScenarioPropertiesAggregator scenarioPropertiesAggregator,
-            PublishScenarioProperties properties) {
+    public ConfigurableTransactionGenerator(ExpressionConverter expressionConverter, MonitorProperties monitorProperties, ScenarioPropertiesAggregator scenarioPropertiesAggregator, PublishScenarioProperties properties) {
         this.expressionConverter = expressionConverter;
         this.monitorProperties = monitorProperties;
         this.scenarioPropertiesAggregator = scenarioPropertiesAggregator;
@@ -72,71 +69,31 @@ public class ConfigurableTransactionGenerator implements TransactionGenerator {
 
     @Override
     public List<PublishRequest> next(int count) {
-        if (count <= 0) {
-            count = 1;
-        }
-
-        long left = remaining.getAndAdd(-count);
-        long actual = Math.min(left, count);
-        if (actual <= 0) {
-            throw new ScenarioException(scenario, "Reached publish limit");
-        }
-
-        if (stopTime - System.nanoTime() <= 0) {
-            throw new ScenarioException(scenario, "Reached publish duration");
-        }
-
-        List<PublishRequest> publishRequests = new ArrayList<>();
-        for (long i = 0; i < actual; i++) {
-            var transaction = transactionSupplier
-                    .get()
-                    .get()
-                    .setMaxAttempts((int) properties.getRetry().getMaxAttempts())
-                    .setTransactionMemo(scenario.getMemo());
-
-            PublishRequest publishRequest = builder.receipt(shouldGenerate(properties.getReceiptPercent()))
-                    .sendRecord(shouldGenerate(properties.getRecordPercent()))
-                    .timestamp(Instant.now())
-                    .transaction(transaction)
-                    .build();
-            publishRequests.add(publishRequest);
-        }
-
-        return publishRequests;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public Flux<PublishScenario> scenarios() {
-        return Flux.just(scenario);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private TransactionSupplier<?> convert() {
         Map<String, String> convertedProperties = expressionConverter.convert(properties.getProperties());
         Map<String, Object> correctedProperties = scenarioPropertiesAggregator.aggregateProperties(convertedProperties);
-        final var supplier = OBJECT_MAPPER.convertValue(
-                correctedProperties, properties.getType().getSupplier().get().getClass());
-
+        final var supplier = OBJECT_MAPPER.convertValue(correctedProperties, properties.getType().getSupplier().get().getClass());
         validateSupplier(supplier);
-
         return supplier;
     }
 
     private void validateSupplier(TransactionSupplier<?> supplier) {
-        try (var validatorFactory = Validation.byDefaultProvider()
-                .configure()
-                .messageInterpolator(new ParameterMessageInterpolator())
-                .buildValidatorFactory()) {
+        try (var validatorFactory = Validation.byDefaultProvider().configure().messageInterpolator(new ParameterMessageInterpolator()).buildValidatorFactory()) {
             var validator = validatorFactory.getValidator();
             var validations = validator.validate(supplier);
-
             if (!validations.isEmpty()) {
                 throw new ConstraintViolationException(validations);
             }
-
-            if (supplier instanceof AccountDeleteTransactionSupplier accountDeleteTransactionSupplier
-                    && DEFAULT_OPERATOR_ACCOUNT_ID.equals(accountDeleteTransactionSupplier.getTransferAccountId())) {
-                accountDeleteTransactionSupplier.setTransferAccountId(
-                        monitorProperties.getOperator().getAccountId());
+            if (supplier instanceof AccountDeleteTransactionSupplier accountDeleteTransactionSupplier && DEFAULT_OPERATOR_ACCOUNT_ID.equals(accountDeleteTransactionSupplier.getTransferAccountId())) {
+                accountDeleteTransactionSupplier.setTransferAccountId(monitorProperties.getOperator().getAccountId());
             }
         }
     }

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.health;
 
 import jakarta.validation.constraints.NotNull;
@@ -17,6 +16,7 @@ import org.springframework.util.CollectionUtils;
 @Data
 @ConfigurationProperties(prefix = "hiero.mirror.monitor.health.importer-lag")
 final class ImporterLagHealthProperties {
+
     /**
      * Clusters to compare against.
      */
@@ -64,22 +64,13 @@ final class ImporterLagHealthProperties {
     private Duration timeout = Duration.ofSeconds(5);
 
     boolean isEnabled() {
-        return enabled
-                && StringUtils.isNotBlank(StringUtils.trimToNull(prometheusBaseUrl))
-                && StringUtils.isNotBlank(StringUtils.trimToNull(localCluster))
-                && !CollectionUtils.isEmpty(clusters);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private String clusterRegexOrNull() {
         final var set = new LinkedHashSet<>(clusters);
         set.add(localCluster);
-
-        final var joined = set.stream()
-                .filter(StringUtils::isNotBlank)
-                .map(String::trim)
-                .reduce((a, b) -> a + "|" + b)
-                .orElse("");
-
+        final var joined = set.stream().filter(StringUtils::isNotBlank).map(String::trim).reduce((a, b) -> a + "|" + b).orElse("");
         return joined.isBlank() ? null : "(" + joined + ")";
     }
 }

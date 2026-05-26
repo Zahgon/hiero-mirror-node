@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.subscribe.rest;
 
 import com.google.common.collect.Iterables;
@@ -33,47 +32,40 @@ import reactor.util.retry.RetryBackoffSpec;
 class RestSubscriber implements MirrorSubscriber {
 
     private final RestApiClient restApiClient;
+
     private final SubscribeProperties subscribeProperties;
-    private final Flux<RestSubscription> subscriptions =
-            Flux.defer(this::createSubscriptions).cache();
+
+    private final Flux<RestSubscription> subscriptions = Flux.defer(this::createSubscriptions).cache();
 
     @Override
     public void onPublish(PublishResponse response) {
-        subscriptions
-                .filter(s -> shouldSample(s, response))
-                .map(RestSubscription::getSink)
-                .subscribe(s -> s.tryEmitNext(response));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private boolean shouldSample(RestSubscription subscription, PublishResponse response) {
         if (!subscription.isRunning()) {
             return false;
         }
-
         RestSubscriberProperties properties = subscription.getProperties();
         Set<String> publishers = properties.getPublishers();
-
-        if (!publishers.isEmpty()
-                && !publishers.contains(response.getRequest().getScenario().getName())) {
+        if (!publishers.isEmpty() && !publishers.contains(response.getRequest().getScenario().getName())) {
             return false;
         }
-
         return ThreadLocalRandom.current().nextDouble() < properties.getSamplePercent();
     }
 
     @Override
     public Flux<SubscribeResponse> subscribe() {
-        return subscriptions.flatMap(this::clientSubscribe);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public Flux<RestSubscription> getSubscriptions() {
-        return subscriptions;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private Flux<RestSubscription> createSubscriptions() {
         Collection<RestSubscription> subscriptionList = new ArrayList<>();
-
         for (RestSubscriberProperties properties : subscribeProperties.getRest().values()) {
             if (subscribeProperties.isEnabled() && properties.isEnabled()) {
                 for (int i = 1; i <= properties.getSubscribers(); ++i) {
@@ -81,50 +73,19 @@ class RestSubscriber implements MirrorSubscriber {
                 }
             }
         }
-
         return Flux.fromIterable(subscriptionList);
     }
 
     private Flux<SubscribeResponse> clientSubscribe(RestSubscription subscription) {
         RestSubscriberProperties properties = subscription.getProperties();
-
-        RetryBackoffSpec retrySpec = Retry.backoff(
-                        properties.getRetry().getMaxAttempts(),
-                        properties.getRetry().getMinBackoff())
-                .maxBackoff(properties.getRetry().getMaxBackoff())
-                .filter(this::shouldRetry)
-                .doBeforeRetry(r -> log.debug(
-                        "Retry attempt #{} after failure: {}",
-                        r.totalRetries() + 1,
-                        r.failure().getMessage()));
-
-        return subscription
-                .getSink()
-                .asFlux()
-                .publishOn(Schedulers.parallel())
-                .doFinally(s -> subscription.onComplete())
-                .doOnNext(publishResponse -> log.trace("Querying REST API: {}", publishResponse))
-                .flatMap(publishResponse -> restApiClient
-                        .retrieve(
-                                TransactionByIdResponse.class,
-                                "/transactions/{transactionId}",
-                                toString(publishResponse.getTransactionId()))
-                        .timeout(properties.getTimeout())
-                        .retryWhen(retrySpec)
-                        .doOnError(t -> subscription.onError(t))
-                        .onErrorResume(e -> Mono.empty())
-                        .doOnNext(subscription::onNext)
-                        .map(transaction -> toResponse(subscription, publishResponse, transaction)))
-                .take(properties.getLimit(), true)
-                .take(properties.getDuration());
+        RetryBackoffSpec retrySpec = Retry.backoff(properties.getRetry().getMaxAttempts(), properties.getRetry().getMinBackoff()).maxBackoff(properties.getRetry().getMaxBackoff()).filter(this::shouldRetry).doBeforeRetry(r -> log.debug("Retry attempt #{} after failure: {}", r.totalRetries() + 1, r.failure().getMessage()));
+        return subscription.getSink().asFlux().publishOn(Schedulers.parallel()).doFinally(s -> subscription.onComplete()).doOnNext(publishResponse -> log.trace("Querying REST API: {}", publishResponse)).flatMap(publishResponse -> restApiClient.retrieve(TransactionByIdResponse.class, "/transactions/{transactionId}", toString(publishResponse.getTransactionId())).timeout(properties.getTimeout()).retryWhen(retrySpec).doOnError(t -> subscription.onError(t)).onErrorResume(e -> Mono.empty()).doOnNext(subscription::onNext).map(transaction -> toResponse(subscription, publishResponse, transaction))).take(properties.getLimit(), true).take(properties.getDuration());
     }
 
-    private SubscribeResponse toResponse(
-            RestSubscription subscription, PublishResponse publishResponse, TransactionByIdResponse response) {
+    private SubscribeResponse toResponse(RestSubscription subscription, PublishResponse publishResponse, TransactionByIdResponse response) {
         Instant receivedTimestamp = Instant.now();
         var transaction = Iterables.getFirst(response.getTransactions(), null);
         Instant consensusTimestamp = null;
-
         if (transaction != null) {
             var timestamp = transaction.getConsensusTimestamp();
             var parts = StringUtils.split(timestamp, '.');
@@ -132,18 +93,11 @@ class RestSubscriber implements MirrorSubscriber {
                 consensusTimestamp = Instant.ofEpochSecond(Long.parseLong(parts[0]), Long.parseLong(parts[1]));
             }
         }
-
-        return SubscribeResponse.builder()
-                .consensusTimestamp(consensusTimestamp)
-                .publishedTimestamp(publishResponse.getRequest().getTimestamp())
-                .receivedTimestamp(receivedTimestamp)
-                .scenario(subscription)
-                .build();
+        return SubscribeResponse.builder().consensusTimestamp(consensusTimestamp).publishedTimestamp(publishResponse.getRequest().getTimestamp()).receivedTimestamp(receivedTimestamp).scenario(subscription).build();
     }
 
     protected boolean shouldRetry(Throwable t) {
-        return t instanceof WebClientResponseException webClientResponseException
-                && webClientResponseException.getStatusCode() == HttpStatus.NOT_FOUND;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private String toString(TransactionId tid) {

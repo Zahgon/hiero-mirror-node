@@ -1,11 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.publish.transaction.account;
 
 import static org.hiero.mirror.monitor.publish.transaction.account.CryptoTransferTransactionSupplier.TransferType.CRYPTO;
 import static org.hiero.mirror.monitor.publish.transaction.account.CryptoTransferTransactionSupplier.TransferType.NFT;
 import static org.hiero.mirror.monitor.publish.transaction.account.CryptoTransferTransactionSupplier.TransferType.TOKEN;
-
 import com.hedera.hashgraph.sdk.AccountId;
 import com.hedera.hashgraph.sdk.Hbar;
 import com.hedera.hashgraph.sdk.NftId;
@@ -38,7 +36,8 @@ public class CryptoTransferTransactionSupplier implements TransactionSupplier<Tr
     @NotBlank
     private String senderAccountId;
 
-    private AtomicLong serialNumber = new AtomicLong(1); // The serial number to transfer.  Increments over time.
+    // The serial number to transfer.  Increments over time.
+    private AtomicLong serialNumber = new AtomicLong(1);
 
     private String tokenId;
 
@@ -59,48 +58,26 @@ public class CryptoTransferTransactionSupplier implements TransactionSupplier<Tr
 
     @Override
     public TransferTransaction get() {
-
-        TransferTransaction transferTransaction =
-                new TransferTransaction().setMaxTransactionFee(Hbar.fromTinybars(maxTransactionFee));
-
-        if (transferTypes.contains(CRYPTO)) {
-            addCryptoTransfers(transferTransaction, getRecipientId(), getSenderId());
-        }
-
-        if (transferTypes.contains(NFT)) {
-            addNftTransfers(transferTransaction, getTransferNftTokenId(), getRecipientId(), getSenderId());
-        }
-
-        if (transferTypes.contains(TOKEN)) {
-            addTokenTransfers(transferTransaction, getTransferTokenId(), getRecipientId(), getSenderId());
-        }
-
-        return transferTransaction;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    private void addCryptoTransfers(
-            TransferTransaction transferTransaction, AccountId recipientId, AccountId senderId) {
+    private void addCryptoTransfers(TransferTransaction transferTransaction, AccountId recipientId, AccountId senderId) {
         Hbar hbarAmount = Hbar.fromTinybars(amount);
         transferTransaction.addHbarTransfer(recipientId, hbarAmount).addHbarTransfer(senderId, hbarAmount.negated());
     }
 
-    private void addNftTransfers(
-            TransferTransaction transferTransaction, TokenId token, AccountId recipientId, AccountId senderId) {
+    private void addNftTransfers(TransferTransaction transferTransaction, TokenId token, AccountId recipientId, AccountId senderId) {
         for (int i = 0; i < amount; i++) {
             transferTransaction.addNftTransfer(new NftId(token, serialNumber.getAndIncrement()), senderId, recipientId);
         }
     }
 
-    private void addTokenTransfers(
-            TransferTransaction transferTransaction, TokenId token, AccountId recipientId, AccountId senderId) {
-        transferTransaction
-                .addTokenTransfer(token, recipientId, amount)
-                .addTokenTransfer(token, senderId, Math.negateExact(amount));
+    private void addTokenTransfers(TransferTransaction transferTransaction, TokenId token, AccountId recipientId, AccountId senderId) {
+        transferTransaction.addTokenTransfer(token, recipientId, amount).addTokenTransfer(token, senderId, Math.negateExact(amount));
     }
 
     public enum TransferType {
-        CRYPTO,
-        NFT,
-        TOKEN
+
+        CRYPTO, NFT, TOKEN
     }
 }

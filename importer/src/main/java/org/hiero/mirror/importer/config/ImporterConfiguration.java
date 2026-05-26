@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.config;
 
 import com.zaxxer.hikari.HikariConfig;
@@ -34,74 +33,38 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EntityScan("org.hiero.mirror.importer.repository.upsert")
 @CustomLog
 @RequiredArgsConstructor
-@AutoConfigureBefore(FlywayAutoConfiguration.class) // Since this configuration creates FlywayConfigurationCustomizer
+// Since this configuration creates FlywayConfigurationCustomizer
+@AutoConfigureBefore(FlywayAutoConfiguration.class)
 class ImporterConfiguration {
 
     private final BlockProperties blockProperties;
+
     private final ImporterProperties importerProperties;
+
     private final RecordDownloaderProperties recordDownloaderProperties;
+
     private final DatabaseWaiter dbWaiter;
 
     @Bean(defaultCandidate = false)
     @FlywayDataSource
-    DataSource flywayDataSource(
-            DBProperties dbProperties,
-            DataSourceProperties dataSourceProperties,
-            HikariConfig hikariConfig,
-            ObjectProvider<JdbcConnectionDetails> detailsObjectProvider) {
-        final var connectionDetails = detailsObjectProvider.getIfAvailable();
-        final var flywayHikariConfig = new HikariConfig();
-        hikariConfig.copyStateTo(flywayHikariConfig);
-
-        var jdbcUrl = dataSourceProperties.determineUrl();
-
-        if (connectionDetails != null) {
-            jdbcUrl = connectionDetails.getJdbcUrl();
-        }
-
-        flywayHikariConfig.setJdbcUrl(jdbcUrl);
-        flywayHikariConfig.setIdleTimeout(60000);
-        flywayHikariConfig.setMinimumIdle(0);
-        flywayHikariConfig.setMaximumPoolSize(10);
-        flywayHikariConfig.setPassword(dbProperties.getOwnerPassword());
-        flywayHikariConfig.setPoolName(hikariConfig.getPoolName() + "_flyway");
-        flywayHikariConfig.setUsername(dbProperties.getOwner());
-        flywayHikariConfig.setInitializationFailTimeout(-1);
-
-        dbWaiter.waitForDatabase(jdbcUrl, dbProperties.getOwner(), dbProperties.getOwnerPassword());
-
-        return new HikariDataSource(flywayHikariConfig);
+    DataSource flywayDataSource(DBProperties dbProperties, DataSourceProperties dataSourceProperties, HikariConfig hikariConfig, ObjectProvider<JdbcConnectionDetails> detailsObjectProvider) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Bean
     FlywayConfigurationCustomizer flywayConfigurationCustomizer() {
-        return configuration -> {
-            Long timestamp = importerProperties.getTopicRunningHashV2AddedTimestamp();
-            if (timestamp == null) {
-                if (ImporterProperties.HederaNetwork.MAINNET.equalsIgnoreCase(importerProperties.getNetwork())) {
-                    timestamp = 1592499600000000000L;
-                } else {
-                    timestamp = 1588706343553042000L;
-                }
-            }
-            configuration.getPlaceholders().put("topicRunningHashV2AddedTimestamp", timestamp.toString());
-        };
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @PostConstruct
     void init() {
-        if (blockProperties.isEnabled() && recordDownloaderProperties.isEnabled()) {
-            throw new IllegalStateException("Cannot enable both block source and record downloader");
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Configuration(proxyBeanMethods = false)
-    @ConditionalOnProperty(
-            prefix = "spring.task.scheduling",
-            name = "enabled",
-            havingValue = "true",
-            matchIfMissing = true)
+    @ConditionalOnProperty(prefix = "spring.task.scheduling", name = "enabled", havingValue = "true", matchIfMissing = true)
     @EnableScheduling
-    // This toggle exists only to disable scheduling for test execution and shouldn't be modified by operators
-    protected static class SchedulingConfiguration {}
+    protected static class // This toggle exists only to disable scheduling for test execution and shouldn't be modified by operators
+    SchedulingConfiguration {
+    }
 }

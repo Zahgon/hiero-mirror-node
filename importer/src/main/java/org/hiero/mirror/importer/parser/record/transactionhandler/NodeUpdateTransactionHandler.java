@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.transactionhandler;
 
 import com.google.common.collect.Range;
@@ -23,56 +22,16 @@ class NodeUpdateTransactionHandler extends AbstractNodeTransactionHandler {
 
     @Override
     public EntityId getEntity(RecordItem recordItem) {
-        return EntityId.of(recordItem.getTransactionBody().getNodeUpdate().getAccountId());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public TransactionType getType() {
-        return TransactionType.NODEUPDATE;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public Node parseNode(RecordItem recordItem) {
-        if (!recordItem.isSuccessful()) {
-            return null;
-        }
-
-        final var nodeUpdate = recordItem.getTransactionBody().getNodeUpdate();
-        final long consensusTimestamp = recordItem.getConsensusTimestamp();
-        final var node = new Node();
-
-        if (nodeUpdate.hasAccountId()) {
-            entityIdService
-                    .lookup(nodeUpdate.getAccountId())
-                    .filter(e -> !EntityId.isEmpty(e))
-                    .ifPresent(node::setAccountId);
-        }
-
-        if (nodeUpdate.hasAdminKey()) {
-            node.setAdminKey(nodeUpdate.getAdminKey().toByteArray());
-        }
-
-        if (nodeUpdate.hasDeclineReward()) {
-            node.setDeclineReward(nodeUpdate.getDeclineReward().getValue());
-        }
-
-        if (nodeUpdate.hasGrpcProxyEndpoint()) {
-            node.setGrpcProxyEndpoint(toServiceEndpoint(consensusTimestamp, nodeUpdate.getGrpcProxyEndpoint()));
-        }
-
-        if (nodeUpdate.hasAssociatedRegisteredNodeList()) {
-            node.setAssociatedRegisteredNodes(
-                    nodeUpdate.getAssociatedRegisteredNodeList().getAssociatedRegisteredNodeList());
-        }
-
-        // As a special case, nodes migrated state to mirror nodes via a NodeUpdate instead of a proper NodeCreate
-        if (recordItem.getTransactionRecord().getTransactionID().getNonce() > 0) {
-            node.setCreatedTimestamp(consensusTimestamp);
-        }
-
-        node.setDeleted(false);
-        node.setNodeId(nodeUpdate.getNodeId());
-        node.setTimestampRange(Range.atLeast(consensusTimestamp));
-        return node;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

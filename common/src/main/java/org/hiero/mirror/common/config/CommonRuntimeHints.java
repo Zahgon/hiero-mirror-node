@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.config;
 
 import static org.hiero.mirror.common.util.RuntimeHintsHelper.CONSTRUCTORS_AND_FIELDS;
@@ -9,7 +8,6 @@ import static org.hiero.mirror.common.util.RuntimeHintsHelper.UNSAFE_ALLOCATED;
 import static org.hiero.mirror.common.util.RuntimeHintsHelper.registerPackage;
 import static org.hiero.mirror.common.util.RuntimeHintsHelper.registerReflectionType;
 import static org.hiero.mirror.common.util.RuntimeHintsHelper.registerReflectionTypes;
-
 import com.github.benmanes.caffeine.cache.AsyncCacheLoader;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import java.time.Instant;
@@ -24,47 +22,18 @@ import org.springframework.aot.hint.TypeReference;
 import org.springframework.util.ClassUtils;
 
 public class CommonRuntimeHints implements RuntimeHintsRegistrar {
+
     @Override
     public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-        // Caffeine loads generated cache implementations via reflection
-        if (ClassUtils.isPresent("com.github.benmanes.caffeine.cache.Caffeine", classLoader)) {
-            registerCache(hints, "SIA");
-            registerCache(hints, "SSMSA");
-            registerCache(hints, "SSR");
-            registerCache(hints, "SSSMA");
-            registerCache(hints, "SSSMSA");
-            registerCache(hints, "SSSW");
-            registerNode(hints, "PDA");
-            registerNode(hints, "PSAMS");
-            registerNode(hints, "PSR");
-        }
-
-        // Hibernate Validator
-        registerReflectionTypes(hints, CONSTRUCTORS_ONLY, Log_$logger.class);
-        registerReflectionTypes(hints, CONSTRUCTORS_AND_FIELDS, Messages_$bundle.class);
-        registerPackage(hints, classLoader, "org.hibernate.validator.internal.constraintvalidators", CONSTRUCTORS_ONLY);
-
-        // For ReconciliationJob.timestampStart use as an ID in Hibernate
-        registerReflectionType(hints, Instant[].class, UNSAFE_ALLOCATED);
-        registerReflectionType(hints, SpelHelper.class.getName(), METHODS_ONLY);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private void registerCache(RuntimeHints hints, String className) {
-        final var types = List.of(
-                TypeReference.of(Caffeine.class),
-                TypeReference.of(AsyncCacheLoader.class),
-                TypeReference.of("boolean"));
-
-        hints.reflection()
-                .registerType(
-                        TypeReference.of("com.github.benmanes.caffeine.cache." + className),
-                        b -> b.withConstructor(types, ExecutableMode.INVOKE).withField("FACTORY"));
+        final var types = List.of(TypeReference.of(Caffeine.class), TypeReference.of(AsyncCacheLoader.class), TypeReference.of("boolean"));
+        hints.reflection().registerType(TypeReference.of("com.github.benmanes.caffeine.cache." + className), b -> b.withConstructor(types, ExecutableMode.INVOKE).withField("FACTORY"));
     }
 
     private void registerNode(RuntimeHints hints, String className) {
-        hints.reflection()
-                .registerType(
-                        TypeReference.of("com.github.benmanes.caffeine.cache." + className),
-                        b -> b.withConstructor(List.of(), ExecutableMode.INVOKE));
+        hints.reflection().registerType(TypeReference.of("com.github.benmanes.caffeine.cache." + className), b -> b.withConstructor(List.of(), ExecutableMode.INVOKE));
     }
 }

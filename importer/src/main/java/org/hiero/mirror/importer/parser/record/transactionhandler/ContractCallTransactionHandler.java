@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.transactionhandler;
 
 import com.hederahashgraph.api.proto.java.ContractID;
@@ -29,26 +28,16 @@ class ContractCallTransactionHandler extends AbstractTransactionHandler {
      */
     @Override
     public EntityId getEntity(RecordItem recordItem) {
-        ContractID contractIdBody =
-                recordItem.getTransactionBody().getContractCall().getContractID();
-        ContractID contractIdReceipt =
-                recordItem.getTransactionRecord().getReceipt().getContractID();
-        return entityIdService.lookup(contractIdReceipt, contractIdBody).orElse(EntityId.EMPTY);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public TransactionType getType() {
-        return TransactionType.CONTRACTCALL;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void updateContractResult(ContractResult contractResult, RecordItem recordItem) {
-        if (recordItem.getTransactionBody().hasContractCall()) {
-            var contractCallTransactionBody = recordItem.getTransactionBody().getContractCall();
-            contractResult.setAmount(contractCallTransactionBody.getAmount());
-            contractResult.setFunctionParameters(
-                    DomainUtils.toBytes(contractCallTransactionBody.getFunctionParameters()));
-            contractResult.setGasLimit(contractCallTransactionBody.getGas());
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

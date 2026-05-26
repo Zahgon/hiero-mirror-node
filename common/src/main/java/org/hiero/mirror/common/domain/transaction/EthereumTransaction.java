@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.transaction;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -22,7 +21,8 @@ import org.hiero.mirror.common.converter.ObjectToStringSerializer;
 import org.hiero.mirror.common.domain.entity.EntityId;
 import org.springframework.data.domain.Persistable;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE) // For builder
+// For builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 @Data
 @Entity
@@ -99,20 +99,16 @@ public class EthereumTransaction implements Persistable<Long> {
     @JsonIgnore
     @Override
     public Long getId() {
-        return consensusTimestamp;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @JsonIgnore
     @Override
     public boolean isNew() {
-        return true; // Since we never update and use a natural ID, avoid Hibernate querying before insert
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public TransactionHash toTransactionHash() {
-        return TransactionHash.builder()
-                .consensusTimestamp(consensusTimestamp)
-                .hash(hash)
-                .payerAccountId(payerAccountId.getId())
-                .build();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

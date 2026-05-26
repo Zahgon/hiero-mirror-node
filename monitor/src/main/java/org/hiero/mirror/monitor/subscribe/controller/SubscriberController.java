@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.subscribe.controller;
 
 import java.util.List;
@@ -32,35 +31,23 @@ class SubscriberController {
     private final MirrorSubscriber mirrorSubscriber;
 
     @GetMapping
-    public <T extends ScenarioProperties> Flux<Scenario<T, Object>> subscriptions(
-            @RequestParam("protocol") Optional<ScenarioProtocol> protocol,
-            @RequestParam("status") Optional<List<ScenarioStatus>> status) {
-        return mirrorSubscriber
-                .<Scenario<T, Object>>getSubscriptions()
-                .filter(s -> !protocol.isPresent() || protocol.get() == s.getProtocol())
-                .filter(s -> !status.isPresent() || status.get().contains(s.getStatus()))
-                .switchIfEmpty(Mono.error(new NoSuchElementException()));
+    public <T extends ScenarioProperties> Flux<Scenario<T, Object>> subscriptions(@RequestParam("protocol") Optional<ScenarioProtocol> protocol, @RequestParam("status") Optional<List<ScenarioStatus>> status) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @GetMapping("/{name}")
-    public <T extends ScenarioProperties> Flux<Scenario<T, Object>> subscriptions(
-            @PathVariable("name") String name, @RequestParam("status") Optional<List<ScenarioStatus>> status) {
-        Flux<Scenario<T, Object>> subscriptions = subscriptions(Optional.empty(), status);
-        return subscriptions
-                .filter(subscription -> subscription.getName().equals(name))
-                .switchIfEmpty(Mono.error(new NoSuchElementException()));
+    public <T extends ScenarioProperties> Flux<Scenario<T, Object>> subscriptions(@PathVariable("name") String name, @RequestParam("status") Optional<List<ScenarioStatus>> status) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @GetMapping("/{name}/{id}")
-    public <T extends ScenarioProperties> Mono<Scenario<T, Object>> subscription(
-            @PathVariable("name") String name, @PathVariable("id") int id) {
-        Flux<Scenario<T, Object>> subscriptions = subscriptions(name, Optional.empty());
-        return subscriptions.filter(s -> s.getId() == id).last();
+    public <T extends ScenarioProperties> Mono<Scenario<T, Object>> subscription(@PathVariable("name") String name, @PathVariable("id") int id) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "Not found")
     @ExceptionHandler(NoSuchElementException.class)
     void notFound() {
-        // Error logging is done generically in LoggingFilter
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.config;
 
 import lombok.RequiredArgsConstructor;
@@ -14,6 +13,6 @@ final class WebMvcConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addFormatters(FormatterRegistry registry) {
-        registry.addConverter(String.class, TransactionIdOrHashParameter.class, TransactionIdOrHashParameter::valueOf);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

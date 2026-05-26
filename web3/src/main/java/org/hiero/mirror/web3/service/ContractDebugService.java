@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.service;
 
 import io.micrometer.core.instrument.MeterRegistry;
@@ -24,50 +23,21 @@ import org.springframework.validation.annotation.Validated;
 @Named
 @Validated
 public class ContractDebugService extends ContractCallService {
+
     private final ContractActionRepository contractActionRepository;
 
     @SuppressWarnings("java:S107")
-    public ContractDebugService(
-            ContractActionRepository contractActionRepository,
-            RecordFileService recordFileService,
-            ThrottleManager throttleManager,
-            ThrottleProperties throttleProperties,
-            MeterRegistry meterRegistry,
-            EvmProperties evmProperties,
-            TransactionExecutionService transactionExecutionService) {
-        super(
-                throttleManager,
-                throttleProperties,
-                meterRegistry,
-                recordFileService,
-                evmProperties,
-                transactionExecutionService);
+    public ContractDebugService(ContractActionRepository contractActionRepository, RecordFileService recordFileService, ThrottleManager throttleManager, ThrottleProperties throttleProperties, MeterRegistry meterRegistry, EvmProperties evmProperties, TransactionExecutionService transactionExecutionService) {
+        super(throttleManager, throttleProperties, meterRegistry, recordFileService, evmProperties, transactionExecutionService);
         this.contractActionRepository = contractActionRepository;
     }
 
-    public OpcodesProcessingResult processOpcodeCall(
-            final @Valid ContractDebugParameters params, final OpcodeContext opcodeContext) {
-        ContractCallContext ctx = ContractCallContext.get();
-        ctx.setTimestamp(Optional.of(params.getConsensusTimestamp() - 1));
-        ctx.setOpcodeContext(opcodeContext);
-        ctx.getOpcodeContext()
-                .setActions(contractActionRepository.findFailedSystemActionsByConsensusTimestamp(
-                        params.getConsensusTimestamp()));
-        final var ethCallTxnResult = callContract(params, ctx);
-        return new OpcodesProcessingResult(
-                ethCallTxnResult, params.getReceiver(), ctx.getOpcodeContext().getOpcodes());
+    public OpcodesProcessingResult processOpcodeCall(@Valid final ContractDebugParameters params, final OpcodeContext opcodeContext) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     protected void validateResult(final EvmTransactionResult txnResult, final CallServiceParameters params) {
-        try {
-            super.validateResult(txnResult, params);
-        } catch (MirrorEvmTransactionException e) {
-            log.warn(
-                    "Transaction failed with status: {}, detail: {}, revertReason: {}",
-                    txnResult.responseCodeEnum(),
-                    e.getDetail(),
-                    e.getData());
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.publish.transaction.token;
 
 import com.hedera.hashgraph.sdk.AccountId;
@@ -44,34 +43,6 @@ public class TokenUpdateTransactionSupplier implements TransactionSupplier<Token
 
     @Override
     public TokenUpdateTransaction get() {
-        TokenUpdateTransaction tokenUpdateTransaction = new TokenUpdateTransaction()
-                .setMaxTransactionFee(Hbar.fromTinybars(maxTransactionFee))
-                .setTokenMemo(Utility.getMemo("Mirror node updated test token"))
-                .setTokenName(symbol + "_name")
-                .setTokenSymbol(symbol)
-                .setTokenId(TokenId.fromString(tokenId));
-
-        if (adminKey != null) {
-            PublicKey key = PublicKey.fromString(adminKey);
-            tokenUpdateTransaction
-                    .setAdminKey(key)
-                    .setFeeScheduleKey(key)
-                    .setFreezeKey(key)
-                    .setKycKey(key)
-                    .setSupplyKey(key)
-                    .setWipeKey(key);
-        }
-        if (treasuryAccountId != null) {
-            AccountId treastury = AccountId.fromString(treasuryAccountId);
-            tokenUpdateTransaction.setAutoRenewAccountId(treastury).setTreasuryAccountId(treastury);
-        }
-
-        if (expirationTime != null) {
-            tokenUpdateTransaction.setExpirationTime(expirationTime);
-        } else {
-            tokenUpdateTransaction.setAutoRenewPeriod(autoRenewPeriod);
-        }
-
-        return tokenUpdateTransaction;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

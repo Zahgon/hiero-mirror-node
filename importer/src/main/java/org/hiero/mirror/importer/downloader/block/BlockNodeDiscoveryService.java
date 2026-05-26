@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.downloader.block;
 
 import com.google.common.collect.Iterables;
@@ -36,12 +35,14 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @RequiredArgsConstructor
 public final class BlockNodeDiscoveryService {
 
-    private static final Set<BlockNodeApi> TIER_ONE_BLOCK_NODE_APIS =
-            EnumSet.of(BlockNodeApi.STATUS, BlockNodeApi.PUBLISH, BlockNodeApi.SUBSCRIBE_STREAM);
+    private static final Set<BlockNodeApi> TIER_ONE_BLOCK_NODE_APIS = EnumSet.of(BlockNodeApi.STATUS, BlockNodeApi.PUBLISH, BlockNodeApi.SUBSCRIBE_STREAM);
+
     private static final List<BlockNodeProperties> CLEARED = Collections.emptyList();
 
     private final BlockProperties blockProperties;
+
     private final AtomicReference<List<BlockNodeProperties>> cache = new AtomicReference<>(CLEARED);
+
     private final RegisteredNodeRepository registeredNodeRepository;
 
     /**
@@ -51,20 +52,7 @@ public final class BlockNodeDiscoveryService {
      * The result is cached. Cache is invalidated when registered nodes are created, updated, or deleted.
      */
     public List<BlockNodeProperties> getBlockNodes() {
-        return cache.updateAndGet(propertiesList -> {
-            if (propertiesList != CLEARED) {
-                return propertiesList;
-            }
-
-            final var configurationsMap = new HashMap<String, BlockNodeProperties>();
-            for (final var properties : Iterables.concat(blockProperties.getNodes(), discover())) {
-                configurationsMap.put(properties.getMergeKey(), properties);
-            }
-
-            final var result = new ArrayList<>(configurationsMap.values());
-            Collections.sort(result);
-            return Collections.unmodifiableList(result);
-        });
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -74,16 +62,12 @@ public final class BlockNodeDiscoveryService {
         if (!blockProperties.isAutoDiscoveryEnabled()) {
             return Collections.emptyList();
         }
-
         try {
-            final var nodes = registeredNodeRepository.findAllByDeletedFalseAndTypeContains(
-                    RegisteredNodeType.BLOCK_NODE.getId());
-
+            final var nodes = registeredNodeRepository.findAllByDeletedFalseAndTypeContains(RegisteredNodeType.BLOCK_NODE.getId());
             final List<BlockNodeProperties> propertiesList = new ArrayList<>(nodes.size());
             for (final var node : nodes) {
                 toBlockNodeProperties(propertiesList, node.getServiceEndpoints());
             }
-
             return propertiesList;
         } catch (Exception ex) {
             log.error("Error during block nodes discovery: ", ex);
@@ -93,8 +77,7 @@ public final class BlockNodeDiscoveryService {
 
     @TransactionalEventListener(RegisteredNodeChangedEvent.class)
     public void onRegisteredNodeChanged() {
-        cache.set(CLEARED);
-        log.debug("Invalidated block node discovery cache");
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Nullable
@@ -103,12 +86,10 @@ public final class BlockNodeDiscoveryService {
         if (!StringUtils.isBlank(domainName)) {
             return domainName.trim();
         }
-
         final var ipAddress = endpoint.getIpAddress();
         if (!StringUtils.isBlank(ipAddress)) {
             return ipAddress.trim();
         }
-
         return null;
     }
 
@@ -116,26 +97,21 @@ public final class BlockNodeDiscoveryService {
      * Returns the properties of tier 1 block nodes. A tier 1 block node is one that has a single
      * endpoint advertising all three required APIs: STATUS, PUBLISH, and SUBSCRIBE_STREAM.
      */
-    private static void toBlockNodeProperties(
-            List<BlockNodeProperties> propertiesList, final List<RegisteredServiceEndpoint> endpoints) {
+    private static void toBlockNodeProperties(List<BlockNodeProperties> propertiesList, final List<RegisteredServiceEndpoint> endpoints) {
         if (CollectionUtil.isEmpty(endpoints)) {
             return;
         }
-
         for (final var endpoint : endpoints) {
             if (endpoint.getBlockNode() == null) {
                 continue;
             }
-
             if (!EnumSet.copyOf(endpoint.getBlockNode().getEndpointApis()).containsAll(TIER_ONE_BLOCK_NODE_APIS)) {
                 continue;
             }
-
             final var host = extractHost(endpoint);
             if (host == null) {
                 continue;
             }
-
             final var properties = new BlockNodeProperties();
             properties.setHost(host);
             properties.setPort(endpoint.getPort());

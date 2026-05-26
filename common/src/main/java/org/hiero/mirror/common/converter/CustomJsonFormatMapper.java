@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.converter;
 
 import static org.hiero.mirror.common.converter.ObjectToStringSerializer.OBJECT_MAPPER;
-
 import org.hibernate.type.descriptor.WrapperOptions;
 import org.hibernate.type.descriptor.java.JavaType;
 import org.hibernate.type.format.FormatMapper;
@@ -20,11 +18,11 @@ public class CustomJsonFormatMapper implements FormatMapper {
 
     @Override
     public <T> T fromString(CharSequence charSequence, JavaType<T> javaType, WrapperOptions wrapperOptions) {
-        return delegate.fromString(charSequence, javaType, wrapperOptions);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public <T> String toString(T value, JavaType<T> javaType, WrapperOptions wrapperOptions) {
-        return delegate.toString(value, javaType, wrapperOptions);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

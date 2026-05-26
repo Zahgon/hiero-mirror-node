@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.state.keyvalue;
 
 import static com.hedera.node.app.service.token.impl.schemas.V0530TokenSchema.AIRDROPS_STATE_ID;
 import static com.hedera.services.utils.EntityIdUtils.toEntityId;
-
 import com.hedera.hapi.node.base.PendingAirdropId;
 import com.hedera.hapi.node.base.PendingAirdropValue;
 import com.hedera.hapi.node.state.token.AccountPendingAirdrop;
@@ -28,28 +26,11 @@ final class AirdropsReadableKVState extends AbstractReadableKVState<PendingAirdr
 
     @Override
     protected AccountPendingAirdrop readFromDataSource(@NonNull PendingAirdropId key) {
-        final var senderId = toEntityId(key.senderId()).getId();
-        final var receiverId = toEntityId(key.receiverId()).getId();
-        final var tokenId = toEntityId(
-                        key.hasNonFungibleToken() ? key.nonFungibleToken().tokenId() : key.fungibleTokenType())
-                .getId();
-        final var serialNumber =
-                key.hasNonFungibleToken() ? key.nonFungibleToken().serialNumber() : 0L;
-        final var timestamp = ContractCallContext.get().getTimestamp();
-
-        return timestamp
-                .map(t -> tokenAirdropRepository.findByIdAndTimestamp(senderId, receiverId, tokenId, serialNumber, t))
-                .orElseGet(() -> tokenAirdropRepository.findById(senderId, receiverId, tokenId, serialNumber))
-                .map(tokenAirdrop -> key.hasNonFungibleToken()
-                        ? AccountPendingAirdrop.DEFAULT
-                        : mapToAccountPendingAirdrop(tokenAirdrop.getAmount()))
-                .orElse(null);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private AccountPendingAirdrop mapToAccountPendingAirdrop(final long amount) {
-        return AccountPendingAirdrop.newBuilder()
-                .pendingAirdropValue(mapToPendingAirdropValue(amount))
-                .build();
+        return AccountPendingAirdrop.newBuilder().pendingAirdropValue(mapToPendingAirdropValue(amount)).build();
     }
 
     private PendingAirdropValue mapToPendingAirdropValue(final long amount) {
@@ -58,6 +39,6 @@ final class AirdropsReadableKVState extends AbstractReadableKVState<PendingAirdr
 
     @Override
     public String getServiceName() {
-        return TokenService.NAME;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

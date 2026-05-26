@@ -1,11 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.state.keyvalue;
 
 import static com.hedera.node.app.service.contract.impl.schemas.V0490ContractSchema.BYTECODE_STATE_ID;
 import static com.hedera.services.utils.EntityIdUtils.entityIdFromContractId;
 import static org.hiero.mirror.common.util.DomainUtils.isLongZeroAddress;
-
 import com.hedera.hapi.node.base.ContractID;
 import com.hedera.hapi.node.state.contract.Bytecode;
 import com.hedera.node.app.service.contract.ContractService;
@@ -28,8 +26,7 @@ final class ContractBytecodeReadableKVState extends AbstractReadableKVState<Cont
 
     private final CommonEntityAccessor commonEntityAccessor;
 
-    protected ContractBytecodeReadableKVState(
-            final ContractRepository contractRepository, CommonEntityAccessor commonEntityAccessor) {
+    protected ContractBytecodeReadableKVState(final ContractRepository contractRepository, CommonEntityAccessor commonEntityAccessor) {
         super(ContractService.NAME, STATE_ID);
         this.contractRepository = contractRepository;
         this.commonEntityAccessor = commonEntityAccessor;
@@ -37,13 +34,7 @@ final class ContractBytecodeReadableKVState extends AbstractReadableKVState<Cont
 
     @Override
     protected Bytecode readFromDataSource(@NonNull ContractID contractID) {
-        final var entityId = toEntityId(contractID);
-
-        return contractRepository
-                .findRuntimeBytecode(entityId.getId())
-                .map(Bytes::wrap)
-                .map(Bytecode::new)
-                .orElse(null);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private EntityId toEntityId(@NonNull final ContractID contractID) {
@@ -54,10 +45,7 @@ final class ContractBytecodeReadableKVState extends AbstractReadableKVState<Cont
             if (isLongZeroAddress(evmAddress)) {
                 return DomainUtils.fromEvmAddress(evmAddress);
             } else {
-                return commonEntityAccessor
-                        .getEntityByEvmAddressAndTimestamp(evmAddress, Optional.empty())
-                        .map(Entity::toEntityId)
-                        .orElse(EntityId.EMPTY);
+                return commonEntityAccessor.getEntityByEvmAddressAndTimestamp(evmAddress, Optional.empty()).map(Entity::toEntityId).orElse(EntityId.EMPTY);
             }
         }
         return EntityId.EMPTY;
@@ -65,6 +53,6 @@ final class ContractBytecodeReadableKVState extends AbstractReadableKVState<Cont
 
     @Override
     public String getServiceName() {
-        return ContractService.NAME;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

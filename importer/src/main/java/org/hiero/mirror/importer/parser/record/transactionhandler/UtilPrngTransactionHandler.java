@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.transactionhandler;
 
 import jakarta.inject.Named;
@@ -21,34 +20,11 @@ class UtilPrngTransactionHandler extends AbstractTransactionHandler {
 
     @Override
     public TransactionType getType() {
-        return TransactionType.UTILPRNG;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     protected void doUpdateTransaction(Transaction transaction, RecordItem recordItem) {
-        long consensusTimestamp = recordItem.getConsensusTimestamp();
-        var range = recordItem.getTransactionBody().getUtilPrng().getRange();
-        if (!recordItem.isSuccessful()) {
-            return;
-        }
-
-        var transactionRecord = recordItem.getTransactionRecord();
-        var prng = new Prng();
-        prng.setConsensusTimestamp(consensusTimestamp);
-        prng.setPayerAccountId(recordItem.getPayerAccountId().getId());
-        prng.setRange(range);
-        switch (transactionRecord.getEntropyCase()) {
-            case PRNG_BYTES -> prng.setPrngBytes(DomainUtils.toBytes(transactionRecord.getPrngBytes()));
-            case PRNG_NUMBER -> prng.setPrngNumber(transactionRecord.getPrngNumber());
-            default -> {
-                log.warn(
-                        "Unsupported entropy case {} at consensus timestamp {}",
-                        transactionRecord.getEntropyCase(),
-                        consensusTimestamp);
-                return;
-            }
-        }
-
-        entityListener.onPrng(prng);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

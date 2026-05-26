@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.publish.transaction.account;
 
 import static org.hiero.mirror.monitor.OperatorProperties.DEFAULT_OPERATOR_ACCOUNT_ID;
-
 import com.hedera.hashgraph.sdk.AccountDeleteTransaction;
 import com.hedera.hashgraph.sdk.AccountId;
 import com.hedera.hashgraph.sdk.Hbar;
@@ -26,10 +24,6 @@ public class AccountDeleteTransactionSupplier implements TransactionSupplier<Acc
 
     @Override
     public AccountDeleteTransaction get() {
-
-        return new AccountDeleteTransaction()
-                .setAccountId(AccountId.fromString(accountId))
-                .setMaxTransactionFee(Hbar.fromTinybars(maxTransactionFee))
-                .setTransferAccountId(AccountId.fromString(transferAccountId));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

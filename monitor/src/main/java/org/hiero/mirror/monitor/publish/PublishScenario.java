@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.publish;
 
 import java.util.Objects;
@@ -19,21 +18,16 @@ public class PublishScenario extends AbstractScenario<PublishScenarioProperties,
     }
 
     public String getMemo() {
-        var memoMessage = System.currentTimeMillis() + " " + this.memo;
-        return StringUtils.truncate(memoMessage, properties.getMaxMemoLength());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public ScenarioProtocol getProtocol() {
-        return ScenarioProtocol.GRPC;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onError(Throwable throwable) {
-        if (throwable instanceof PublishException publishException) {
-            errors.add(publishException.getStatus());
-        } else {
-            super.onError(throwable);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

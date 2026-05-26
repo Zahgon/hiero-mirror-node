@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.publish.transaction.network;
 
 import com.hedera.hashgraph.sdk.FileId;
@@ -31,19 +30,6 @@ public class FreezeTransactionSupplier implements TransactionSupplier<FreezeTran
 
     @Override
     public FreezeTransaction get() {
-        var freezeTransaction = new FreezeTransaction()
-                .setFreezeType(freezeType)
-                .setMaxTransactionFee(Hbar.fromTinybars(maxTransactionFee))
-                .setStartTime(startTime);
-
-        if (fileHash != null) {
-            freezeTransaction.setFileHash(fileHash);
-        }
-
-        if (StringUtils.isNotBlank(fileId)) {
-            freezeTransaction.setFileId(FileId.fromString(fileId));
-        }
-
-        return freezeTransaction;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

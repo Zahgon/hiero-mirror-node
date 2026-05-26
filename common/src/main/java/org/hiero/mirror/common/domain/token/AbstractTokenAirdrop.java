@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.token;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -48,22 +47,21 @@ public class AbstractTokenAirdrop implements History {
 
     @JsonIgnore
     public Id getId() {
-        Id id = new Id();
-        id.setReceiverAccountId(receiverAccountId);
-        id.setSenderAccountId(senderAccountId);
-        id.setSerialNumber(serialNumber);
-        id.setTokenId(tokenId);
-        return id;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Data
     public static class Id implements Serializable {
+
         @Serial
         private static final long serialVersionUID = -8165098238647325621L;
 
         private long receiverAccountId;
+
         private long senderAccountId;
+
         private long serialNumber;
+
         private long tokenId;
     }
 }

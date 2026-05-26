@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.config;
 
 import static org.springframework.http.HttpHeaders.CONTENT_LENGTH;
 import static org.springframework.web.servlet.HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE;
-
 import io.micrometer.core.instrument.DistributionSummary;
 import io.micrometer.core.instrument.Meter.MeterProvider;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -26,46 +24,35 @@ import org.springframework.web.util.WebUtils;
 class MetricsFilter extends OncePerRequestFilter {
 
     static final String REQUEST_BYTES = "hiero.mirror.web3.request.bytes";
+
     static final String RESPONSE_BYTES = "hiero.mirror.web3.response.bytes";
 
     private static final String METHOD = "method";
+
     private static final String URI = "uri";
 
     private final MeterProvider<DistributionSummary> requestBytesProvider;
+
     private final MeterProvider<DistributionSummary> responseBytesProvider;
 
     MetricsFilter(MeterRegistry meterRegistry) {
-        this.requestBytesProvider = DistributionSummary.builder(REQUEST_BYTES)
-                .baseUnit("bytes")
-                .description("The size of the request in bytes")
-                .withRegistry(meterRegistry);
-        this.responseBytesProvider = DistributionSummary.builder(RESPONSE_BYTES)
-                .baseUnit("bytes")
-                .description("The size of the response in bytes")
-                .withRegistry(meterRegistry);
+        this.requestBytesProvider = DistributionSummary.builder(REQUEST_BYTES).baseUnit("bytes").description("The size of the request in bytes").withRegistry(meterRegistry);
+        this.responseBytesProvider = DistributionSummary.builder(RESPONSE_BYTES).baseUnit("bytes").description("The size of the response in bytes").withRegistry(meterRegistry);
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
-
-        try {
-            filterChain.doFilter(request, response);
-        } finally {
-            recordMetrics(request, response);
-        }
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private void recordMetrics(HttpServletRequest request, HttpServletResponse response) {
         if (request.getAttribute(BEST_MATCHING_PATTERN_ATTRIBUTE) instanceof String uri) {
             var tags = Tags.of(METHOD, request.getMethod(), URI, uri);
-
             var contentLengthHeader = request.getHeader(CONTENT_LENGTH);
             if (contentLengthHeader != null) {
                 long contentLength = Math.max(0L, NumberUtils.toLong(contentLengthHeader));
                 requestBytesProvider.withTags(tags).record(contentLength);
             }
-
             var responseFacade = WebUtils.getNativeResponse(response, ResponseFacade.class);
             if (responseFacade != null) {
                 var responseSize = responseFacade.getContentWritten();

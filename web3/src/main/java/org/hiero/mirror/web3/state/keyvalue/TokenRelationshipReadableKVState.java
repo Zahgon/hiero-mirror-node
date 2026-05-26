@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.state.keyvalue;
 
 import static com.hedera.node.app.service.token.impl.schemas.V0490TokenSchema.TOKEN_RELS_STATE_ID;
 import static com.hedera.services.utils.EntityIdUtils.toEntityId;
-
 import com.hedera.hapi.node.base.AccountID;
 import com.hedera.hapi.node.base.TokenID;
 import com.hedera.hapi.node.state.common.EntityIDPair;
@@ -34,17 +32,16 @@ final class TokenRelationshipReadableKVState extends AbstractReadableKVState<Ent
     public static final int STATE_ID = TOKEN_RELS_STATE_ID;
 
     private final NftRepository nftRepository;
+
     private final SystemEntity systemEntity;
+
     private final TokenAccountRepository tokenAccountRepository;
+
     private final TokenBalanceRepository tokenBalanceRepository;
+
     private final TokenRepository tokenRepository;
 
-    protected TokenRelationshipReadableKVState(
-            final NftRepository nftRepository,
-            final SystemEntity systemEntity,
-            final TokenAccountRepository tokenAccountRepository,
-            final TokenBalanceRepository tokenBalanceRepository,
-            final TokenRepository tokenRepository) {
+    protected TokenRelationshipReadableKVState(final NftRepository nftRepository, final SystemEntity systemEntity, final TokenAccountRepository tokenAccountRepository, final TokenBalanceRepository tokenBalanceRepository, final TokenRepository tokenRepository) {
         super(TokenService.NAME, TOKEN_RELS_STATE_ID);
         this.nftRepository = nftRepository;
         this.systemEntity = systemEntity;
@@ -55,45 +52,18 @@ final class TokenRelationshipReadableKVState extends AbstractReadableKVState<Ent
 
     @Override
     protected TokenRelation readFromDataSource(@NonNull EntityIDPair key) {
-        final var tokenId = key.tokenId();
-        final var accountId = key.accountId();
-        if (tokenId == null
-                || accountId == null
-                || AccountID.DEFAULT.equals(accountId)
-                || TokenID.DEFAULT.equals(tokenId)) {
-            return null;
-        }
-
-        final var timestamp = ContractCallContext.get().getTimestamp();
-        // The accountId will always be in the format "shard.realm.num"
-        return findTokenAccount(tokenId, accountId, timestamp)
-                .map(ta -> tokenRelationFromEntity(tokenId, accountId, ta, timestamp))
-                .orElse(null);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    private Optional<TokenAccount> findTokenAccount(
-            final TokenID tokenID, final AccountID accountID, final Optional<Long> timestamp) {
+    private Optional<TokenAccount> findTokenAccount(final TokenID tokenID, final AccountID accountID, final Optional<Long> timestamp) {
         AbstractTokenAccount.Id id = new AbstractTokenAccount.Id();
         id.setTokenId(toEntityId(tokenID).getId());
         id.setAccountId(toEntityId(accountID).getId());
-        return timestamp
-                .map(t -> tokenAccountRepository.findByIdAndTimestamp(id.getAccountId(), id.getTokenId(), t))
-                .orElseGet(() -> tokenAccountRepository.findById(id));
+        return timestamp.map(t -> tokenAccountRepository.findByIdAndTimestamp(id.getAccountId(), id.getTokenId(), t)).orElseGet(() -> tokenAccountRepository.findById(id));
     }
 
-    private TokenRelation tokenRelationFromEntity(
-            final TokenID tokenID,
-            final AccountID accountID,
-            final TokenAccount tokenAccount,
-            final Optional<Long> timestamp) {
-        return TokenRelation.newBuilder()
-                .tokenId(tokenID)
-                .accountId(accountID)
-                .balanceSupplier(getBalance(tokenAccount, timestamp))
-                .frozen(tokenAccount.getFreezeStatus() == TokenFreezeStatusEnum.FROZEN)
-                .kycGranted(tokenAccount.getKycStatus() != TokenKycStatusEnum.REVOKED)
-                .automaticAssociation(tokenAccount.getAutomaticAssociation())
-                .build();
+    private TokenRelation tokenRelationFromEntity(final TokenID tokenID, final AccountID accountID, final TokenAccount tokenAccount, final Optional<Long> timestamp) {
+        return TokenRelation.newBuilder().tokenId(tokenID).accountId(accountID).balanceSupplier(getBalance(tokenAccount, timestamp)).frozen(tokenAccount.getFreezeStatus() == TokenFreezeStatusEnum.FROZEN).kycGranted(tokenAccount.getKycStatus() != TokenKycStatusEnum.REVOKED).automaticAssociation(tokenAccount.getAutomaticAssociation()).build();
     }
 
     /**
@@ -102,28 +72,16 @@ final class TokenRelationshipReadableKVState extends AbstractReadableKVState<Ent
      * timestamp and the token type in order to use the correct repository.
      */
     private Supplier<Long> getBalance(final TokenAccount tokenAccount, final Optional<Long> timestamp) {
-        return Suppliers.memoize(() -> timestamp
-                .map(t -> findTokenType(tokenAccount.getTokenId())
-                        .map(tokenTypeEnum -> tokenTypeEnum.equals(TokenTypeEnum.NON_FUNGIBLE_UNIQUE)
-                                ? getNftBalance(tokenAccount, t)
-                                : getFungibleBalance(tokenAccount, t))
-                        .orElse(0L))
-                .orElseGet(tokenAccount::getBalance));
+        return Suppliers.memoize(() -> timestamp.map(t -> findTokenType(tokenAccount.getTokenId()).map(tokenTypeEnum -> tokenTypeEnum.equals(TokenTypeEnum.NON_FUNGIBLE_UNIQUE) ? getNftBalance(tokenAccount, t) : getFungibleBalance(tokenAccount, t)).orElse(0L)).orElseGet(tokenAccount::getBalance));
     }
 
     private Long getNftBalance(final TokenAccount tokenAccount, final long timestamp) {
-        return nftRepository
-                .nftBalanceByAccountIdTokenIdAndTimestamp(
-                        tokenAccount.getAccountId(), tokenAccount.getTokenId(), timestamp)
-                .orElse(0L);
+        return nftRepository.nftBalanceByAccountIdTokenIdAndTimestamp(tokenAccount.getAccountId(), tokenAccount.getTokenId(), timestamp).orElse(0L);
     }
 
     private Long getFungibleBalance(final TokenAccount tokenAccount, final long timestamp) {
         long treasuryAccountId = systemEntity.treasuryAccount().getId();
-        return tokenBalanceRepository
-                .findHistoricalTokenBalanceUpToTimestamp(
-                        tokenAccount.getTokenId(), tokenAccount.getAccountId(), timestamp, treasuryAccountId)
-                .orElse(0L);
+        return tokenBalanceRepository.findHistoricalTokenBalanceUpToTimestamp(tokenAccount.getTokenId(), tokenAccount.getAccountId(), timestamp, treasuryAccountId).orElse(0L);
     }
 
     private Optional<TokenTypeEnum> findTokenType(final long tokenId) {
@@ -132,6 +90,6 @@ final class TokenRelationshipReadableKVState extends AbstractReadableKVState<Ent
 
     @Override
     public String getServiceName() {
-        return TokenService.NAME;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

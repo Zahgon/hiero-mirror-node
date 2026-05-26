@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.downloader;
 
 import static org.hiero.mirror.common.domain.DigestAlgorithm.SHA_384;
 import static org.hiero.mirror.importer.domain.StreamFileSignature.SignatureStatus;
-
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Ordering;
@@ -60,7 +58,9 @@ public abstract class Downloader<T extends StreamFile<I>, I extends StreamItem> 
     public static final String STREAM_CLOSE_LATENCY_METRIC_NAME = "hiero.mirror.importer.stream.close.latency";
 
     private static final String HASH_TYPE_FILE = "File";
+
     private static final String HASH_TYPE_METADATA = "Metadata";
+
     private static final String HASH_TYPE_RUNNING = "Running";
 
     private static final Comparator<StreamFileSignature> STREAM_FILE_SIGNATURE_COMPARATOR = (left, right) -> {
@@ -68,46 +68,50 @@ public abstract class Downloader<T extends StreamFile<I>, I extends StreamItem> 
             // Ensures values are unique when used in a Set
             return 0;
         }
-
         // The arbitrary ordering compares objects by identity, thus when used in a sorted collection, it gives a random
         // order of the StreamFileSignatures w.r.t the nodes
         return Ordering.arbitrary().compare(left, right);
     };
 
     protected final Logger log = LoggerFactory.getLogger(getClass());
+
     protected final DownloaderProperties downloaderProperties;
+
     protected final ImporterProperties importerProperties;
+
     protected final NodeSignatureVerifier nodeSignatureVerifier;
+
     protected final SignatureFileReader signatureFileReader;
+
     protected final StreamFileProvider streamFileProvider;
+
     protected final StreamFileReader<T, ?> streamFileReader;
+
     protected final StreamFileNotifier streamFileNotifier;
+
     protected final DateRangeCalculator dateRangeCalculator;
+
     protected final AtomicReference<Optional<StreamFile<I>>> lastStreamFile = new AtomicReference<>(Optional.empty());
 
     private final ConsensusNodeService consensusNodeService;
+
     private final StreamType streamType;
 
     // Metrics
     private final MeterRegistry meterRegistry;
+
     private final Map<Long, Counter> nodeSignatureStatusMetricMap = new ConcurrentHashMap<>();
+
     private final Timer cloudStorageLatencyMetric;
+
     private final Timer downloadLatencyMetric;
+
     private final Timer streamCloseMetric;
+
     private final Timer.Builder streamVerificationMetric;
 
-    @SuppressWarnings({"java:S107", "java:S3740"})
-    protected Downloader(
-            ConsensusNodeService consensusNodeService,
-            DownloaderProperties downloaderProperties,
-            ImporterProperties importerProperties,
-            MeterRegistry meterRegistry,
-            DateRangeCalculator dateRangeCalculator,
-            NodeSignatureVerifier nodeSignatureVerifier,
-            SignatureFileReader signatureFileReader,
-            StreamFileNotifier streamFileNotifier,
-            StreamFileProvider streamFileProvider,
-            StreamFileReader<T, ?> streamFileReader) {
+    @SuppressWarnings({ "java:S107", "java:S3740" })
+    protected Downloader(ConsensusNodeService consensusNodeService, DownloaderProperties downloaderProperties, ImporterProperties importerProperties, MeterRegistry meterRegistry, DateRangeCalculator dateRangeCalculator, NodeSignatureVerifier nodeSignatureVerifier, SignatureFileReader signatureFileReader, StreamFileNotifier streamFileNotifier, StreamFileProvider streamFileProvider, StreamFileReader<T, ?> streamFileReader) {
         this.consensusNodeService = consensusNodeService;
         this.downloaderProperties = downloaderProperties;
         this.importerProperties = importerProperties;
@@ -119,54 +123,17 @@ public abstract class Downloader<T extends StreamFile<I>, I extends StreamItem> 
         this.streamFileReader = streamFileReader;
         this.streamFileNotifier = streamFileNotifier;
         this.streamType = downloaderProperties.getStreamType();
-
         // Metrics
-        cloudStorageLatencyMetric = Timer.builder("hiero.mirror.importer.cloud.latency")
-                .description("The difference in time between the consensus time of the last transaction in the file "
-                        + "and the time at which the file was created in the cloud storage provider")
-                .tag("type", streamType.toString())
-                .register(meterRegistry);
-
-        downloadLatencyMetric = Timer.builder("hiero.mirror.importer.stream.latency")
-                .description("The difference in time between the consensus time of the last transaction in the file "
-                        + "and the time at which the file was downloaded and verified")
-                .tag("type", streamType.toString())
-                .register(meterRegistry);
-
-        streamCloseMetric = Timer.builder(STREAM_CLOSE_LATENCY_METRIC_NAME)
-                .description("The difference between the consensus start of the current and the last stream file")
-                .tag("type", streamType.toString())
-                .register(meterRegistry);
-
-        streamVerificationMetric = Timer.builder("hiero.mirror.importer.stream.verification")
-                .description("The duration in seconds it took to verify consensus and hash chain of a stream file")
-                .tag("type", streamType.toString());
+        cloudStorageLatencyMetric = Timer.builder("hiero.mirror.importer.cloud.latency").description("The difference in time between the consensus time of the last transaction in the file " + "and the time at which the file was created in the cloud storage provider").tag("type", streamType.toString()).register(meterRegistry);
+        downloadLatencyMetric = Timer.builder("hiero.mirror.importer.stream.latency").description("The difference in time between the consensus time of the last transaction in the file " + "and the time at which the file was downloaded and verified").tag("type", streamType.toString()).register(meterRegistry);
+        streamCloseMetric = Timer.builder(STREAM_CLOSE_LATENCY_METRIC_NAME).description("The difference between the consensus start of the current and the last stream file").tag("type", streamType.toString()).register(meterRegistry);
+        streamVerificationMetric = Timer.builder("hiero.mirror.importer.stream.verification").description("The duration in seconds it took to verify consensus and hash chain of a stream file").tag("type", streamType.toString());
     }
 
     public abstract void download();
 
     protected void downloadNextBatch() {
-        if (!shouldDownload()) {
-            return;
-        }
-
-        try {
-            var sigFilesMap = downloadAndParseSigFiles();
-
-            // Following is a cost optimization to not unnecessarily list the public demo bucket once complete
-            if (sigFilesMap.isEmpty()
-                    && ImporterProperties.HederaNetwork.DEMO.equalsIgnoreCase(importerProperties.getNetwork())) {
-                downloaderProperties.setEnabled(false);
-                log.warn("Disabled polling after downloading all files in demo bucket");
-            }
-
-            // Verify signature files and download corresponding files of valid signature files
-            verifySigsAndDownloadDataFiles(sigFilesMap);
-        } catch (SignatureVerificationException e) {
-            log.warn(e.getMessage());
-        } catch (Exception e) {
-            log.error("Error downloading files", e);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -175,23 +142,15 @@ public abstract class Downloader<T extends StreamFile<I>, I extends StreamItem> 
      * @param streamFile the stream file object
      */
     protected void setStreamFileIndex(T streamFile) {
-        long index = lastStreamFile
-                .get()
-                .map(StreamFile::getIndex)
-                .map(v -> v + 1)
-                .or(() -> Optional.ofNullable(importerProperties.getStartBlockNumber()))
-                .orElse(0L);
-        streamFile.setIndex(index);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     Multimap<StreamFilename, StreamFileSignature> getStreamFileSignatureMultiMap() {
-        // The custom comparator ensures there is no duplicate key-value pairs and randomly sorts the values associated
-        // with the same key
-        return TreeMultimap.create(Ordering.natural(), STREAM_FILE_SIGNATURE_COMPARATOR);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     protected boolean shouldDownload() {
-        return downloaderProperties.isEnabled();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -207,38 +166,20 @@ public abstract class Downloader<T extends StreamFile<I>, I extends StreamItem> 
         var nodes = partialCollection(consensusNodeService.getNodes());
         var startAfterFilename = getStartAfterFilename();
         log.debug("Asking for new signature files created after file: {}", startAfterFilename);
-
-        final var signatures = Objects.requireNonNull(Flux.fromIterable(nodes)
-                .flatMap(node -> streamFileProvider
-                        .list(node, startAfterFilename)
-                        .take(listLimit)
-                        .map(s -> {
-                            var streamFileSignature = signatureFileReader.read(s);
-                            streamFileSignature.setNode(node);
-                            streamFileSignature.setStreamType(streamType);
-                            return streamFileSignature;
-                        })
-                        .onErrorContinue((e, s) -> log.error("Error downloading signature files for node {}", node, e)))
-                .timeout(downloaderProperties.getCommon().getTimeout())
-                .collect(this::getStreamFileSignatureMultiMap, (map, s) -> map.put(s.getFilename(), s))
-                .subscribeOn(Schedulers.parallel())
-                .block());
-
+        final var signatures = Objects.requireNonNull(Flux.fromIterable(nodes).flatMap(node -> streamFileProvider.list(node, startAfterFilename).take(listLimit).map(s -> {
+            var streamFileSignature = signatureFileReader.read(s);
+            streamFileSignature.setNode(node);
+            streamFileSignature.setStreamType(streamType);
+            return streamFileSignature;
+        }).onErrorContinue((e, s) -> log.error("Error downloading signature files for node {}", node, e))).timeout(downloaderProperties.getCommon().getTimeout()).collect(this::getStreamFileSignatureMultiMap, (map, s) -> map.put(s.getFilename(), s)).subscribeOn(Schedulers.parallel()).block());
         long total = signatures.size();
         if (total > 0) {
             var rate = (int) (1000000.0 * total / stopwatch.elapsed(TimeUnit.MICROSECONDS));
-            var counts = signatures.keySet().stream()
-                    .limit(10)
-                    .collect(Collectors.toMap(
-                            Function.identity(), s -> signatures.get(s).size()));
+            var counts = signatures.keySet().stream().limit(10).collect(Collectors.toMap(Function.identity(), s -> signatures.get(s).size()));
             log.info("Downloaded {} signatures in {} ({}/s): {}", total, stopwatch, rate, counts);
         } else {
-            log.info(
-                    "No new signature files to download after file: {}. Retrying in {} s",
-                    startAfterFilename,
-                    downloaderProperties.getFrequency().toMillis() / 1_000f);
+            log.info("No new signature files to download after file: {}. Retrying in {} s", startAfterFilename, downloaderProperties.getFrequency().toMillis() / 1_000f);
         }
-
         return signatures;
     }
 
@@ -251,16 +192,11 @@ public abstract class Downloader<T extends StreamFile<I>, I extends StreamItem> 
      * @return filename lexically after the last signature file and before the next stream file
      */
     private StreamFilename getStartAfterFilename() {
-        return lastStreamFile
-                .get()
-                .or(() -> {
-                    Optional<StreamFile<I>> streamFile = dateRangeCalculator.getLastStreamFile(streamType);
-                    lastStreamFile.compareAndSet(Optional.empty(), streamFile);
-                    return streamFile;
-                })
-                .map(StreamFile::getName)
-                .map(StreamFilename::from)
-                .orElse(StreamFilename.EPOCH);
+        return lastStreamFile.get().or(() -> {
+            Optional<StreamFile<I>> streamFile = dateRangeCalculator.getLastStreamFile(streamType);
+            lastStreamFile.compareAndSet(Optional.empty(), streamFile);
+            return streamFile;
+        }).map(StreamFile::getName).map(StreamFilename::from).orElse(StreamFilename.EPOCH);
     }
 
     /**
@@ -275,24 +211,18 @@ public abstract class Downloader<T extends StreamFile<I>, I extends StreamItem> 
      */
     @SuppressWarnings("java:S135")
     private void verifySigsAndDownloadDataFiles(Multimap<StreamFilename, StreamFileSignature> sigFilesMap) {
-        var nodeIds = consensusNodeService.getNodes().stream()
-                .map(ConsensusNode::getNodeId)
-                .collect(Collectors.toSet());
+        var nodeIds = consensusNodeService.getNodes().stream().map(ConsensusNode::getNodeId).collect(Collectors.toSet());
         StreamFilename earliestFilename = null;
-
         for (var sigFilenameIter = sigFilesMap.keySet().iterator(); sigFilenameIter.hasNext(); ) {
             if (ShutdownHelper.isStopping()) {
                 return;
             }
-
             Instant startTime = Instant.now();
             var sigFilename = sigFilenameIter.next();
             var signatures = sigFilesMap.get(sigFilename);
-
             if (earliestFilename == null) {
                 earliestFilename = sigFilename;
             }
-
             try {
                 nodeSignatureVerifier.verify(signatures);
             } catch (SignatureVerificationException ex) {
@@ -301,104 +231,59 @@ public abstract class Downloader<T extends StreamFile<I>, I extends StreamItem> 
                     log.warn("{}. Trying next group: {}", ex.getMessage(), statusMapMessage);
                     continue;
                 }
-
                 throw new SignatureVerificationException(ex.getMessage() + ": " + statusMapMessage);
             }
-
             boolean valid = verifySignatures(signatures, earliestFilename);
             if (!valid) {
                 log.error("None of the data files could be verified, signatures: {}", signatures);
             }
-
-            streamVerificationMetric
-                    .tag("success", String.valueOf(valid))
-                    .register(meterRegistry)
-                    .record(Duration.between(startTime, Instant.now()));
+            streamVerificationMetric.tag("success", String.valueOf(valid)).register(meterRegistry).record(Duration.between(startTime, Instant.now()));
         }
     }
 
     private boolean verifySignatures(Collection<StreamFileSignature> signatures, StreamFilename earliestFilename) {
         Instant endDate = importerProperties.getEndDate();
-
         for (var signature : signatures) {
             // Ignore signatures that didn't validate or weren't in the majority
             if (signature.getStatus() != StreamFileSignature.SignatureStatus.CONSENSUS_REACHED) {
                 continue;
             }
-
             var nodeId = signature.getNode().getNodeId();
-
             try {
                 var dataFilename = signature.getDataFilename();
                 var node = signature.getNode();
-                var streamFileData = Objects.requireNonNull(
-                        streamFileProvider.get(dataFilename).block());
+                var streamFileData = Objects.requireNonNull(streamFileProvider.get(dataFilename).block());
                 T streamFile = streamFileReader.read(streamFileData);
-
                 verify(streamFile, signature);
-
                 var archiveDestinationFolder = importerProperties.getArchiveDestinationFolderPath(streamFileData);
-
                 if (downloaderProperties.isWriteFiles()) {
                     Utility.archiveFile(streamFileData.getFilePath(), streamFile.getBytes(), archiveDestinationFolder);
                 }
-
                 if (downloaderProperties.isWriteSignatures()) {
-                    signatures.forEach(s -> Utility.archiveFile(
-                            s.getFilename().getBucketFilePath(), s.getBytes(), archiveDestinationFolder));
+                    signatures.forEach(s -> Utility.archiveFile(s.getFilename().getBucketFilePath(), s.getBytes(), archiveDestinationFolder));
                 }
-
                 if (!downloaderProperties.isPersistBytes()) {
                     streamFile.setBytes(null);
                 }
-
                 if (dataFilename.getInstant().isAfter(endDate)) {
                     downloaderProperties.setEnabled(false);
                     log.warn("Disabled polling after downloading all files <= endDate ({})", endDate);
                     return false;
                 }
-
                 onVerified(streamFileData, streamFile);
                 return true;
             } catch (FileOperationException | HashMismatchException | TransientProviderException e) {
-                final var previous =
-                        lastStreamFile.get().map(StreamFile::getName).orElse("None");
-                log.warn(
-                        "Failed processing signatures after {} from node {} corresponding to {}. Earliest failure in batch is {}. {}",
-                        previous,
-                        nodeId,
-                        signature.getFilename(),
-                        earliestFilename,
-                        e.getMessage());
+                final var previous = lastStreamFile.get().map(StreamFile::getName).orElse("None");
+                log.warn("Failed processing signatures after {} from node {} corresponding to {}. Earliest failure in batch is {}. {}", previous, nodeId, signature.getFilename(), earliestFilename, e.getMessage());
             } catch (Exception e) {
-                log.error(
-                        "Error downloading data file from node {} corresponding to {}. Will retry another node",
-                        nodeId,
-                        signature.getFilename(),
-                        e);
+                log.error("Error downloading data file from node {} corresponding to {}. Will retry another node", nodeId, signature.getFilename(), e);
             }
         }
-
         return false;
     }
 
     protected void onVerified(StreamFileData streamFileData, T streamFile) {
-        setStreamFileIndex(streamFile);
-        streamFileNotifier.verified(streamFile);
-
-        lastStreamFile.get().ifPresent(last -> {
-            long latency = streamFile.getConsensusStart() - last.getConsensusStart();
-            streamCloseMetric.record(latency, TimeUnit.NANOSECONDS);
-        });
-
-        Instant cloudStorageTime = streamFileData.getLastModified();
-        Instant consensusEnd = Instant.ofEpochSecond(0, streamFile.getConsensusEnd());
-        cloudStorageLatencyMetric.record(Duration.between(consensusEnd, cloudStorageTime));
-        downloadLatencyMetric.record(Duration.between(consensusEnd, Instant.now()));
-
-        // Cache a copy of the streamFile with bytes and items set to null so as not to keep them in memory
-        var copy = streamFile.copy().clear();
-        lastStreamFile.set(Optional.of(copy));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -411,12 +296,9 @@ public abstract class Downloader<T extends StreamFile<I>, I extends StreamItem> 
     private void verify(T streamFile, StreamFileSignature signature) {
         String filename = streamFile.getName();
         String expectedPrevHash = lastStreamFile.get().map(StreamFile::getHash).orElse(null);
-
         if (!verifyHashChain(streamFile, expectedPrevHash)) {
-            throw new HashMismatchException(
-                    filename, expectedPrevHash, streamFile.getPreviousHash(), HASH_TYPE_RUNNING);
+            throw new HashMismatchException(filename, expectedPrevHash, streamFile.getPreviousHash(), HASH_TYPE_RUNNING);
         }
-
         verifyHash(filename, streamFile.getFileHash(), signature.getFileHashAsHex(), HASH_TYPE_FILE);
         verifyHash(filename, streamFile.getMetadataHash(), signature.getMetadataHashAsHex(), HASH_TYPE_METADATA);
     }
@@ -435,55 +317,28 @@ public abstract class Downloader<T extends StreamFile<I>, I extends StreamItem> 
     }
 
     boolean verifyHashChain(T streamFile, String expectedPreviousHash) {
-        if (!streamFile.getType().isChained()) {
-            return true;
-        }
-
-        if (SHA_384.isHashEmpty(expectedPreviousHash)) {
-            log.warn("Previous hash not available");
-            return true;
-        }
-
-        return streamFile.getPreviousHash().contentEquals(expectedPreviousHash);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    private Map<SignatureStatus, Collection<Long>> statusMap(
-            Collection<StreamFileSignature> signatures, Set<Long> nodeIds) {
-        Map<SignatureStatus, Collection<Long>> statusMap = signatures.stream()
-                .collect(Collectors.groupingBy(
-                        StreamFileSignature::getStatus,
-                        Collectors.mapping(s -> s.getNode().getNodeId(), Collectors.toCollection(TreeSet::new))));
-
+    private Map<SignatureStatus, Collection<Long>> statusMap(Collection<StreamFileSignature> signatures, Set<Long> nodeIds) {
+        Map<SignatureStatus, Collection<Long>> statusMap = signatures.stream().collect(Collectors.groupingBy(StreamFileSignature::getStatus, Collectors.mapping(s -> s.getNode().getNodeId(), Collectors.toCollection(TreeSet::new))));
         var seenNodes = signatures.stream().map(s -> s.getNode().getNodeId()).collect(Collectors.toSet());
         var missingNodes = new TreeSet<>(Sets.difference(nodeIds, seenNodes));
         statusMap.put(SignatureStatus.NOT_FOUND, missingNodes);
-
-        String signatureStreamType = signatures.stream()
-                .map(StreamFileSignature::getStreamType)
-                .map(StreamType::toString)
-                .findFirst()
-                .orElse("UNKNOWN");
-
+        String signatureStreamType = signatures.stream().map(StreamFileSignature::getStreamType).map(StreamType::toString).findFirst().orElse("UNKNOWN");
         for (var entry : statusMap.entrySet()) {
             entry.getValue().forEach(nodeId -> {
-                Counter counter = nodeSignatureStatusMetricMap.computeIfAbsent(
-                        nodeId, n -> newStatusMetric(nodeId, signatureStreamType, entry.getKey()));
+                Counter counter = nodeSignatureStatusMetricMap.computeIfAbsent(nodeId, n -> newStatusMetric(nodeId, signatureStreamType, entry.getKey()));
                 counter.increment();
             });
         }
-
         // remove CONSENSUS_REACHED for logging purposes
         statusMap.remove(SignatureStatus.CONSENSUS_REACHED);
         return statusMap;
     }
 
     private Counter newStatusMetric(Long nodeId, String streamType, SignatureStatus status) {
-        return Counter.builder("hiero.mirror.importer.stream.signature.verification")
-                .description("The number of signatures verified from a particular node")
-                .tag("node", nodeId.toString())
-                .tag("type", streamType)
-                .tag("status", status.toString())
-                .register(meterRegistry);
+        return Counter.builder("hiero.mirror.importer.stream.signature.verification").description("The number of signatures verified from a particular node").tag("node", nodeId.toString()).tag("type", streamType).tag("status", status.toString()).register(meterRegistry);
     }
 
     /**
@@ -499,29 +354,19 @@ public abstract class Downloader<T extends StreamFile<I>, I extends StreamItem> 
         if (allNodes.size() <= 1 || downloadRatio.compareTo(BigDecimal.ONE) == 0) {
             return allNodes;
         }
-
         var nodes = new ArrayList<>(allNodes);
         // shuffle nodes into a random order
         Collections.shuffle(nodes);
-
         long totalStake = nodes.getFirst().getTotalStake();
         // only keep "just enough" nodes to reach/exceed downloadRatio
-        long neededStake = BigDecimal.valueOf(totalStake)
-                .multiply(downloadRatio)
-                .setScale(0, RoundingMode.CEILING)
-                .longValue();
-        long aggregateStake = 0; // sum of the stake of all nodes evaluated so far
+        long neededStake = BigDecimal.valueOf(totalStake).multiply(downloadRatio).setScale(0, RoundingMode.CEILING).longValue();
+        // sum of the stake of all nodes evaluated so far
+        long aggregateStake = 0;
         int lastEntry = 0;
         while (aggregateStake < neededStake) {
             aggregateStake += nodes.get(lastEntry++).getStake();
         }
-
-        log.debug(
-                "partialCollection: Kept {} of {} nodes, for stake of {} / {}",
-                lastEntry,
-                allNodes.size(),
-                aggregateStake,
-                totalStake);
+        log.debug("partialCollection: Kept {} of {} nodes, for stake of {} / {}", lastEntry, allNodes.size(), aggregateStake, totalStake);
         return nodes.subList(0, lastEntry);
     }
 }

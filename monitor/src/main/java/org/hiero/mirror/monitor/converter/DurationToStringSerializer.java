@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.converter;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -17,34 +16,11 @@ public class DurationToStringSerializer extends StdSerializer<Duration> {
     }
 
     @Override
-    public void serialize(Duration duration, JsonGenerator jsonGenerator, SerializerProvider provider)
-            throws IOException {
-        jsonGenerator.writeString(convert(duration));
+    public void serialize(Duration duration, JsonGenerator jsonGenerator, SerializerProvider provider) throws IOException {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public static String convert(Duration duration) {
-        if (duration == null) {
-            return null;
-        }
-
-        StringBuilder s = new StringBuilder();
-
-        if (duration.toDaysPart() > 0) {
-            s.append(duration.toDaysPart()).append("d");
-        }
-
-        if (duration.toHoursPart() > 0) {
-            s.append(duration.toHoursPart()).append("h");
-        }
-
-        if (duration.toMinutesPart() > 0) {
-            s.append(duration.toMinutesPart()).append("m");
-        }
-
-        if (duration.toSecondsPart() > 0 || s.length() == 0) {
-            s.append(duration.toSecondsPart()).append("s");
-        }
-
-        return s.toString();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

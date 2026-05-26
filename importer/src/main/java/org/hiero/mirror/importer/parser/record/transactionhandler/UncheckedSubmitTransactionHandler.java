@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.transactionhandler;
 
 import jakarta.inject.Named;
@@ -10,6 +9,6 @@ class UncheckedSubmitTransactionHandler extends AbstractTransactionHandler {
 
     @Override
     public TransactionType getType() {
-        return TransactionType.UNCHECKEDSUBMIT;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

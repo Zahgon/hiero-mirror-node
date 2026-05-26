@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.balance;
 
 import jakarta.persistence.Entity;
@@ -19,7 +18,8 @@ import org.hiero.mirror.common.domain.StreamType;
 @Builder(toBuilder = true)
 @Data
 @Entity
-@AllArgsConstructor(access = AccessLevel.PRIVATE) // For Builder
+// For Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor
 public class AccountBalanceFile implements StreamFile<AccountBalance> {
 
@@ -52,26 +52,26 @@ public class AccountBalanceFile implements StreamFile<AccountBalance> {
 
     @Override
     public StreamFile<AccountBalance> copy() {
-        return this.toBuilder().build();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public Long getConsensusStart() {
-        return consensusTimestamp;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void setConsensusStart(Long timestamp) {
-        consensusTimestamp = timestamp;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public Long getConsensusEnd() {
-        return getConsensusStart();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public StreamType getType() {
-        return StreamType.BALANCE;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

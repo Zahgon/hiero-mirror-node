@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.graphql.cache;
 
 import com.github.benmanes.caffeine.cache.AsyncCache;
@@ -21,8 +20,7 @@ final class CachedPreparsedDocumentProvider implements PreparsedDocumentProvider
     }
 
     @Override
-    public CompletableFuture<PreparsedDocumentEntry> getDocumentAsync(
-            ExecutionInput executionInput, Function<ExecutionInput, PreparsedDocumentEntry> parseAndValidateFunction) {
-        return cache.get(executionInput.getQuery(), key -> parseAndValidateFunction.apply(executionInput));
+    public CompletableFuture<PreparsedDocumentEntry> getDocumentAsync(ExecutionInput executionInput, Function<ExecutionInput, PreparsedDocumentEntry> parseAndValidateFunction) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

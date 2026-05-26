@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.token;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -49,33 +48,19 @@ public abstract class AbstractCustomFee implements History {
     private Range<Long> timestampRange;
 
     public void addFixedFee(@NonNull FixedFee fixedFee) {
-        if (this.fixedFees == null) {
-            this.fixedFees = new ArrayList<>();
-        }
-
-        this.fixedFees.add(fixedFee);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public void addFractionalFee(@NonNull FractionalFee fractionalFee) {
-        if (this.fractionalFees == null) {
-            this.fractionalFees = new ArrayList<>();
-        }
-
-        this.fractionalFees.add(fractionalFee);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public void addRoyaltyFee(@NonNull RoyaltyFee royaltyFee) {
-        if (this.royaltyFees == null) {
-            this.royaltyFees = new ArrayList<>();
-        }
-
-        this.royaltyFees.add(royaltyFee);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @JsonIgnore
     public boolean isEmptyFee() {
-        return CollectionUtils.isEmpty(this.fixedFees)
-                && CollectionUtils.isEmpty(this.fractionalFees)
-                && CollectionUtils.isEmpty(this.royaltyFees);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

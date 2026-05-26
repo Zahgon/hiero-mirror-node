@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.downloader.block;
 
 import static org.hiero.mirror.importer.downloader.block.scheduler.Scheduler.EARLIEST_AVAILABLE_BLOCK_NUMBER;
-
 import com.hedera.hapi.block.stream.protoc.Block;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
@@ -39,79 +37,27 @@ final class BlockFileSource extends AbstractBlockSource {
     // metrics
     private final Timer cloudStorageLatencyMetric;
 
-    BlockFileSource(
-            final BlockStreamReader blockStreamReader,
-            final BlockStreamVerifier blockStreamVerifier,
-            final CommonDownloaderProperties commonDownloaderProperties,
-            final CutoverService cutoverService,
-            final MeterRegistry meterRegistry,
-            final BlockProperties properties,
-            final StreamFileProvider streamFileProvider) {
+    BlockFileSource(final BlockStreamReader blockStreamReader, final BlockStreamVerifier blockStreamVerifier, final CommonDownloaderProperties commonDownloaderProperties, final CutoverService cutoverService, final MeterRegistry meterRegistry, final BlockProperties properties, final StreamFileProvider streamFileProvider) {
         super(blockStreamReader, blockStreamVerifier, commonDownloaderProperties, cutoverService, properties);
         this.streamFileProvider = streamFileProvider;
-
-        cloudStorageLatencyMetric = Timer.builder("hiero.mirror.importer.cloud.latency")
-                .description("The difference in time between the consensus time of the last transaction in the file "
-                        + "and the time at which the file was created in the cloud storage provider")
-                .tag("type", StreamType.BLOCK.toString())
-                .register(meterRegistry);
+        cloudStorageLatencyMetric = Timer.builder("hiero.mirror.importer.cloud.latency").description("The difference in time between the consensus time of the last transaction in the file " + "and the time at which the file was created in the cloud storage provider").tag("type", StreamType.BLOCK.toString()).register(meterRegistry);
     }
 
     @Override
     protected void doGet(final long blockNumber, final Long endBlockNumber) {
-        if (blockNumber == EARLIEST_AVAILABLE_BLOCK_NUMBER) {
-            throw new IllegalStateException(
-                    this.getClass().getSimpleName() + " doesn't support earliest available block number");
-        }
-
-        final var network = getDiscoveredNetwork();
-        final var path = "%s/%s".formatted(network, StreamType.BLOCK.getPath());
-        final var streamFilename = StreamFilename.from(path, blockNumber);
-
-        try {
-            final var blockFileData = streamFileProvider
-                    .get(streamFilename)
-                    .blockOptional(commonDownloaderProperties.getTimeout())
-                    .orElseThrow();
-            log.debug("Downloaded block file {}", streamFilename.getFilename());
-
-            final var blockStream = getBlockStream(blockFileData);
-            final var blockFile = onBlockStream(blockStream, DEFAULT_NODE_ENDPOINT);
-
-            final var cloudStorageTime = blockFileData.getLastModified();
-            final var consensusEnd = Instant.ofEpochSecond(0, blockFile.getConsensusEnd());
-            cloudStorageLatencyMetric.record(Duration.between(consensusEnd, cloudStorageTime));
-
-            if (properties.isWriteFiles()) {
-                final var streamPath =
-                        commonDownloaderProperties.getImporterProperties().getStreamPath();
-                Utility.archiveFile(blockFileData.getFilePath(), blockStream.bytes(), streamPath);
-            }
-        } catch (final Throwable t) {
-            throw new BlockStreamException("Failed to download block file " + streamFilename.getFilename(), t);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private String discoverNetwork() {
         final var network = commonDownloaderProperties.getImporterProperties().getNetwork();
-        return streamFileProvider
-                .discoverNetwork()
-                .doOnNext(n -> log.info("Discovered latest network folder '{}'", n))
-                .blockOptional()
-                .orElseThrow(() ->
-                        new IllegalStateException("Failed to discover network folder for '%s'".formatted(network)));
+        return streamFileProvider.discoverNetwork().doOnNext(n -> log.info("Discovered latest network folder '{}'", n)).blockOptional().orElseThrow(() -> new IllegalStateException("Failed to discover network folder for '%s'".formatted(network)));
     }
 
     private BlockStream getBlockStream(final StreamFileData blockFileData) throws IOException {
         try (final var inputStream = blockFileData.getInputStream()) {
             final var block = Block.parseFrom(inputStream);
             final byte[] bytes = blockFileData.getBytes();
-            return new BlockStream(
-                    block.getItemsList(),
-                    System.currentTimeMillis(),
-                    bytes,
-                    blockFileData.getFilename(),
-                    blockFileData.getStreamFilename().getTimestamp());
+            return new BlockStream(block.getItemsList(), System.currentTimeMillis(), bytes, blockFileData.getFilename(), blockFileData.getStreamFilename().getTimestamp());
         }
     }
 }

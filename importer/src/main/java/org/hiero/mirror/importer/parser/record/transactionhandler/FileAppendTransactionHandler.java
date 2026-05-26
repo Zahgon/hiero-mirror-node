@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.transactionhandler;
 
 import jakarta.inject.Named;
@@ -17,21 +16,16 @@ class FileAppendTransactionHandler extends AbstractTransactionHandler {
 
     @Override
     public EntityId getEntity(RecordItem recordItem) {
-        return EntityId.of(recordItem.getTransactionBody().getFileAppend().getFileID());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public TransactionType getType() {
-        return TransactionType.FILEAPPEND;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     protected void doUpdateTransaction(Transaction transaction, RecordItem recordItem) {
-        if (!recordItem.isSuccessful()) {
-            return;
-        }
-
-        var contents = recordItem.getTransactionBody().getFileAppend().getContents();
-        fileDataHandler.handle(transaction, contents);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

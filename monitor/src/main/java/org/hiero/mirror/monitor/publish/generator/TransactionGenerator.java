@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.publish.generator;
 
 import java.util.List;
@@ -19,7 +18,7 @@ public interface TransactionGenerator {
     List<PublishRequest> next(int count);
 
     default List<PublishRequest> next() {
-        return next(1);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     Flux<PublishScenario> scenarios();

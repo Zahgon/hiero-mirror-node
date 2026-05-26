@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.contract;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -44,22 +43,22 @@ public class ContractState {
 
     @JsonIgnore
     public ContractState.Id getId() {
-        ContractState.Id id = new ContractState.Id();
-        id.setContractId(contractId);
-        id.setSlot(slot);
-        return id;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public void setSlot(byte[] slot) {
-        this.slot = DomainUtils.leftPadBytes(slot, SLOT_BYTE_LENGTH);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
     public static class Id implements Serializable {
+
         private static final long serialVersionUID = 6192377810161178246L;
+
         private long contractId;
+
         private byte[] slot;
     }
 }

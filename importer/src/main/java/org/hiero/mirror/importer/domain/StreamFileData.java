@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.domain;
 
 import com.google.common.base.Suppliers;
@@ -44,7 +43,6 @@ public class StreamFileData {
         if (!file.exists() || !file.canRead() || !file.isFile()) {
             throw new FileOperationException("Unable to read file " + file);
         }
-
         Supplier<byte[]> bytes = Suppliers.memoize(() -> {
             try {
                 return FileUtils.readFileToByteArray(file);
@@ -52,54 +50,51 @@ public class StreamFileData {
                 throw new FileOperationException("Unable to read file to byte array", e);
             }
         });
-
         var lastModified = Instant.ofEpochMilli(file.lastModified());
         return new StreamFileData(streamFilename, bytes, lastModified);
     }
 
     public static StreamFileData from(File file) {
-        return readStreamFileData(file, StreamFilename.from(file.getPath(), File.separator));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public static StreamFileData from(File file, StreamFilename streamFilename) {
-        return readStreamFileData(file, streamFilename);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public static StreamFileData from(final Path basePath, final StreamFilename streamFilename) {
-        final var streamFile = new File(basePath.toFile(), streamFilename.getBucketFilePath());
-        return readStreamFileData(streamFile, streamFilename);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     // Used for testing String based files like CSVs
     public static StreamFileData from(String filename, String contents) {
-        return new StreamFileData(
-                StreamFilename.from(filename), () -> contents.getBytes(StandardCharsets.UTF_8), Instant.now());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     // Used for testing with raw bytes
     public static StreamFileData from(String filename, byte[] bytes) {
-        return new StreamFileData(StreamFilename.from(filename), () -> bytes, Instant.now());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public byte[] getBytes() {
-        return bytes.get();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public InputStream getInputStream() {
-        return new ByteArrayInputStream(getDecompressedBytes());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public String getFilename() {
-        return streamFilename.getFilename();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public String getFilePath() {
-        return streamFilename.getBucketFilePath();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public String toString() {
-        return streamFilename.toString();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private byte[] decompressBytes() {
@@ -107,10 +102,8 @@ public class StreamFileData {
         if (StringUtils.isBlank(compressor)) {
             return getBytes();
         }
-
         try (var inputStream = new ByteArrayInputStream(getBytes());
-                var compressorInputStream =
-                        compressorStreamFactory.createCompressorInputStream(compressor, inputStream)) {
+            var compressorInputStream = compressorStreamFactory.createCompressorInputStream(compressor, inputStream)) {
             return compressorInputStream.readAllBytes();
         } catch (IOException e) {
             var filename = streamFilename.getFilename();

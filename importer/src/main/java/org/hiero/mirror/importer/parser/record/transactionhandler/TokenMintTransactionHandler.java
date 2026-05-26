@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.transactionhandler;
 
 import static org.hiero.mirror.common.util.DomainUtils.toBytes;
-
 import com.google.common.collect.Range;
 import jakarta.inject.Named;
 import lombok.CustomLog;
@@ -24,54 +22,21 @@ import org.hiero.mirror.importer.util.Utility;
 class TokenMintTransactionHandler extends AbstractTransactionHandler {
 
     private final EntityListener entityListener;
+
     private final EntityProperties entityProperties;
 
     @Override
     public EntityId getEntity(RecordItem recordItem) {
-        return EntityId.of(recordItem.getTransactionBody().getTokenMint().getToken());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public TransactionType getType() {
-        return TransactionType.TOKENMINT;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     protected void doUpdateTransaction(Transaction transaction, RecordItem recordItem) {
-        if (!entityProperties.getPersist().isTokens() || !recordItem.isSuccessful()) {
-            return;
-        }
-
-        var transactionBody = recordItem.getTransactionBody().getTokenMint();
-        var tokenId = transaction.getEntityId();
-        long consensusTimestamp = recordItem.getConsensusTimestamp();
-        long newTotalSupply = recordItem.getTransactionRecord().getReceipt().getNewTotalSupply();
-
-        var token = new Token();
-        token.setTokenId(tokenId.getId());
-        token.setTotalSupply(newTotalSupply);
-        entityListener.onToken(token);
-
-        var serialNumbers = recordItem.getTransactionRecord().getReceipt().getSerialNumbersList();
-        for (int i = 0; i < serialNumbers.size(); i++) {
-            if (i >= transactionBody.getMetadataCount()) {
-                Utility.handleRecoverableError(
-                        "Mismatch between {} metadata and {} serial numbers at {}",
-                        transactionBody.getMetadataCount(),
-                        serialNumbers,
-                        consensusTimestamp);
-                break;
-            }
-
-            var nft = Nft.builder()
-                    .createdTimestamp(consensusTimestamp)
-                    .deleted(false)
-                    .metadata(toBytes(transactionBody.getMetadata(i)))
-                    .serialNumber(serialNumbers.get(i))
-                    .timestampRange(Range.atLeast(consensusTimestamp))
-                    .tokenId(tokenId.getId())
-                    .build();
-            entityListener.onNft(nft);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

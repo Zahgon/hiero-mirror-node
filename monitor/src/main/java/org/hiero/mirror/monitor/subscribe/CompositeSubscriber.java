@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.subscribe;
 
 import jakarta.inject.Named;
@@ -19,16 +18,16 @@ public class CompositeSubscriber implements MirrorSubscriber {
 
     @Override
     public void onPublish(PublishResponse response) {
-        subscribers.forEach(s -> s.onPublish(response));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public Flux<SubscribeResponse> subscribe() {
-        return Flux.fromIterable(subscribers).flatMap(MirrorSubscriber::subscribe);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public Flux<Scenario<?, ?>> getSubscriptions() {
-        return Flux.fromIterable(subscribers).flatMap(MirrorSubscriber::getSubscriptions);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

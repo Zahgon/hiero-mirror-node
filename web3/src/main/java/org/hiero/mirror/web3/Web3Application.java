@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3;
 
 import java.io.IOException;
@@ -18,13 +17,11 @@ import org.springframework.util.FileSystemUtils;
 public class Web3Application {
 
     static void main(String[] args) {
-        cleanup();
-        SpringApplication.run(Web3Application.class, args);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private static void cleanup() {
         final var tmpDir = Path.of(System.getProperty("java.io.tmpdir", "/tmp/web3"));
-
         try {
             FileSystemUtils.deleteRecursively(tmpDir);
             Files.createDirectories(tmpDir);

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.grpc.listener;
 
 import io.micrometer.core.instrument.MeterRegistry;
@@ -20,33 +19,26 @@ import reactor.core.publisher.Flux;
 final class CompositeTopicListener implements TopicListener {
 
     private final ListenerProperties listenerProperties;
+
     private final MeterRegistry meterRegistry;
+
     private final PollingTopicListener pollingTopicListener;
+
     private final RedisTopicListener redisTopicListener;
+
     private final SharedPollingTopicListener sharedPollingTopicListener;
 
     @Getter(lazy = true, value = AccessLevel.PRIVATE)
-    private final Timer consensusLatencyTimer = Timer.builder("hiero.mirror.grpc.consensus.latency")
-            .description("The difference in ms between the time consensus was achieved and the message was sent")
-            .tag("type", TopicMessage.class.getSimpleName())
-            .register(meterRegistry);
+    private final Timer consensusLatencyTimer = Timer.builder("hiero.mirror.grpc.consensus.latency").description("The difference in ms between the time consensus was achieved and the message was sent").tag("type", TopicMessage.class.getSimpleName()).register(meterRegistry);
 
     @Override
     public Flux<TopicMessage> listen(TopicMessageFilter filter) {
-        if (!listenerProperties.isEnabled()) {
-            return Flux.empty();
-        }
-
-        return getTopicListener()
-                .listen(filter)
-                .filter(t -> filterMessage(t, filter))
-                .doOnNext(this::recordMetric);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private TopicListener getTopicListener() {
         final var type = listenerProperties.getType();
-
-        switch (type) {
+        switch(type) {
             case POLL:
                 return pollingTopicListener;
             case REDIS:
@@ -59,8 +51,7 @@ final class CompositeTopicListener implements TopicListener {
     }
 
     private boolean filterMessage(TopicMessage message, TopicMessageFilter filter) {
-        return message.getTopicId().equals(filter.getTopicId())
-                && message.getConsensusTimestamp() >= filter.getStartTime();
+        return message.getTopicId().equals(filter.getTopicId()) && message.getConsensusTimestamp() >= filter.getStartTime();
     }
 
     private void recordMetric(TopicMessage topicMessage) {

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.controller;
 
 import lombok.CustomLog;
@@ -29,7 +28,9 @@ class OpcodesController {
     static final String MISSING_GZIP_HEADER_MESSAGE = "Accept-Encoding: gzip header is required";
 
     private final OpcodeService opcodeService;
+
     private final ThrottleManager throttleManager;
+
     private final OpcodesProperties properties;
 
     /**
@@ -50,21 +51,8 @@ class OpcodesController {
      * @return {@link OpcodesResponse} containing the result of the transaction execution
      */
     @GetMapping(value = "/{transactionIdOrHash}/opcodes")
-    OpcodesResponse getContractOpcodes(
-            @PathVariable TransactionIdOrHashParameter transactionIdOrHash,
-            @RequestParam(required = false, defaultValue = "true") boolean stack,
-            @RequestParam(required = false, defaultValue = "false") boolean memory,
-            @RequestParam(required = false, defaultValue = "false") boolean storage,
-            @RequestHeader(value = HttpHeaders.ACCEPT_ENCODING) String acceptEncoding) {
-        if (properties.isEnabled()) {
-            validateAcceptEncodingHeader(acceptEncoding);
-            throttleManager.throttleOpcodeRequest();
-
-            final var request = new OpcodeRequest(transactionIdOrHash, stack, memory, storage);
-            return opcodeService.processOpcodeCall(request);
-        }
-
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+    OpcodesResponse getContractOpcodes(@PathVariable TransactionIdOrHashParameter transactionIdOrHash, @RequestParam(required = false, defaultValue = "true") boolean stack, @RequestParam(required = false, defaultValue = "false") boolean memory, @RequestParam(required = false, defaultValue = "false") boolean storage, @RequestHeader(value = HttpHeaders.ACCEPT_ENCODING) String acceptEncoding) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -74,14 +62,10 @@ class OpcodesController {
      */
     private void validateAcceptEncodingHeader(String acceptEncodingHeader) {
         if (acceptEncodingHeader == null || !acceptEncodingHeader.toLowerCase().contains("gzip")) {
-            throw HttpClientErrorException.create(
-                    MISSING_GZIP_HEADER_MESSAGE,
-                    HttpStatus.NOT_ACCEPTABLE,
-                    HttpStatus.NOT_ACCEPTABLE.getReasonPhrase(),
-                    null, // headers
-                    null, // body
-                    null // charset
-                    );
+            throw HttpClientErrorException.create(MISSING_GZIP_HEADER_MESSAGE, HttpStatus.NOT_ACCEPTABLE, HttpStatus.NOT_ACCEPTABLE.getReasonPhrase(), // headers
+            null, // body
+            null, // charset
+            null);
         }
     }
 }

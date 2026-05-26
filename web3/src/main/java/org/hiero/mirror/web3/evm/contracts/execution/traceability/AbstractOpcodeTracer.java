@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.evm.contracts.execution.traceability;
 
 import static org.hiero.mirror.web3.convert.BytesDecoder.startsWithErrorSelector;
 import static org.hiero.mirror.web3.validation.HexValidator.HEX_PREFIX;
-
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.hedera.node.app.service.contract.impl.state.RootProxyWorldUpdater;
@@ -32,115 +30,22 @@ public abstract class AbstractOpcodeTracer {
 
     // Common cache that keeps hex string representation of different Bytes keys. We can have the same Bytes occurrence
     // on multiple opcode data and this cache helps to avoid unnecessary string allocations.
-    private final LoadingCache<Bytes, String> hexCache = Caffeine.newBuilder()
-            .maximumSize(HEX_CACHE_MAX_SIZE)
-            .expireAfterAccess(Duration.ofMinutes(1))
-            .build(Bytes::toHexString);
+    private final LoadingCache<Bytes, String> hexCache = Caffeine.newBuilder().maximumSize(HEX_CACHE_MAX_SIZE).expireAfterAccess(Duration.ofMinutes(1)).build(Bytes::toHexString);
 
     protected final List<String> captureMemory(final MessageFrame frame, final OpcodeContext options) {
-        if (!options.isMemory()) {
-            return Collections.emptyList();
-        }
-        var size = frame.memoryWordSize();
-        var hexMemoryEntries = new ArrayList<String>(size);
-
-        final var wordSize = 32;
-        final var memory = frame.readMutableMemory(0L, (long) wordSize * size).toArrayUnsafe();
-        final var hex = HexFormat.of();
-
-        for (var i = 0; i < size; i++) {
-            var startIndex = i * wordSize;
-            final var result = HEX_PREFIX + hex.formatHex(memory, startIndex, startIndex + wordSize);
-            hexMemoryEntries.add(result);
-        }
-
-        return hexMemoryEntries;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     protected final List<String> captureStack(final MessageFrame frame, final OpcodeContext options) {
-        if (!options.isStack()) {
-            return Collections.emptyList();
-        }
-
-        var size = frame.stackSize();
-        var stack = new ArrayList<String>(size);
-        for (var i = 0; i < size; ++i) {
-            var item = frame.getStackItem(size - 1 - i);
-            stack.add(hexCache.get(item, Bytes::toHexString));
-        }
-
-        return stack;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    protected Map<String, String> captureStorage(
-            final MessageFrame frame, final OpcodeContext options, final ContractCallContext context) {
-        if (!options.isStorage()) {
-            return Collections.emptyMap();
-        }
-
-        try {
-            if (context.getOpcodeContext().getRootProxyWorldUpdater() == null) {
-
-                var worldUpdater = frame.getWorldUpdater();
-                var parent = worldUpdater.parentUpdater().orElse(null);
-                while (parent != null) {
-                    worldUpdater = parent;
-                    parent = worldUpdater.parentUpdater().orElse(null);
-                }
-
-                if (!(worldUpdater instanceof RootProxyWorldUpdater rootProxyWorldUpdater)) {
-                    // The storage updates are kept only in the RootProxyWorldUpdater.
-                    // If we don't have one -> something unexpected happened and an attempt to
-                    // get the storage changes from a ProxyWorldUpdater would result in a
-                    // NullPointerException, so in this case just return an empty map.
-                    return Collections.emptyMap();
-                }
-
-                context.getOpcodeContext().setRootProxyWorldUpdater(rootProxyWorldUpdater);
-            }
-
-            final var rootProxyWorldUpdater = context.getOpcodeContext().getRootProxyWorldUpdater();
-            final var updates = rootProxyWorldUpdater
-                    .getEvmFrameState()
-                    .getTxStorageUsage(true)
-                    .accesses();
-
-            if (updates.isEmpty()) {
-                return Collections.emptyMap();
-            }
-
-            final var result = new TreeMap<String, String>();
-            for (final var storageAccesses : updates) {
-                for (final var access : storageAccesses.accesses()) {
-                    final var key = hexCache.get(access.key(), Bytes::toHexString);
-                    if (!result.containsKey(key)) {
-                        final var value = access.writtenValue() != null
-                                ? hexCache.get(access.writtenValue(), Bytes::toHexString)
-                                : hexCache.get(access.value(), Bytes::toHexString);
-                        result.put(key, value);
-                    }
-                }
-            }
-            return result;
-
-        } catch (final ModificationNotAllowedException e) {
-            return Collections.emptyMap();
-        }
+    protected Map<String, String> captureStorage(final MessageFrame frame, final OpcodeContext options, final ContractCallContext context) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     protected final String getRevertReasonFromContractActions(final ContractCallContext context) {
-        final var contractActions = context.getOpcodeContext().getActions();
-
-        if (CollectionUtils.isEmpty(contractActions)) {
-            return null;
-        }
-
-        for (var action : contractActions) {
-            if (action.hasRevertReason()) {
-                return formatRevertReason(action.getResultData());
-            }
-        }
-        return null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -151,24 +56,7 @@ public abstract class AbstractOpcodeTracer {
      * @return the formatted revert reason as hex string
      */
     protected final String formatRevertReason(final byte[] revertReason) {
-        if (revertReason == null || revertReason.length == 0 || isZero(revertReason)) {
-            return HEX_PREFIX;
-        }
-
-        if (startsWithErrorSelector(revertReason)) {
-            return HEX_PREFIX + Hex.toHexString(revertReason);
-        }
-
-        final var firstNonZero = findFirstNonZero(revertReason);
-        final var trimmedLength = revertReason.length - firstNonZero;
-        if (trimmedLength <= Integer.BYTES) {
-            final var responseCode = ResponseCodeEnum.forNumber(toInt(revertReason, firstNonZero));
-            if (responseCode != null) {
-                return BytesDecoder.getAbiEncodedRevertReason(responseCode.name());
-            }
-        }
-
-        return BytesDecoder.getAbiEncodedRevertReason(new String(revertReason, StandardCharsets.UTF_8));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private boolean isZero(final byte[] bytes) {

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.job;
 
 import jakarta.persistence.Entity;
@@ -32,10 +31,10 @@ public class ReconciliationJob {
     private Instant timestampStart;
 
     public boolean hasErrors() {
-        return status.ordinal() > ReconciliationStatus.SUCCESS.ordinal();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public void increment() {
-        ++count;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

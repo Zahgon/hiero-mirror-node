@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.restjava.dto;
 
 import org.jspecify.annotations.NullUnmarked;
@@ -12,33 +11,12 @@ import org.jspecify.annotations.NullUnmarked;
  * <p>Parameter order matches the SQL SELECT clause order (alphabetically sorted by alias name).
  */
 @NullUnmarked
-public record NetworkNodeDto(
-        byte[] adminKey,
-        Long[] associatedRegisteredNodes,
-        Boolean declineReward,
-        String description,
-        Long endConsensusTimestamp,
-        Long fileId,
-        String grpcProxyEndpointJson,
-        Long maxStake,
-        String memo,
-        Long minStake,
-        Long nodeAccountId,
-        String nodeCertHash,
-        Long nodeId,
-        String publicKey,
-        Long rewardRateStart,
-        String serviceEndpointsJson,
-        Long stake,
-        Long stakeNotRewarded,
-        Long stakeRewarded,
-        Long stakingPeriod,
-        Long startConsensusTimestamp) {
+public record NetworkNodeDto(byte[] adminKey, Long[] associatedRegisteredNodes, Boolean declineReward, String description, Long endConsensusTimestamp, Long fileId, String grpcProxyEndpointJson, Long maxStake, String memo, Long minStake, Long nodeAccountId, String nodeCertHash, Long nodeId, String publicKey, Long rewardRateStart, String serviceEndpointsJson, Long stake, Long stakeNotRewarded, Long stakeRewarded, Long stakingPeriod, Long startConsensusTimestamp) {
 
     private static final Long[] EMPTY = {};
 
     @Override
     public Long[] associatedRegisteredNodes() {
-        return associatedRegisteredNodes != null ? associatedRegisteredNodes : EMPTY;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

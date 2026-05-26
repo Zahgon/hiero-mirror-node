@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package com.swirlds.state.spi;
 
 import static java.util.Objects.requireNonNull;
-
 import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,18 +11,21 @@ import java.util.List;
  * Copy of the class from hedera-app. The difference is that the get() method is modified not to return null values.
  * @param <T> The type
  */
-public abstract class WritableSingletonStateBase<T> extends ReadableSingletonStateBase<T>
-        implements WritableSingletonState<T> {
+public abstract class WritableSingletonStateBase<T> extends ReadableSingletonStateBase<T> implements WritableSingletonState<T> {
 
     /**
      * A sentinel value to represent null in the backing store.
      */
     private static final Object NULL_VALUE = new Object();
 
-    /** Modified value buffered in this mutable state */
+    /**
+     * Modified value buffered in this mutable state
+     */
     private Object value;
 
-    /** A list of listeners to be notified of changes to the state */
+    /**
+     * A list of listeners to be notified of changes to the state
+     */
     private final List<SingletonChangeListener<T>> listeners = new ArrayList<>();
 
     /**
@@ -46,32 +47,22 @@ public abstract class WritableSingletonStateBase<T> extends ReadableSingletonSta
      * @param listener the listener to register
      */
     public void registerListener(@NonNull final SingletonChangeListener<T> listener) {
-        requireNonNull(listener);
-        listeners.add(listener);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public T get() {
-        // If there is a modification, then we've already done a "put" or "remove"
-        // and should return based on the modification
-        if (isModified()) {
-            // The change from the copied class is here - preventing null values
-            // as they cause NullPointerExceptions in some various places in the code.
-            final var currentValue = currentValue();
-            return currentValue != null ? currentValue : super.get();
-        } else {
-            return super.get();
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void put(T value) {
-        this.value = value == null ? NULL_VALUE : value;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public boolean isModified() {
-        return value != null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -80,16 +71,7 @@ public abstract class WritableSingletonStateBase<T> extends ReadableSingletonSta
      * it. Don't cast and commit unless you own the instance!
      */
     public void commit() {
-        if (isModified()) {
-            if (currentValue() != null) {
-                putIntoDataSource(currentValue());
-                //noinspection DataFlowIssue
-                listeners.forEach(l -> l.singletonUpdateChange(currentValue()));
-            } else {
-                removeFromDataSource();
-            }
-        }
-        reset();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @SuppressWarnings("unchecked")
@@ -104,8 +86,7 @@ public abstract class WritableSingletonStateBase<T> extends ReadableSingletonSta
      */
     @Override
     public void reset() {
-        this.value = null;
-        super.reset();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**

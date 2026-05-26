@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.grpc.controller;
 
 import com.google.protobuf.ByteString;
@@ -31,62 +30,39 @@ final class NetworkController extends NetworkServiceGrpc.NetworkServiceImplBase 
 
     @Override
     public void getNodes(final AddressBookQuery request, final StreamObserver<NodeAddress> responseObserver) {
-        final var disposable = Mono.fromCallable(() -> toFilter(request))
-                .flatMapMany(networkService::getNodes)
-                .map(this::toNodeAddress)
-                .onErrorMap(ProtoUtil::toStatusRuntimeException)
-                .subscribe(responseObserver::onNext, responseObserver::onError, responseObserver::onCompleted);
-
-        if (responseObserver instanceof ServerCallStreamObserver serverCallStreamObserver) {
-            serverCallStreamObserver.setOnCancelHandler(disposable::dispose);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private AddressBookFilter toFilter(final AddressBookQuery query) {
         final var filter = AddressBookFilter.builder().limit(query.getLimit());
-
         if (query.hasFileId()) {
             filter.fileId(EntityId.of(query.getFileId()));
         }
-
         return filter.build();
     }
 
     @SuppressWarnings("deprecation")
     private NodeAddress toNodeAddress(final AddressBookEntry addressBookEntry) {
-        final var nodeAddress = NodeAddress.newBuilder()
-                .setNodeAccountId(addressBookEntry.getNodeAccountId().toAccountID())
-                .setNodeId(addressBookEntry.getNodeId());
-
+        final var nodeAddress = NodeAddress.newBuilder().setNodeAccountId(addressBookEntry.getNodeAccountId().toAccountID()).setNodeId(addressBookEntry.getNodeId());
         if (addressBookEntry.getDescription() != null) {
             nodeAddress.setDescription(addressBookEntry.getDescription());
         }
-
         if (addressBookEntry.getMemo() != null) {
             nodeAddress.setMemo(ByteString.copyFromUtf8(addressBookEntry.getMemo()));
         }
-
         if (addressBookEntry.getNodeCertHash() != null) {
             nodeAddress.setNodeCertHash(ProtoUtil.toByteString(addressBookEntry.getNodeCertHash()));
         }
-
         if (addressBookEntry.getPublicKey() != null) {
             nodeAddress.setRSAPubKey(addressBookEntry.getPublicKey());
         }
-
         if (addressBookEntry.getStake() != null) {
             nodeAddress.setStake(addressBookEntry.getStake());
         }
-
         for (final var s : addressBookEntry.getServiceEndpoints()) {
-            final var serviceEndpoint = ServiceEndpoint.newBuilder()
-                    .setDomainName(s.getDomainName())
-                    .setIpAddressV4(toIpAddressV4(s.getIpAddressV4()))
-                    .setPort(s.getPort())
-                    .build();
+            final var serviceEndpoint = ServiceEndpoint.newBuilder().setDomainName(s.getDomainName()).setIpAddressV4(toIpAddressV4(s.getIpAddressV4())).setPort(s.getPort()).build();
             nodeAddress.addServiceEndpoint(serviceEndpoint);
         }
-
         return nodeAddress.build();
     }
 
@@ -95,13 +71,11 @@ final class NetworkController extends NetworkServiceGrpc.NetworkServiceImplBase 
             if (StringUtils.isBlank(ipAddress)) {
                 return ByteString.EMPTY;
             }
-
             return ProtoUtil.toByteString(InetAddress.getByName(ipAddress).getAddress());
         } catch (UnknownHostException e) {
             // Shouldn't occur since we never pass hostnames to InetAddress.getByName()
             log.warn("Unable to convert IP address to byte array", e.getMessage());
         }
-
         return ByteString.EMPTY;
     }
 }

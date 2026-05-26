@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common;
 
 import com.zaxxer.hikari.HikariConfig;
@@ -31,66 +30,37 @@ import org.springframework.context.annotation.Lazy;
 @EntityScan("org.hiero.mirror.common.domain")
 @ImportRuntimeHints(CommonRuntimeHints.class)
 public final class CommonConfiguration {
+
     @Bean
     SystemEntity systemEntity(CommonProperties commonProperties) {
-        return new SystemEntity(commonProperties);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Bean
     HibernatePropertiesCustomizer hibernatePropertiesCustomizer() {
-        return p -> {
-            // Ensure Criteria API queries use bind parameters and not literals
-            p.put("hibernate.criteria.literal_handling_mode", "BIND");
-            p.put(AvailableSettings.GENERATE_STATISTICS, true);
-            p.put(AvailableSettings.HBM2DDL_AUTO, "none");
-            p.put(AvailableSettings.JSON_FORMAT_MAPPER, new CustomJsonFormatMapper());
-        };
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Bean
     DatabaseWaiter dbWaiter(CommonProperties commonProperties) {
-        return new DatabaseWaiter(commonProperties);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Bean("spelHelper")
     SpelHelper spelHelper() {
-        return new SpelHelper();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Bean
     @ConfigurationProperties("spring.datasource.hikari")
     HikariConfig hikariConfig() {
-        return new HikariConfig();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Bean
     @ConditionalOnMissingBean(DataSource.class)
     @Lazy
-    DataSource dataSource(
-            DataSourceProperties dataSourceProperties,
-            HikariConfig hikariConfig,
-            DatabaseWaiter databaseWaiter,
-            ObjectProvider<JdbcConnectionDetails> detailsProvider) {
-
-        var jdbcUrl = dataSourceProperties.determineUrl();
-        var username = dataSourceProperties.determineUsername();
-        var password = dataSourceProperties.determinePassword();
-
-        final var connectionDetails = detailsProvider.getIfAvailable();
-        if (connectionDetails != null) {
-            jdbcUrl = connectionDetails.getJdbcUrl();
-            username = connectionDetails.getUsername();
-            password = connectionDetails.getPassword();
-        }
-
-        databaseWaiter.waitForDatabase(jdbcUrl, username, password);
-
-        final var config = new HikariConfig();
-        hikariConfig.copyStateTo(config);
-        config.setJdbcUrl(jdbcUrl);
-        config.setUsername(username);
-        config.setPassword(password);
-
-        return new HikariDataSource(config);
+    DataSource dataSource(DataSourceProperties dataSourceProperties, HikariConfig hikariConfig, DatabaseWaiter databaseWaiter, ObjectProvider<JdbcConnectionDetails> detailsProvider) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

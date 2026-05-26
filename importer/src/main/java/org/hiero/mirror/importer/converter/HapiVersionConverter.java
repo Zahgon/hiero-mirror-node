@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.converter;
 
 import io.micrometer.common.util.StringUtils;
@@ -14,12 +13,6 @@ public class HapiVersionConverter implements Converter<String, Version> {
 
     @Override
     public Version convert(String source) {
-        if (StringUtils.isEmpty(source)) {
-            return null;
-        }
-
-        final var dashIndex = source.indexOf("-");
-        String truncatedSource = dashIndex > -1 ? source.substring(0, dashIndex) : source;
-        return Version.parse(truncatedSource);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

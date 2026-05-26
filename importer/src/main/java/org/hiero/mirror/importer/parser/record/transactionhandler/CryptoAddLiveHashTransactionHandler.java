@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.transactionhandler;
 
 import static org.hiero.mirror.common.util.DomainUtils.toBytes;
-
 import jakarta.inject.Named;
 import lombok.RequiredArgsConstructor;
 import org.hiero.mirror.common.domain.entity.EntityId;
@@ -19,28 +17,22 @@ import org.hiero.mirror.importer.parser.record.entity.EntityProperties;
 class CryptoAddLiveHashTransactionHandler extends AbstractTransactionHandler {
 
     private final EntityListener entityListener;
+
     private final EntityProperties entityProperties;
 
     @Override
     public EntityId getEntity(RecordItem recordItem) {
-        return EntityId.of(getLiveHash(recordItem).getAccountId());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public TransactionType getType() {
-        return TransactionType.CRYPTOADDLIVEHASH;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     protected void doUpdateTransaction(Transaction transaction, RecordItem recordItem) {
-        if (!entityProperties.getPersist().isClaims() || !recordItem.isSuccessful()) {
-            return;
-        }
-
-        var liveHash = new LiveHash();
-        liveHash.setConsensusTimestamp(transaction.getConsensusTimestamp());
-        liveHash.setLivehash(toBytes(getLiveHash(recordItem).getHash()));
-        entityListener.onLiveHash(liveHash);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @SuppressWarnings("deprecation")

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.downloader.block.transformer;
 
 import jakarta.inject.Named;
@@ -13,6 +12,6 @@ final class DefaultTransformer extends AbstractBlockTransactionTransformer {
      */
     @Override
     public TransactionType getType() {
-        return TransactionType.UNKNOWN;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

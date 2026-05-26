@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.transactionhandler;
 
 import com.google.common.collect.Range;
@@ -23,37 +22,15 @@ class NodeCreateTransactionHandler extends AbstractNodeTransactionHandler {
 
     @Override
     public EntityId getEntity(RecordItem recordItem) {
-        return EntityId.of(recordItem.getTransactionBody().getNodeCreate().getAccountId());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public TransactionType getType() {
-        return TransactionType.NODECREATE;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public Node parseNode(RecordItem recordItem) {
-        if (!recordItem.isSuccessful()) {
-            return null;
-        }
-
-        var nodeCreate = recordItem.getTransactionBody().getNodeCreate();
-        long consensusTimestamp = recordItem.getConsensusTimestamp();
-        var grpcProxyEndpoint = nodeCreate.hasGrpcProxyEndpoint()
-                ? toServiceEndpoint(consensusTimestamp, nodeCreate.getGrpcProxyEndpoint())
-                : null;
-        var key = nodeCreate.hasAdminKey() ? nodeCreate.getAdminKey().toByteArray() : null;
-        final var accountId = entityIdService.lookup(nodeCreate.getAccountId()).orElse(EntityId.EMPTY);
-
-        return Node.builder()
-                .accountId(accountId)
-                .adminKey(key)
-                .associatedRegisteredNodes(nodeCreate.getAssociatedRegisteredNodeList())
-                .createdTimestamp(consensusTimestamp)
-                .declineReward(nodeCreate.getDeclineReward())
-                .deleted(false)
-                .grpcProxyEndpoint(grpcProxyEndpoint)
-                .nodeId(recordItem.getTransactionRecord().getReceipt().getNodeId())
-                .timestampRange(Range.atLeast(consensusTimestamp))
-                .build();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

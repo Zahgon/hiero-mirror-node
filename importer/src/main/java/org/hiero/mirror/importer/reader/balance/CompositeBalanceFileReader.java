@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.reader.balance;
 
 import com.google.common.base.Stopwatch;
@@ -17,38 +16,25 @@ import org.springframework.context.annotation.Primary;
 public class CompositeBalanceFileReader implements BalanceFileReader {
 
     private final BalanceFileReaderImplV1 balanceFileReaderImplV1;
+
     private final BalanceFileReaderImplV2 balanceFileReaderImplV2;
+
     private final ProtoBalanceFileReader protoBalanceFileReader;
 
     @Override
     public boolean supports(StreamFileData streamFileData) {
-        return true;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public AccountBalanceFile read(StreamFileData streamFileData) {
-        Stopwatch stopwatch = Stopwatch.createStarted();
-        boolean success = false;
-
-        try {
-            BalanceFileReader balanceFileReader = getReader(streamFileData);
-            AccountBalanceFile accountBalanceFile = balanceFileReader.read(streamFileData);
-            success = true;
-            return accountBalanceFile;
-        } finally {
-            log.info(
-                    "Read account balance file {} {}successfully in {}",
-                    streamFileData.getFilename(),
-                    success ? "" : "un",
-                    stopwatch);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private BalanceFileReader getReader(StreamFileData streamFileData) {
         if (protoBalanceFileReader.supports(streamFileData)) {
             return protoBalanceFileReader;
         }
-
         return balanceFileReaderImplV2.supports(streamFileData) ? balanceFileReaderImplV2 : balanceFileReaderImplV1;
     }
 }

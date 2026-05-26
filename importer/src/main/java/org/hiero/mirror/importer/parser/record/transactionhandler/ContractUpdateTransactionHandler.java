@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.transactionhandler;
 
 import static com.hederahashgraph.api.proto.java.ContractUpdateTransactionBody.StakedIdCase.STAKEDID_NOT_SET;
 import static org.hiero.mirror.common.domain.transaction.RecordFile.HAPI_VERSION_0_27_0;
-
 import com.hederahashgraph.api.proto.java.ContractID;
 import jakarta.inject.Named;
 import lombok.CustomLog;
@@ -25,8 +23,7 @@ class ContractUpdateTransactionHandler extends AbstractEntityCrudTransactionHand
 
     private final EVMHookHandler evmHookHandler;
 
-    ContractUpdateTransactionHandler(
-            EntityIdService entityIdService, EntityListener entityListener, EVMHookHandler evmHookHandler) {
+    ContractUpdateTransactionHandler(EntityIdService entityIdService, EntityListener entityListener, EVMHookHandler evmHookHandler) {
         super(entityIdService, entityListener, TransactionType.CONTRACTUPDATEINSTANCE);
         this.evmHookHandler = evmHookHandler;
     }
@@ -42,76 +39,14 @@ class ContractUpdateTransactionHandler extends AbstractEntityCrudTransactionHand
      */
     @Override
     public EntityId getEntity(RecordItem recordItem) {
-        ContractID contractIdBody =
-                recordItem.getTransactionBody().getContractUpdateInstance().getContractID();
-        ContractID contractIdReceipt =
-                recordItem.getTransactionRecord().getReceipt().getContractID();
-        return entityIdService.lookup(contractIdReceipt, contractIdBody).orElse(EntityId.EMPTY);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     // We explicitly ignore the updated fileID field since nodes do not allow changing the bytecode after create
     @Override
-    @SuppressWarnings({"deprecation", "java:S1874"})
+    @SuppressWarnings({ "deprecation", "java:S1874" })
     protected void doUpdateEntity(Entity entity, RecordItem recordItem) {
-        var transactionBody = recordItem.getTransactionBody().getContractUpdateInstance();
-
-        if (transactionBody.hasExpirationTime()) {
-            entity.setExpirationTimestamp(DomainUtils.timestampInNanosMax(transactionBody.getExpirationTime()));
-        }
-
-        if (transactionBody.hasAutoRenewAccountId()) {
-            // Allow clearing of the autoRenewAccount by allowing it to be set to 0
-            entityIdService
-                    .lookup(transactionBody.getAutoRenewAccountId())
-                    .ifPresentOrElse(
-                            accountId -> {
-                                entity.setAutoRenewAccountId(accountId.getId());
-                                recordItem.addEntityId(accountId);
-                            },
-                            () -> Utility.handleRecoverableError(
-                                    "Invalid autoRenewAccountId at {}", recordItem.getConsensusTimestamp()));
-        }
-
-        if (transactionBody.hasAutoRenewPeriod()) {
-            entity.setAutoRenewPeriod(transactionBody.getAutoRenewPeriod().getSeconds());
-        }
-
-        if (transactionBody.hasAdminKey()) {
-            entity.setKey(transactionBody.getAdminKey().toByteArray());
-        }
-
-        if (transactionBody.hasMaxAutomaticTokenAssociations()) {
-            entity.setMaxAutomaticTokenAssociations(
-                    transactionBody.getMaxAutomaticTokenAssociations().getValue());
-        }
-
-        switch (transactionBody.getMemoFieldCase()) {
-            case MEMOWRAPPER:
-                entity.setMemo(transactionBody.getMemoWrapper().getValue());
-                break;
-            case MEMO:
-                if (!transactionBody.getMemo().isEmpty()) {
-                    entity.setMemo(transactionBody.getMemo());
-                }
-                break;
-            default:
-                break;
-        }
-
-        if (transactionBody.hasProxyAccountID()) {
-            var proxyAccountId = EntityId.of(transactionBody.getProxyAccountID());
-            entity.setProxyAccountId(proxyAccountId);
-            recordItem.addEntityId(proxyAccountId);
-        }
-
-        updateStakingInfo(recordItem, entity);
-        entity.setType(EntityType.CONTRACT);
-        entityListener.onEntity(entity);
-        evmHookHandler.process(
-                recordItem,
-                entity.getId(),
-                transactionBody.getHookCreationDetailsList(),
-                transactionBody.getHookIdsToDeleteList());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private void updateStakingInfo(RecordItem recordItem, Entity entity) {
@@ -122,8 +57,7 @@ class ContractUpdateTransactionHandler extends AbstractEntityCrudTransactionHand
         if (transactionBody.hasDeclineReward()) {
             entity.setDeclineReward(transactionBody.getDeclineReward().getValue());
         }
-
-        switch (transactionBody.getStakedIdCase()) {
+        switch(transactionBody.getStakedIdCase()) {
             case STAKEDID_NOT_SET:
                 break;
             case STAKED_NODE_ID:
@@ -137,7 +71,6 @@ class ContractUpdateTransactionHandler extends AbstractEntityCrudTransactionHand
                 recordItem.addEntityId(accountId);
                 break;
         }
-
         // If the stake node id or the decline reward value has changed, we start a new stake period.
         if (transactionBody.getStakedIdCase() != STAKEDID_NOT_SET || transactionBody.hasDeclineReward()) {
             entity.setStakePeriodStart(Utility.getEpochDay(recordItem.getConsensusTimestamp()));

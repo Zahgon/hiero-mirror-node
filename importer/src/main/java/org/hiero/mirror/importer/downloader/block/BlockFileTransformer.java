@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.downloader.block;
 
 import jakarta.inject.Named;
@@ -24,50 +23,13 @@ public final class BlockFileTransformer implements StreamFileTransformer<RecordF
 
     @Override
     public RecordFile transform(final BlockFile blockFile) {
-        if (blockFile.hasRecordFile()) {
-            return blockFile.getRecordFile();
-        }
-
-        final var blockHeader = blockFile.getBlockHeader();
-        final var hapiProtoVersion = blockHeader.getHapiProtoVersion();
-        final int major = hapiProtoVersion.getMajor();
-        final int minor = hapiProtoVersion.getMinor();
-        final int patch = hapiProtoVersion.getPatch();
-        final var hapiVersion = new Version(major, minor, patch);
-        final var softwareVersion = blockHeader.getSoftwareVersion();
-        return RecordFile.builder()
-                .bytes(blockFile.getBytes())
-                .consensusEnd(blockFile.getConsensusEnd())
-                .consensusStart(blockFile.getConsensusStart())
-                .count(blockFile.getCount())
-                .digestAlgorithm(blockFile.getDigestAlgorithm())
-                .fileHash(StringUtils.EMPTY)
-                .hapiVersionMajor(major)
-                .hapiVersionMinor(minor)
-                .hapiVersionPatch(patch)
-                .hash(blockFile.getHash())
-                .index(blockFile.getIndex())
-                .items(getRecordItems(blockFile.getItems(), hapiVersion))
-                .loadEnd(blockFile.getLoadEnd())
-                .loadStart(blockFile.getLoadStart())
-                .name(blockFile.getName())
-                .previousHash(blockFile.getPreviousHash())
-                .previousWrappedRecordBlockHash(blockFile.getPreviousWrappedRecordBlockHash())
-                .roundEnd(blockFile.getRoundEnd())
-                .roundStart(blockFile.getRoundStart())
-                .size(blockFile.getSize())
-                .softwareVersionMajor(softwareVersion.getMajor())
-                .softwareVersionMinor(softwareVersion.getMinor())
-                .softwareVersionPatch(softwareVersion.getPatch())
-                .version(blockFile.getVersion())
-                .build();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private List<RecordItem> getRecordItems(final List<BlockTransaction> blockTransactions, final Version hapiVersion) {
         if (blockTransactions.isEmpty()) {
             return Collections.emptyList();
         }
-
         // Transform block items in reverse order. This solves the problem of inferring correct intermediate state
         // changes for child transactions, notably, the majority should be a parent contract call transaction with
         // multiple child transactions. For such transactions, state changes are only committed for hence written to
@@ -87,17 +49,10 @@ public final class BlockFileTransformer implements StreamFileTransformer<RecordF
         final var builders = new ArrayList<RecordItem.RecordItemBuilder>(blockTransactions.size());
         for (int index = blockTransactions.size() - 1; index >= 0; index--) {
             var blockTransaction = blockTransactions.get(index);
-            var builder = RecordItem.builder()
-                    .blockstream(true)
-                    .hapiVersion(hapiVersion)
-                    .signatureMap(blockTransaction.getSignedTransaction().getSigMap())
-                    .transaction(blockTransaction.getTransaction())
-                    .transactionBody(blockTransaction.getTransactionBody())
-                    .transactionIndex(index);
+            var builder = RecordItem.builder().blockstream(true).hapiVersion(hapiVersion).signatureMap(blockTransaction.getSignedTransaction().getSigMap()).transaction(blockTransaction.getTransaction()).transactionBody(blockTransaction.getTransactionBody()).transactionIndex(index);
             blockTransactionTransformerFactory.transform(blockTransaction, builder);
             builders.add(builder);
         }
-
         // An unpleasant performance degradation of reverse order is the second pass to build the record items, just to
         // set the previous link
         final var recordItems = new ArrayList<RecordItem>(blockTransactions.size());
@@ -108,7 +63,6 @@ public final class BlockFileTransformer implements StreamFileTransformer<RecordF
             recordItems.add(recordItem);
             previousItem = recordItem;
         }
-
         return Collections.unmodifiableList(recordItems);
     }
 }

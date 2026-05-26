@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.downloader.record;
 
 import jakarta.validation.constraints.NotNull;
@@ -35,6 +34,6 @@ public class RecordDownloaderProperties implements DownloaderProperties {
 
     @Override
     public StreamType getStreamType() {
-        return StreamType.RECORD;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

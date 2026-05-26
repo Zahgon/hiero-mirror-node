@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.subscribe.rest;
 
 import lombok.Getter;
@@ -25,31 +24,16 @@ class RestSubscription extends AbstractScenario<RestSubscriberProperties, Transa
 
     @Override
     public ScenarioProtocol getProtocol() {
-        return ScenarioProtocol.REST;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onError(Throwable t) {
-        String message = t.getMessage();
-
-        if (Exceptions.isRetryExhausted(t) && t.getCause() != null) {
-            t = t.getCause();
-            message += " " + t.getMessage();
-        }
-
-        String error = t.getClass().getSimpleName();
-
-        if (t instanceof WebClientResponseException webClientResponseException) {
-            error = String.valueOf(webClientResponseException.getStatusCode().value());
-        }
-
-        log.warn("Subscription {} failed: {}", this, message);
-        errors.add(error);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public String toString() {
-        String name = getName();
-        return getProperties().getSubscribers() <= 1 ? name : name + " #" + getId();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.transactionhandler;
 
 import com.google.common.collect.Range;
@@ -13,26 +12,17 @@ import org.springframework.context.ApplicationEventPublisher;
 @Named
 final class RegisteredNodeDeleteTransactionHandler extends AbstractRegisteredNodeTransactionHandler {
 
-    RegisteredNodeDeleteTransactionHandler(
-            ApplicationEventPublisher applicationEventPublisher, EntityListener entityListener) {
+    RegisteredNodeDeleteTransactionHandler(ApplicationEventPublisher applicationEventPublisher, EntityListener entityListener) {
         super(applicationEventPublisher, entityListener);
     }
 
     @Override
     public TransactionType getType() {
-        return TransactionType.REGISTEREDNODEDELETE;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public RegisteredNode parseRegisteredNode(RecordItem recordItem) {
-        if (!recordItem.isSuccessful()) {
-            return null;
-        }
-        final var deleteBody = recordItem.getTransactionBody().getRegisteredNodeDelete();
-        return RegisteredNode.builder()
-                .deleted(true)
-                .registeredNodeId(deleteBody.getRegisteredNodeId())
-                .timestampRange(Range.atLeast(recordItem.getConsensusTimestamp()))
-                .build();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

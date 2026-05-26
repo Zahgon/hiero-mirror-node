@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.utils;
 
 import static org.hiero.mirror.web3.validation.HexValidator.HEX_PREFIX;
-
 import java.util.regex.Pattern;
 import lombok.experimental.UtilityClass;
 import org.jspecify.annotations.NonNull;
@@ -20,13 +18,19 @@ import org.jspecify.annotations.NonNull;
 public class BytecodeUtils {
 
     public static final String SKIP_INIT_CODE_CHECK = "HIERO_MIRROR_WEB3_EVM_SKIPINITCODECHECK";
+
     private static final String CODECOPY = "39";
+
     private static final String RETURN = "f3";
+
     private static final long MINIMUM_INIT_CODE_SIZE = 14L;
+
     private static final String FREE_MEMORY_POINTER = "60806040";
+
     private static final String FREE_MEMORY_POINTER_2 = "60606040";
-    private static final String RUNTIME_CODE_PREFIX =
-            "6080"; // The pattern to find the start of the runtime code in the init bytecode
+
+    private static final String RUNTIME_CODE_PREFIX = // The pattern to find the start of the runtime code in the init bytecode
+    "6080";
 
     /**
      * Compiled regex pattern to match the init bytecode sequence. The pattern checks for a sequence of a free memory
@@ -45,38 +49,24 @@ public class BytecodeUtils {
      * "60806040" or "60606040" appears, followed by "39" (CODECOPY) and then "f3" (RETURN), with valid hexadecimal
      * characters in between.
      */
-    private static final Pattern INIT_BYTECODE_PATTERN = Pattern.compile(
-            String.format(
-                    "(%s|%s)[0-9a-z]+%s[0-9a-z]+%s", FREE_MEMORY_POINTER, FREE_MEMORY_POINTER_2, CODECOPY, RETURN),
-            Pattern.CASE_INSENSITIVE);
+    private static final Pattern INIT_BYTECODE_PATTERN = Pattern.compile(String.format("(%s|%s)[0-9a-z]+%s[0-9a-z]+%s", FREE_MEMORY_POINTER, FREE_MEMORY_POINTER_2, CODECOPY, RETURN), Pattern.CASE_INSENSITIVE);
 
     public static String extractRuntimeBytecode(String initBytecode) {
-        // Check if the bytecode starts with "0x" and remove it if necessary
-        if (initBytecode.startsWith(HEX_PREFIX)) {
-            initBytecode = initBytecode.substring(2);
-        }
-
-        String runtimeBytecode = getRuntimeBytecode(initBytecode);
-
-        return HEX_PREFIX + runtimeBytecode; // Append "0x" prefix and return
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @NonNull
     private static String getRuntimeBytecode(final String initBytecode) {
         // Find the first occurrence of "CODECOPY" (39)
         int codeCopyIndex = initBytecode.indexOf(CODECOPY);
-
         if (codeCopyIndex == -1) {
             throw new IllegalArgumentException("CODECOPY instruction (39) not found in init bytecode.");
         }
-
         // Find the first occurrence of "6080" after the "CODECOPY"
         int runtimeCodePrefixIndex = initBytecode.indexOf(RUNTIME_CODE_PREFIX, codeCopyIndex);
-
         if (runtimeCodePrefixIndex == -1) {
             throw new IllegalArgumentException("Runtime code prefix (6080) not found after CODECOPY.");
         }
-
         // Extract the runtime bytecode starting from the runtimeCodePrefixIndex
         return initBytecode.substring(runtimeCodePrefixIndex);
     }
@@ -88,15 +78,11 @@ public class BytecodeUtils {
      * @return true if it is init bytecode, false otherwise.
      */
     public static boolean isInitBytecode(final String data) {
-        if (data == null || data.length() < MINIMUM_INIT_CODE_SIZE) {
-            return false;
-        }
-
-        return INIT_BYTECODE_PATTERN.matcher(data).find();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public static boolean isValidInitBytecode(final String data) {
-        return shouldSkipBytecodeCheck() || BytecodeUtils.isInitBytecode(data);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private static boolean shouldSkipBytecodeCheck() {

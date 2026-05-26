@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.entity;
 
 import jakarta.inject.Named;
@@ -26,78 +25,60 @@ import org.jspecify.annotations.Nullable;
 public class ParserContext {
 
     private final Map<Class<?>, DomainContext<?>> state = new ConcurrentSkipListMap<>(new DomainClassComparator());
+
     private final Set<Long> evmAddressLookupIds = new HashSet<>();
 
     public <T> void addTransient(T object) {
-        var domainContext = getDomainContext(object);
-        domainContext.getNonPersisted().add(object);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public <T> void add(T object) {
-        add(object, null);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public <T> void add(T object, @Nullable Object key) {
-        var domainContext = getDomainContext(object);
-        domainContext.getInserts().add(object);
-
-        if (key != null) {
-            domainContext.getState().put(key, object);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public <T> void addAll(Collection<T> objects) {
-        if (!objects.isEmpty()) {
-            var first = objects.iterator().next();
-            var domainContext = getDomainContext(first);
-            domainContext.getInserts().addAll(objects);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public void clear() {
-        state.clear();
-        evmAddressLookupIds.clear();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public void forEach(Consumer<Collection<?>> sink) {
-        state.forEach((c, v) -> sink.accept(v.getInserts()));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    public <T> @Nullable T get(Class<T> domainClass, Object key) {
-        var domainContext = getDomainContext(domainClass);
-        return domainContext.getState().get(key);
+    @Nullable
+    public <T> T get(Class<T> domainClass, Object key) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public <T> Collection<T> get(Class<T> domainClass) {
-        var domainContext = getDomainContext(domainClass);
-        return Collections.unmodifiableList(domainContext.getInserts());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public <T> Collection<T> getTransient(Class<T> domainClass) {
-        var domainContext = getDomainContext(domainClass);
-        return Collections.unmodifiableList(domainContext.getNonPersisted());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public <T> void merge(Object key, T value, BinaryOperator<T> mergeFunction) {
-        var domainContext = getDomainContext(value);
-        var merged = domainContext.getState().merge(key, value, mergeFunction);
-
-        if (merged == value) {
-            domainContext.getInserts().add(value);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public void remove(Class<?> domainClass) {
-        var domainContext = getDomainContext(domainClass);
-        domainContext.clear();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public Collection<Long> getEvmAddressLookupIds() {
-        return Collections.unmodifiableSet(evmAddressLookupIds);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public void addEvmAddressLookupId(long id) {
-        evmAddressLookupIds.add(id);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @SuppressWarnings("unchecked")
@@ -123,9 +104,7 @@ public class ParserContext {
         private final List<T> nonPersisted = new ArrayList<>();
 
         void clear() {
-            getInserts().clear();
-            getState().clear();
-            getNonPersisted().clear();
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
     }
 }

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.migration;
 
 import com.google.common.base.Stopwatch;
@@ -33,94 +32,93 @@ import org.springframework.transaction.support.TransactionTemplate;
 public class BackfillAndDeduplicateBalanceMigration extends AsyncJavaMigration<Long> {
 
     private static final String ACCOUNT_BALANCE_TABLE_NAME = "account_balance";
+
     private static final String DEFAULT_MIN_FREQUENCY = "4h";
+
     private static final long EPOCH = 0L;
+
     private static final String MIN_FREQUENCY_KEY = "minFrequency";
+
     private static final long NO_BALANCE = -1;
 
     // Can't use spring data repositories because the migration runs with a different role, so it can drop the resources
     // at the end
     private static final String CLEANUP_SQL = """
-            drop function if exists create_full_account_balance_snapshot(bigint, bigint);
-            drop function if exists create_deduped_account_balance_snapshot(bigint, bigint);
-            drop function if exists create_full_token_balance_snapshot(bigint, bigint);
-            drop function if exists create_deduped_token_balance_snapshot(bigint, bigint);
+        drop function if exists create_full_account_balance_snapshot(bigint, bigint);
+        drop function if exists create_deduped_account_balance_snapshot(bigint, bigint);
+        drop function if exists create_full_token_balance_snapshot(bigint, bigint);
+        drop function if exists create_deduped_token_balance_snapshot(bigint, bigint);
+        
+        truncate account_balance_old;
+        truncate token_balance_old;
+        drop table account_balance_old;
+        drop table token_balance_old;
+        """;
 
-            truncate account_balance_old;
-            truncate token_balance_old;
-            drop table account_balance_old;
-            drop table token_balance_old;
-            """;
+    private static final String CREATE_FULL_ACCOUNT_BALANCE_SNAPSHOT_SQL = "select create_full_account_balance_snapshot(:balanceTimestamp, :prevBalanceTimestamp)";
 
-    private static final String CREATE_FULL_ACCOUNT_BALANCE_SNAPSHOT_SQL =
-            "select create_full_account_balance_snapshot(:balanceTimestamp, :prevBalanceTimestamp)";
+    private static final String CREATE_DEDUPED_ACCOUNT_BALANCE_SNAPSHOT_SQL = "select create_deduped_account_balance_snapshot(:balanceTimestamp, :prevBalanceTimestamp)";
 
-    private static final String CREATE_DEDUPED_ACCOUNT_BALANCE_SNAPSHOT_SQL =
-            "select create_deduped_account_balance_snapshot(:balanceTimestamp, :prevBalanceTimestamp)";
+    private static final String CREATE_FULL_TOKEN_BALANCE_SNAPSHOT_SQL = "select create_full_token_balance_snapshot(:balanceTimestamp, :prevBalanceTimestamp)";
 
-    private static final String CREATE_FULL_TOKEN_BALANCE_SNAPSHOT_SQL =
-            "select create_full_token_balance_snapshot(:balanceTimestamp, :prevBalanceTimestamp)";
-
-    private static final String CREATE_DEDUPED_TOKEN_BALANCE_SNAPSHOT_SQL =
-            "select create_deduped_token_balance_snapshot(:balanceTimestamp, :prevBalanceTimestamp)";
+    private static final String CREATE_DEDUPED_TOKEN_BALANCE_SNAPSHOT_SQL = "select create_deduped_token_balance_snapshot(:balanceTimestamp, :prevBalanceTimestamp)";
 
     private static final String IS_ACCOUNT_BALANCE_PARTITION_EMPTY_SQL = """
-            select not exists(
-              select * from account_balance
-              where consensus_timestamp >= :lowerBound and consensus_timestamp < :upperBound
-            )
-            """;
+        select not exists(
+          select * from account_balance
+          where consensus_timestamp >= :lowerBound and consensus_timestamp < :upperBound
+        )
+        """;
 
     private static final String PATCH_ORIGINAL_FIRST_ACCOUNT_BALANCE_SNAPSHOT_SQL = """
-            with previous as (
-              select *
-              from account_balance_old
-              where consensus_timestamp = :prevBalanceTimestamp
-            ), current as (
-              select *
-              from account_balance_old
-              where consensus_timestamp = :balanceTimestamp
-            )
-            insert into account_balance (account_id, balance, consensus_timestamp)
-            select p.account_id, 0, :balanceTimestamp
-            from previous as p
-            left join current as c using (account_id)
-            where c.account_id is null
-            """;
+        with previous as (
+          select *
+          from account_balance_old
+          where consensus_timestamp = :prevBalanceTimestamp
+        ), current as (
+          select *
+          from account_balance_old
+          where consensus_timestamp = :balanceTimestamp
+        )
+        insert into account_balance (account_id, balance, consensus_timestamp)
+        select p.account_id, 0, :balanceTimestamp
+        from previous as p
+        left join current as c using (account_id)
+        where c.account_id is null
+        """;
 
     private static final String PATCH_ORIGINAL_FIRST_TOKEN_BALANCE_SNAPSHOT_SQL = """
-            with previous as (
-              select *
-              from token_balance_old
-              where consensus_timestamp = :prevBalanceTimestamp
-            ), current as (
-              select *
-              from token_balance_old
-              where consensus_timestamp = :balanceTimestamp
-            )
-            insert into token_balance (account_id, balance, consensus_timestamp, token_id)
-            select p.account_id, 0, :balanceTimestamp, p.token_id
-            from previous as p
-            left join current as c using (account_id, token_id)
-            where c.account_id is null
-            """;
+        with previous as (
+          select *
+          from token_balance_old
+          where consensus_timestamp = :prevBalanceTimestamp
+        ), current as (
+          select *
+          from token_balance_old
+          where consensus_timestamp = :balanceTimestamp
+        )
+        insert into token_balance (account_id, balance, consensus_timestamp, token_id)
+        select p.account_id, 0, :balanceTimestamp, p.token_id
+        from previous as p
+        left join current as c using (account_id, token_id)
+        where c.account_id is null
+        """;
 
     private static final String SELECT_NEXT_CONSENSUS_TIMESTAMP_SQL = """
-            select consensus_timestamp
-            from account_balance_file
-            where consensus_timestamp >= :lowerBound and consensus_timestamp < :upperBound
-            order by consensus_timestamp
-            limit 1
-            """;
+        select consensus_timestamp
+        from account_balance_file
+        where consensus_timestamp >= :lowerBound and consensus_timestamp < :upperBound
+        order by consensus_timestamp
+        limit 1
+        """;
 
     private static final String SELECT_INITIAL_CONSENSUS_TIMESTAMP_SQL = """
-            select coalesce(max(consensus_timestamp), 0)
-            from account_balance
-            where account_id = 2 and consensus_timestamp < ?
-            """;
+        select coalesce(max(consensus_timestamp), 0)
+        from account_balance
+        where account_id = 2 and consensus_timestamp < ?
+        """;
 
-    private static final String SELECT_LAST_CONSENSUS_TIMESTAMP_SQL =
-            "select balance from account_balance_old where consensus_timestamp = -1 and account_id = -1";
+    private static final String SELECT_LAST_CONSENSUS_TIMESTAMP_SQL = "select balance from account_balance_old where consensus_timestamp = -1 and account_id = -1";
 
     private final ObjectProvider<TimePartitionService> timePartitionServiceProvider;
 
@@ -128,107 +126,41 @@ public class BackfillAndDeduplicateBalanceMigration extends AsyncJavaMigration<L
     private final TransactionOperations transactionOperations = transactionOperations();
 
     private Long lastConsensusTimestamp;
+
     private long minFrequency;
 
-    public BackfillAndDeduplicateBalanceMigration(
-            DBProperties dbProperties,
-            ImporterProperties importerProperties,
-            @Owner ObjectProvider<JdbcOperations> jdbcOperationsProvider,
-            ObjectProvider<TimePartitionService> timePartitionServiceProvider) {
+    public BackfillAndDeduplicateBalanceMigration(DBProperties dbProperties, ImporterProperties importerProperties, @Owner ObjectProvider<JdbcOperations> jdbcOperationsProvider, ObjectProvider<TimePartitionService> timePartitionServiceProvider) {
         super(importerProperties.getMigration(), jdbcOperationsProvider, dbProperties.getSchema());
         this.timePartitionServiceProvider = timePartitionServiceProvider;
     }
 
     @Override
     public String getDescription() {
-        return "Backfill and deduplicate old balance information";
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     protected Long getInitial() {
-        minFrequency = DurationStyle.SIMPLE
-                .parse(
-                        migrationProperties.getParams().getOrDefault(MIN_FREQUENCY_KEY, DEFAULT_MIN_FREQUENCY),
-                        ChronoUnit.MINUTES)
-                .toNanos();
-
-        lastConsensusTimestamp =
-                queryForObjectOrNull(SELECT_LAST_CONSENSUS_TIMESTAMP_SQL, EmptySqlParameterSource.INSTANCE, Long.class);
-        if (lastConsensusTimestamp == null) {
-            return NO_BALANCE;
-        }
-
-        return getJdbcOperations()
-                .queryForObject(SELECT_INITIAL_CONSENSUS_TIMESTAMP_SQL, Long.class, lastConsensusTimestamp);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     protected MigrationVersion getMinimumVersion() {
-        return MigrationVersion.fromVersion("1.89.2"); // The version balance table partitions are created
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @NonNull
     @Override
     protected Optional<Long> migratePartial(Long last) {
-        var stopwatch = Stopwatch.createStarted();
-        getJdbcOperations().execute("set local work_mem = '512MB'"); // Use higher work_mem to avoid temp files
-
-        var timestamp = getBalanceTimestamp(last);
-        if (timestamp == null) {
-            patchSnapshotAtLastConsensusTimestamp(last);
-            getJdbcOperations().execute(CLEANUP_SQL);
-            return Optional.empty();
-        }
-
-        var partitions = timePartitionServiceProvider
-                .getObject()
-                .getOverlappingTimePartitions(ACCOUNT_BALANCE_TABLE_NAME, timestamp, timestamp);
-        if (partitions.isEmpty()) {
-            throw new InvalidDatasetException(
-                    String.format("No account_balance table partition found for timestamp %d", timestamp));
-        }
-
-        var partitionRange = partitions.get(0).getTimestampRange();
-        var params = new MapSqlParameterSource()
-                .addValue("lowerBound", partitionRange.lowerEndpoint())
-                .addValue("upperBound", Math.min(partitionRange.upperEndpoint(), lastConsensusTimestamp));
-        var isPartitionEmpty = getNamedParameterJdbcOperations()
-                .queryForObject(IS_ACCOUNT_BALANCE_PARTITION_EMPTY_SQL, params, Boolean.class);
-        var createAccountBalanceSnapshotSql = Boolean.TRUE.equals(isPartitionEmpty)
-                ? CREATE_FULL_ACCOUNT_BALANCE_SNAPSHOT_SQL
-                : CREATE_DEDUPED_ACCOUNT_BALANCE_SNAPSHOT_SQL;
-        var createTokenBalanceSnapshotSql = Boolean.TRUE.equals(isPartitionEmpty)
-                ? CREATE_FULL_TOKEN_BALANCE_SNAPSHOT_SQL
-                : CREATE_DEDUPED_TOKEN_BALANCE_SNAPSHOT_SQL;
-
-        params = new MapSqlParameterSource()
-                .addValue("balanceTimestamp", timestamp)
-                .addValue("prevBalanceTimestamp", last);
-        var accountBalanceCount = getNamedParameterJdbcOperations()
-                .queryForObject(createAccountBalanceSnapshotSql, params, Integer.class);
-        var tokenBalanceCount =
-                getNamedParameterJdbcOperations().queryForObject(createTokenBalanceSnapshotSql, params, Integer.class);
-
-        log.info(
-                "Created a new {} snapshot with {} account balances and {} token balances at timestamp {} in {}",
-                Boolean.TRUE.equals(isPartitionEmpty) ? "full" : "deduped",
-                accountBalanceCount,
-                tokenBalanceCount,
-                timestamp,
-                stopwatch);
-
-        return Optional.of(timestamp);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private Long getBalanceTimestamp(Long last) {
         if (last == NO_BALANCE) {
             return null;
         }
-
         long lowerBound = last + minFrequency;
-        var params = new MapSqlParameterSource()
-                .addValue("lowerBound", lowerBound)
-                .addValue("upperBound", lastConsensusTimestamp);
+        var params = new MapSqlParameterSource().addValue("lowerBound", lowerBound).addValue("upperBound", lastConsensusTimestamp);
         return queryForObjectOrNull(SELECT_NEXT_CONSENSUS_TIMESTAMP_SQL, params, Long.class);
     }
 
@@ -236,20 +168,11 @@ public class BackfillAndDeduplicateBalanceMigration extends AsyncJavaMigration<L
         if (lastConsensusTimestamp == null || lastProcessedTimestamp == EPOCH) {
             return;
         }
-
         var stopwatch = Stopwatch.createStarted();
-        var params = new MapSqlParameterSource()
-                .addValue("balanceTimestamp", lastConsensusTimestamp)
-                .addValue("prevBalanceTimestamp", lastProcessedTimestamp);
-        int accountBalanceCount =
-                getNamedParameterJdbcOperations().update(PATCH_ORIGINAL_FIRST_ACCOUNT_BALANCE_SNAPSHOT_SQL, params);
-        int tokenBalanceCount =
-                getNamedParameterJdbcOperations().update(PATCH_ORIGINAL_FIRST_TOKEN_BALANCE_SNAPSHOT_SQL, params);
-        log.info(
-                "Patched the original first balance snapshot with {} account balances and {} token balances in {}",
-                accountBalanceCount,
-                tokenBalanceCount,
-                stopwatch);
+        var params = new MapSqlParameterSource().addValue("balanceTimestamp", lastConsensusTimestamp).addValue("prevBalanceTimestamp", lastProcessedTimestamp);
+        int accountBalanceCount = getNamedParameterJdbcOperations().update(PATCH_ORIGINAL_FIRST_ACCOUNT_BALANCE_SNAPSHOT_SQL, params);
+        int tokenBalanceCount = getNamedParameterJdbcOperations().update(PATCH_ORIGINAL_FIRST_TOKEN_BALANCE_SNAPSHOT_SQL, params);
+        log.info("Patched the original first balance snapshot with {} account balances and {} token balances in {}", accountBalanceCount, tokenBalanceCount, stopwatch);
     }
 
     private TransactionOperations transactionOperations() {

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.downloader.block.scheduler;
 
 import io.micrometer.core.instrument.MeterRegistry;
@@ -24,21 +23,18 @@ import org.jspecify.annotations.Nullable;
 abstract class AbstractLatencyAwareScheduler extends AbstractScheduler {
 
     protected final LatencyService latencyService;
+
     protected final SchedulerProperties schedulerProperties;
 
     protected final List<BlockNode> candidates = new CopyOnWriteArrayList<>();
+
     protected final AtomicReference<@Nullable BlockNode> current = new AtomicReference<>();
+
     protected final AtomicLong lastScheduledTime = new AtomicLong(0);
 
     private volatile long lastPostProcessingLatency;
 
-    AbstractLatencyAwareScheduler(
-            final BlockNodeDiscoveryService blockNodeDiscoveryService,
-            final ManagedChannelBuilderProvider channelBuilderProvider,
-            final LatencyService latencyService,
-            final MeterRegistry meterRegistry,
-            final SchedulerProperties schedulerProperties,
-            final StreamProperties streamProperties) {
+    AbstractLatencyAwareScheduler(final BlockNodeDiscoveryService blockNodeDiscoveryService, final ManagedChannelBuilderProvider channelBuilderProvider, final LatencyService latencyService, final MeterRegistry meterRegistry, final SchedulerProperties schedulerProperties, final StreamProperties streamProperties) {
         super(blockNodeDiscoveryService, channelBuilderProvider, meterRegistry, streamProperties);
         this.latencyService = latencyService;
         this.schedulerProperties = schedulerProperties;
@@ -46,52 +42,12 @@ abstract class AbstractLatencyAwareScheduler extends AbstractScheduler {
 
     @Override
     public ScheduledBlockNode getNode(final long blockNumber) {
-        try {
-            final var scheduled = super.getNode(blockNumber);
-            current.set(scheduled.blockNode());
-            candidates.clear();
-            candidates.addAll(getCandidates());
-            latencyService.setNodes(candidates);
-            lastScheduledTime.set(System.currentTimeMillis());
-            return scheduled;
-        } catch (BlockStreamException ex) {
-            current.set(null);
-            throw ex;
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public boolean shouldReschedule(final BlockFile blockFile, final BlockStream blockStream) {
-        final long previousPostProcessingLatency = lastPostProcessingLatency;
-        lastPostProcessingLatency = System.currentTimeMillis() - blockStream.blockCompleteTime();
-
-        // when post-processing takes too long, it can significantly delay block stream response processing and skew the
-        // latency. Therefore, latency should only be measured and recorded under low post-processing latency conditions
-        if (previousPostProcessingLatency
-                > schedulerProperties.getMaxPostProcessingLatency().toMillis()) {
-            return false;
-        }
-
-        final var node = Objects.requireNonNull(current.get());
-        final var latency = node.getLatency();
-        latency.record(Utils.getLatency(blockFile, blockStream));
-
-        if (System.currentTimeMillis() - lastScheduledTime.get()
-                < schedulerProperties.getMinRescheduleInterval().toMillis()) {
-            return false;
-        }
-
-        final double average = latency.getAverage();
-        final long threshold =
-                schedulerProperties.getRescheduleLatencyThreshold().toMillis();
-        for (var candidate : candidates) {
-            final var candidateAverage = candidate.getLatency().getAverage();
-            if (average - candidateAverage >= threshold) {
-                return true;
-            }
-        }
-
-        return false;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     protected abstract Iterator<BlockNode> getNodeGroupIterator();
@@ -105,10 +61,8 @@ abstract class AbstractLatencyAwareScheduler extends AbstractScheduler {
             if (node == active) {
                 continue;
             }
-
             candidates.add(node);
         }
-
         return Collections.unmodifiableCollection(candidates);
     }
 }

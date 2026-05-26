@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.converter;
 
 import jakarta.persistence.AttributeConverter;
@@ -16,17 +15,11 @@ public class EntityIdConverter implements AttributeConverter<EntityId, Long> {
 
     @Override
     public Long convertToDatabaseColumn(EntityId entityId) {
-        if (EntityId.isEmpty(entityId)) {
-            return null;
-        }
-        return entityId.getId();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public EntityId convertToEntityAttribute(Long encodedId) {
-        if (encodedId == null) {
-            return null;
-        }
-        return EntityId.of(encodedId);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

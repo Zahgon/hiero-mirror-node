@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.downloader.block.transformer;
 
 import com.hedera.hapi.block.stream.output.protoc.TransactionOutput;
@@ -14,29 +13,11 @@ final class UtilPrngTransformer extends AbstractBlockTransactionTransformer {
 
     @Override
     protected void doTransform(BlockTransactionTransformation blockTransactionTransformation) {
-        var blockTransaction = blockTransactionTransformation.blockTransaction();
-        if (!blockTransaction.isSuccessful()) {
-            return;
-        }
-
-        var recordBuilder = blockTransactionTransformation.recordItemBuilder().transactionRecordBuilder();
-        var utilPrng = blockTransaction
-                .getTransactionOutput(TransactionCase.UTIL_PRNG)
-                .map(TransactionOutput::getUtilPrng)
-                .orElseThrow();
-        switch (utilPrng.getEntropyCase()) {
-            case PRNG_NUMBER -> recordBuilder.setPrngNumber(utilPrng.getPrngNumber());
-            case PRNG_BYTES -> recordBuilder.setPrngBytes(utilPrng.getPrngBytes());
-            default ->
-                log.warn(
-                        "Unhandled entropy case {} for transaction at {}",
-                        utilPrng.getEntropyCase(),
-                        blockTransaction.getConsensusTimestamp());
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public TransactionType getType() {
-        return TransactionType.UTILPRNG;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

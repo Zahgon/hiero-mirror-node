@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.publish.transaction.account;
 
 import com.hedera.hashgraph.sdk.AccountCreateTransaction;
@@ -30,24 +29,17 @@ public class AccountCreateTransactionSupplier implements TransactionSupplier<Acc
 
     @Override
     public AccountCreateTransaction get() {
-        return new AccountCreateTransaction()
-                .setAccountMemo(Utility.getMemo("Mirror node created test account"))
-                .setInitialBalance(Hbar.fromTinybars(initialBalance))
-                .setKeyWithoutAlias(publicKey != null ? PublicKey.fromString(publicKey) : generateKeys())
-                .setMaxTransactionFee(Hbar.fromTinybars(maxTransactionFee))
-                .setReceiverSignatureRequired(receiverSignatureRequired);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private PublicKey generateKeys() {
         PrivateKey privateKey = PrivateKey.generateED25519();
-
         // Since these keys will never be seen again, if we want to reuse this account
         // provide an option to print them
         if (logKeys) {
             log.info("privateKey: {}", privateKey);
             log.info("publicKey: {}", privateKey.getPublicKey());
         }
-
         return privateKey.getPublicKey();
     }
 }

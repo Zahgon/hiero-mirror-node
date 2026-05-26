@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.contract;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -54,7 +53,8 @@ public class ContractResult implements Persistable<Long> {
     @ToString.Exclude
     private byte[] functionParameters;
 
-    private byte[] functionResult; // Temporary field until we can confirm the migration captured everything
+    // Temporary field until we can confirm the migration captured everything
+    private byte[] functionResult;
 
     private Long gasConsumed;
 
@@ -79,26 +79,20 @@ public class ContractResult implements Persistable<Long> {
     @JsonIgnore
     @Override
     public Long getId() {
-        return consensusTimestamp;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public void setBloom(byte[] bloom) {
-        this.bloom = !Arrays.equals(bloom, EMPTY_BLOOM) ? bloom : ArrayUtils.EMPTY_BYTE_ARRAY;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @JsonIgnore
     @Override
     public boolean isNew() {
-        return true; // Since we never update and use a natural ID, avoid Hibernate querying before insert
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public ContractTransactionHash toContractTransactionHash() {
-        return ContractTransactionHash.builder()
-                .consensusTimestamp(consensusTimestamp)
-                .hash(transactionHash)
-                .entityId(contractId)
-                .payerAccountId(payerAccountId.getId())
-                .transactionResult(transactionResult)
-                .build();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

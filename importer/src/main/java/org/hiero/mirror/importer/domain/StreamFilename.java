@@ -1,12 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.domain;
 
 import static org.apache.commons.io.FilenameUtils.removeExtension;
 import static org.hiero.mirror.importer.domain.StreamFilename.FileType.DATA;
 import static org.hiero.mirror.importer.domain.StreamFilename.FileType.SIDECAR;
 import static org.hiero.mirror.importer.domain.StreamFilename.FileType.SIGNATURE;
-
 import com.google.common.base.Splitter;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
@@ -34,17 +32,22 @@ import org.jspecify.annotations.NonNull;
 @Value
 public class StreamFilename implements Comparable<StreamFilename> {
 
-    public static final Comparator<StreamFilename> EXTENSION_COMPARATOR =
-            Comparator.comparing(StreamFilename::getExtension);
+    public static final Comparator<StreamFilename> EXTENSION_COMPARATOR = Comparator.comparing(StreamFilename::getExtension);
+
     public static final StreamFilename EPOCH;
+
     public static final String SIDECAR_FOLDER = "sidecar";
 
     private static final Comparator<StreamFilename> COMPARATOR = Comparator.comparing(StreamFilename::getFilename);
+
     private static final char COMPATIBLE_TIME_SEPARATOR = '_';
+
     private static final char STANDARD_TIME_SEPARATOR = ':';
-    private static final Splitter FILENAME_SPLITTER =
-            Splitter.on(FilenameUtils.EXTENSION_SEPARATOR).omitEmptyStrings();
+
+    private static final Splitter FILENAME_SPLITTER = Splitter.on(FilenameUtils.EXTENSION_SEPARATOR).omitEmptyStrings();
+
     private static final Pattern SIDECAR_PATTERN;
+
     private static final Map<StreamType, Map<String, StreamType.Extension>> STREAM_TYPE_EXTENSION_MAP;
 
     static {
@@ -61,14 +64,23 @@ public class StreamFilename implements Comparable<StreamFilename> {
     }
 
     private final String bucketFilePath;
+
     private final String compressor;
+
     private final StreamType.Extension extension;
+
     private final String filename;
+
     private final FileType fileType;
+
     private final String fullExtension;
+
     private final Instant instant;
+
     private final String pathSeparator;
+
     private final String sidecarId;
+
     private final StreamType streamType;
 
     @EqualsAndHashCode.Include
@@ -83,23 +95,16 @@ public class StreamFilename implements Comparable<StreamFilename> {
         this.pathSeparator = pathSeparator;
         this.filename = filename;
         this.path = path;
-
         final var typeInfo = extractTypeInfo(filename);
         this.compressor = typeInfo.compressor;
         this.extension = typeInfo.extension;
         this.fileType = typeInfo.fileType;
         this.sidecarId = typeInfo.sidecarId;
         this.streamType = typeInfo.streamType;
-        this.fullExtension = this.compressor == null
-                ? this.extension.getName()
-                : StringUtils.joinWith(".", this.extension.getName(), this.compressor);
-
+        this.fullExtension = this.compressor == null ? this.extension.getName() : StringUtils.joinWith(".", this.extension.getName(), this.compressor);
         // A compressed and uncompressed file can exist simultaneously, so we need uniqueness to not include .gz
         this.filenameWithoutCompressor = isCompressed() ? removeExtension(this.filename) : this.filename;
-        this.instant = streamType != StreamType.BLOCK
-                ? extractInstant(filename, this.fullExtension, this.sidecarId, this.streamType.getSuffix())
-                : null;
-
+        this.instant = streamType != StreamType.BLOCK ? extractInstant(filename, this.fullExtension, this.sidecarId, this.streamType.getSuffix()) : null;
         var builder = new StringBuilder();
         if (!StringUtils.isEmpty(this.path)) {
             builder.append(this.path);
@@ -114,41 +119,27 @@ public class StreamFilename implements Comparable<StreamFilename> {
     }
 
     public static StreamFilename from(final String path, final long blockNumber) {
-        final var filename = BlockFile.getFilename(blockNumber, true);
-        return from(path, filename, S3StreamFileProvider.SEPARATOR);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public static StreamFilename from(String filePath) {
-        return from(filePath, S3StreamFileProvider.SEPARATOR);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public static StreamFilename from(@NonNull String filePath, @NonNull String pathSeparator) {
-        var lastSeparatorIndex = filePath.lastIndexOf(pathSeparator);
-        var filename = lastSeparatorIndex < 0 ? filePath : filePath.substring(lastSeparatorIndex + 1);
-        var path = lastSeparatorIndex < 0 ? null : filePath.substring(0, lastSeparatorIndex);
-
-        return from(path, filename, pathSeparator);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public static StreamFilename from(@NonNull StreamFilename base, String filename) {
-        return from(base.getPath(), filename, base.getPathSeparator());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public static StreamFilename from(String path, @NonNull String filename, @NonNull String pathSeparator) {
-        return new StreamFilename(path, filename, pathSeparator);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public static String getFilename(StreamType streamType, FileType fileType, Instant instant) {
-        String timestamp = instant.toString().replace(STANDARD_TIME_SEPARATOR, COMPATIBLE_TIME_SEPARATOR);
-        String suffix = streamType.getSuffix();
-        String extension;
-        if (fileType == DATA) {
-            extension = streamType.getDataExtensions().first().getName();
-        } else {
-            extension = streamType.getSignatureExtensions().first().getName();
-        }
-
-        return StringUtils.joinWith(".", StringUtils.join(timestamp, suffix), extension);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @SuppressWarnings("java:S3776")
@@ -157,21 +148,17 @@ public class StreamFilename implements Comparable<StreamFilename> {
         if (parts.size() < 2) {
             throw new InvalidStreamFileException("Failed to determine StreamType for filename: " + filename);
         }
-
         String last = parts.get(parts.size() - 1);
         String secondLast = parts.get(parts.size() - 2);
-
         for (StreamType type : StreamType.values()) {
             String suffix = type.getSuffix();
             if (!StringUtils.isEmpty(suffix) && !filename.contains(suffix)) {
                 continue;
             }
-
             String compressor = null;
             String sidecarIndex = null;
             String streamTypeExtension = null;
             Map<String, StreamType.Extension> extensions = STREAM_TYPE_EXTENSION_MAP.get(type);
-
             if (extensions.containsKey(last)) {
                 streamTypeExtension = last;
             } else if (extensions.containsKey(secondLast)) {
@@ -179,7 +166,6 @@ public class StreamFilename implements Comparable<StreamFilename> {
                 compressor = last;
                 streamTypeExtension = secondLast;
             }
-
             if (streamTypeExtension != null) {
                 FileType fileType = streamTypeExtension.endsWith(StreamType.SIGNATURE_SUFFIX) ? SIGNATURE : DATA;
                 if (type == StreamType.RECORD && fileType == DATA) {
@@ -189,11 +175,9 @@ public class StreamFilename implements Comparable<StreamFilename> {
                         fileType = FileType.SIDECAR;
                     }
                 }
-
                 return new TypeInfo(compressor, extensions.get(streamTypeExtension), fileType, sidecarIndex, type);
             }
         }
-
         throw new InvalidStreamFileException("Failed to determine StreamType for filename: " + filename);
     }
 
@@ -212,16 +196,12 @@ public class StreamFilename implements Comparable<StreamFilename> {
     }
 
     public Instant getInstant() {
-        if (streamType == StreamType.BLOCK) {
-            throw new IllegalStateException("BLOCK stream file doesn't have instant in its filename");
-        }
-
-        return instant;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public int compareTo(StreamFilename other) {
-        return COMPARATOR.compare(this, other);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -232,40 +212,31 @@ public class StreamFilename implements Comparable<StreamFilename> {
      * @return the filename to mark files after this stream filename
      */
     public String getFilenameAfter() {
-        return Strings.CS.remove(filename, "." + fullExtension) + COMPATIBLE_TIME_SEPARATOR;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public String getSidecarFilename(int id) {
-        if (streamType != StreamType.RECORD || fileType == SIGNATURE) {
-            throw new IllegalArgumentException(
-                    String.format("%s %s stream doesn't support sidecars", streamType, fileType));
-        }
-
-        String end = StringUtils.isEmpty(sidecarId)
-                ? "." + fullExtension
-                : StringUtils.join(COMPATIBLE_TIME_SEPARATOR, sidecarId, ".", fullExtension);
-        return String.format("%s_%02d.%s", Strings.CS.removeEnd(filename, end), id, fullExtension);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public boolean isCompressed() {
-        return compressor != null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public boolean isNodeId() {
-        return !bucketFilePath.contains(streamType.getPath());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public String toString() {
-        return filename;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public enum FileType {
-        DATA,
-        SIDECAR,
-        SIGNATURE
+
+        DATA, SIDECAR, SIGNATURE
     }
 
-    private record TypeInfo(
-            String compressor, Extension extension, FileType fileType, String sidecarId, StreamType streamType) {}
+    private record TypeInfo(String compressor, Extension extension, FileType fileType, String sidecarId, StreamType streamType) {
+    }
 }

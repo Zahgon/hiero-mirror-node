@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.config;
 
 import static org.springframework.web.util.WebUtils.ERROR_EXCEPTION_ATTRIBUTE;
-
 import jakarta.inject.Named;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,44 +28,31 @@ import org.springframework.web.util.WebUtils;
 class LoggingFilter extends OncePerRequestFilter {
 
     private static final String ACTUATOR_PATH = "/actuator/";
+
     private static final Pattern DATA_PATTERN = Pattern.compile("(\"data\":.*?),(.+)(}[^}]*)$");
+
     private static final String LOG_FORMAT = "{} {} {} in {} ms : {} {} - {}";
+
     private static final String SUCCESS = "Success";
+
     private final Web3Properties web3Properties;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
-        long start = System.currentTimeMillis();
-        Exception cause = null;
-
-        if (!(request instanceof ContentCachingRequestWrapper)) {
-            request = new ContentCachingRequestWrapper(request, web3Properties.getMaxPayloadLogSize() * 10);
-        }
-
-        try {
-            filterChain.doFilter(request, response);
-        } catch (Exception t) {
-            cause = t;
-        } finally {
-            logRequest(request, response, start, cause);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private void logRequest(HttpServletRequest request, HttpServletResponse response, long startTime, Exception e) {
         var uri = request.getRequestURI();
         boolean actuator = Strings.CS.startsWith(uri, ACTUATOR_PATH);
-
         if (!log.isDebugEnabled() && actuator) {
             return;
         }
-
         long elapsed = System.currentTimeMillis() - startTime;
         int status = response.getStatus();
         var content = getContent(request, status);
         var message = getMessage(request, e);
-        var params =
-                new Object[] {request.getRemoteAddr(), request.getMethod(), uri, elapsed, status, message, content};
-
+        var params = new Object[] { request.getRemoteAddr(), request.getMethod(), uri, elapsed, status, message, content };
         if (actuator) {
             log.debug(LOG_FORMAT, params);
         } else if (status >= HttpStatus.INTERNAL_SERVER_ERROR.value()) {
@@ -75,7 +60,8 @@ class LoggingFilter extends OncePerRequestFilter {
         } else if (log.isInfoEnabled()) {
             log.info(LOG_FORMAT, params);
         } else {
-            log.debug(LOG_FORMAT, params); // params are more verbose if debug enabled
+            // params are more verbose if debug enabled
+            log.debug(LOG_FORMAT, params);
         }
     }
 
@@ -83,18 +69,15 @@ class LoggingFilter extends OncePerRequestFilter {
         var content = StringUtils.EMPTY;
         final int maxPayloadLogSize = web3Properties.getMaxPayloadLogSize();
         final var wrapper = WebUtils.getNativeRequest(request, ContentCachingRequestWrapper.class);
-
         if (wrapper != null) {
             content = StringUtils.deleteWhitespace(wrapper.getContentAsString());
         }
-
         if (content.length() > maxPayloadLogSize) {
             final var bos = new ByteArrayOutputStream(content.length() / 4);
             try (final var out = new GZIPOutputStream(bos)) {
                 out.write(content.getBytes(StandardCharsets.UTF_8));
                 out.finish();
                 final var compressed = Base64.getEncoder().encodeToString(bos.toByteArray());
-
                 if (compressed.length() <= maxPayloadLogSize) {
                     content = compressed;
                 }
@@ -102,15 +85,11 @@ class LoggingFilter extends OncePerRequestFilter {
                 // Ignore
             }
         }
-
         // Truncate log message size unless it's a 5xx error
-        if (log.isInfoEnabled()
-                && content.length() > maxPayloadLogSize
-                && status < HttpStatus.INTERNAL_SERVER_ERROR.value()) {
+        if (log.isInfoEnabled() && content.length() > maxPayloadLogSize && status < HttpStatus.INTERNAL_SERVER_ERROR.value()) {
             content = reorderFields(content);
             content = StringUtils.substring(content, 0, maxPayloadLogSize);
         }
-
         return content;
     }
 
@@ -118,14 +97,12 @@ class LoggingFilter extends OncePerRequestFilter {
         if (e != null) {
             return e.getMessage();
         }
-
         if (request.getAttribute(ERROR_EXCEPTION_ATTRIBUTE) instanceof Exception ex) {
             if (ex instanceof MirrorEvmTransactionException mirrorEvmTransactionException) {
                 return mirrorEvmTransactionException.getFullMessage();
             }
             return ex.getMessage();
         }
-
         return SUCCESS;
     }
 

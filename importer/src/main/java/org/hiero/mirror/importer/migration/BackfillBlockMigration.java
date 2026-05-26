@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.migration;
 
 import jakarta.inject.Named;
@@ -19,55 +18,37 @@ import org.springframework.transaction.support.TransactionOperations;
 @Named
 public class BackfillBlockMigration extends AsyncJavaMigration<Long> {
 
-    private static final String SELECT_CONTRACT_RESULT = "select bloom, gas_used " + "from contract_result cr "
-            + "join transaction t on t.consensus_timestamp = cr.consensus_timestamp "
-            + "where cr.consensus_timestamp >= :consensusStart "
-            + "  and cr.consensus_timestamp <= :consensusEnd "
-            + "  and t.nonce = 0";
+    private static final String SELECT_CONTRACT_RESULT = "select bloom, gas_used " + "from contract_result cr " + "join transaction t on t.consensus_timestamp = cr.consensus_timestamp " + "where cr.consensus_timestamp >= :consensusStart " + "  and cr.consensus_timestamp <= :consensusEnd " + "  and t.nonce = 0";
 
-    private static final String SET_TRANSACTION_INDEX = "with indexed as ( "
-            + "  select consensus_timestamp, row_number() over (order by consensus_timestamp) - 1 as index "
-            + "  from transaction "
-            + "  where consensus_timestamp >= :consensusStart"
-            + "    and consensus_timestamp <= :consensusEnd "
-            + "  order by consensus_timestamp) "
-            + "update transaction t "
-            + "set index = indexed.index "
-            + "from indexed "
-            + "where t.consensus_timestamp = indexed.consensus_timestamp";
+    private static final String SET_TRANSACTION_INDEX = "with indexed as ( " + "  select consensus_timestamp, row_number() over (order by consensus_timestamp) - 1 as index " + "  from transaction " + "  where consensus_timestamp >= :consensusStart" + "    and consensus_timestamp <= :consensusEnd " + "  order by consensus_timestamp) " + "update transaction t " + "set index = indexed.index " + "from indexed " + "where t.consensus_timestamp = indexed.consensus_timestamp";
 
     private final ObjectProvider<RecordFileRepository> recordFileRepositoryProvider;
 
     private final ObjectProvider<TransactionOperations> transactionOperationsProvider;
 
-    public BackfillBlockMigration(
-            DBProperties dbProperties,
-            ImporterProperties importerProperties,
-            ObjectProvider<JdbcOperations> jdbcOperationsProvider,
-            ObjectProvider<RecordFileRepository> recordFileRepositoryProvider,
-            ObjectProvider<TransactionOperations> transactionOperationsProvider) {
+    public BackfillBlockMigration(DBProperties dbProperties, ImporterProperties importerProperties, ObjectProvider<JdbcOperations> jdbcOperationsProvider, ObjectProvider<RecordFileRepository> recordFileRepositoryProvider, ObjectProvider<TransactionOperations> transactionOperationsProvider) {
         super(importerProperties.getMigration(), jdbcOperationsProvider, dbProperties.getSchema());
         this.recordFileRepositoryProvider = recordFileRepositoryProvider;
         this.transactionOperationsProvider = transactionOperationsProvider;
     }
 
     public TransactionOperations getTransactionOperations() {
-        return transactionOperationsProvider.getObject();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public String getDescription() {
-        return "Backfill block gasUsed, logsBloom, and transaction index";
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     protected Long getInitial() {
-        return Long.MAX_VALUE;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     protected MigrationVersion getMinimumVersion() {
-        return MigrationVersion.fromVersion("1.61.1");
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -80,31 +61,6 @@ public class BackfillBlockMigration extends AsyncJavaMigration<Long> {
     @NonNull
     @Override
     protected Optional<Long> migratePartial(Long lastConsensusEnd) {
-        return recordFileRepositoryProvider
-                .getObject()
-                .findLatestMissingGasUsedBefore(lastConsensusEnd)
-                .map(recordFile -> {
-                    var queryParams = Map.of(
-                            "consensusStart",
-                            recordFile.getConsensusStart(),
-                            "consensusEnd",
-                            recordFile.getConsensusEnd());
-
-                    var logsBloomFilter = new LogsBloomFilter();
-                    var gasUsedTotal = new AtomicLong(0);
-                    getNamedParameterJdbcOperations().query(SELECT_CONTRACT_RESULT, queryParams, rs -> {
-                        logsBloomFilter.or(rs.getBytes("bloom"));
-                        gasUsedTotal.addAndGet(rs.getLong("gas_used"));
-                    });
-
-                    recordFile.setGasUsed(gasUsedTotal.get());
-                    recordFile.setLogsBloom(logsBloomFilter.toArrayUnsafe());
-                    recordFileRepositoryProvider.getObject().save(recordFile);
-
-                    // set transaction index for the transactions in the record file
-                    getNamedParameterJdbcOperations().update(SET_TRANSACTION_INDEX, queryParams);
-
-                    return recordFile.getConsensusEnd();
-                });
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

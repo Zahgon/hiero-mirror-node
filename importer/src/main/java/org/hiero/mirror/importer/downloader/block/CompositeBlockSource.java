@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.downloader.block;
 
 import jakarta.inject.Named;
@@ -20,18 +19,18 @@ import org.springframework.scheduling.annotation.Scheduled;
 final class CompositeBlockSource implements BlockSource {
 
     private final SourceHealth blockFileSourceHealth;
+
     private final BlockNodeDiscoveryService blockNodeDiscoveryService;
+
     private final SourceHealth blockNodeSubscriberSourceHealth;
+
     private final AtomicReference<SourceHealth> current;
+
     private final CutoverService cutoverService;
+
     private final BlockProperties properties;
 
-    CompositeBlockSource(
-            final BlockFileSource blockFileSource,
-            final BlockNodeDiscoveryService blockNodeDiscoveryService,
-            final BlockNodeSubscriber blockNodeSubscriber,
-            final CutoverService cutoverService,
-            final BlockProperties properties) {
+    CompositeBlockSource(final BlockFileSource blockFileSource, final BlockNodeDiscoveryService blockNodeDiscoveryService, final BlockNodeSubscriber blockNodeSubscriber, final CutoverService cutoverService, final BlockProperties properties) {
         this.blockFileSourceHealth = new SourceHealth(blockFileSource, BlockSourceType.FILE);
         this.blockNodeDiscoveryService = blockNodeDiscoveryService;
         this.blockNodeSubscriberSourceHealth = new SourceHealth(blockNodeSubscriber, BlockSourceType.BLOCK_NODE);
@@ -43,36 +42,26 @@ final class CompositeBlockSource implements BlockSource {
     @Override
     @Scheduled(fixedDelayString = "#{@blockProperties.getFrequency().toMillis()}")
     public void get() {
-        cutoverService.get(StreamType.BLOCK, () -> {
-            final var sourceHealth = getSourceHealth();
-            try {
-                sourceHealth.getSource().get();
-                sourceHealth.reset();
-            } catch (Throwable t) {
-                log.error("Failed to get block from {} source", sourceHealth.getType(), t);
-                sourceHealth.onError();
-            }
-        });
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private SourceHealth getSourceHealth() {
-        return switch (properties.getSourceType()) {
-            case AUTO -> {
-                if (blockNodeDiscoveryService.getBlockNodes().isEmpty()) {
-                    yield blockFileSourceHealth;
+        return switch(properties.getSourceType()) {
+            case AUTO ->
+                {
+                    if (blockNodeDiscoveryService.getBlockNodes().isEmpty()) {
+                        yield blockFileSourceHealth;
+                    }
+                    if (!current.get().isHealthy()) {
+                        var sourceHealth = current.get() == blockNodeSubscriberSourceHealth ? blockFileSourceHealth : blockNodeSubscriberSourceHealth;
+                        current.set(sourceHealth);
+                    }
+                    yield current.get();
                 }
-
-                if (!current.get().isHealthy()) {
-                    var sourceHealth = current.get() == blockNodeSubscriberSourceHealth
-                            ? blockFileSourceHealth
-                            : blockNodeSubscriberSourceHealth;
-                    current.set(sourceHealth);
-                }
-
-                yield current.get();
-            }
-            case BLOCK_NODE -> blockNodeSubscriberSourceHealth;
-            case FILE -> blockFileSourceHealth;
+            case BLOCK_NODE ->
+                blockNodeSubscriberSourceHealth;
+            case FILE ->
+                blockFileSourceHealth;
         };
     }
 
@@ -81,19 +70,21 @@ final class CompositeBlockSource implements BlockSource {
     private static class SourceHealth {
 
         private final AtomicInteger errors = new AtomicInteger();
+
         private final BlockSource source;
+
         private final BlockSourceType type;
 
         boolean isHealthy() {
-            return errors.get() < 3;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         void onError() {
-            errors.incrementAndGet();
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         void reset() {
-            errors.set(0);
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
     }
 }

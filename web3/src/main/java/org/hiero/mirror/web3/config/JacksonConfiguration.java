@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.config;
 
 import com.fasterxml.jackson.core.StreamReadConstraints;
@@ -18,23 +17,6 @@ class JacksonConfiguration {
     @Bean
     @SuppressWarnings("removal")
     Jackson2ObjectMapperBuilderCustomizer jacksonCustomizer(EvmProperties properties) {
-        final var jumboConfig = properties.getVersionedConfiguration().getConfigData(JumboTransactionsConfig.class);
-        final int maxSize = jumboConfig.ethereumMaxCallDataSize() * 2 + 1024;
-        return builder -> {
-            var streamReadConstraints = StreamReadConstraints.builder()
-                    .maxDocumentLength(maxSize)
-                    .maxNameLength(100)
-                    .maxNestingDepth(10)
-                    .maxNumberLength(19)
-                    .maxStringLength(maxSize)
-                    .maxTokenCount(100)
-                    .build();
-            var streamWriteConstraints =
-                    StreamWriteConstraints.builder().maxNestingDepth(100).build();
-            var factory = new MappingJsonFactory();
-            factory.setStreamReadConstraints(streamReadConstraints);
-            factory.setStreamWriteConstraints(streamWriteConstraints);
-            builder.factory(factory);
-        };
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

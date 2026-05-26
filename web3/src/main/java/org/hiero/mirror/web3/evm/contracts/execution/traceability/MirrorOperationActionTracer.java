@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.evm.contracts.execution.traceability;
 
 import static org.hiero.mirror.common.util.DomainUtils.toEvmAddress;
 import static org.hiero.mirror.web3.utils.Constants.BALANCE_OPERATION_NAME;
-
 import com.hedera.hapi.streams.CallOperationType;
 import com.hedera.hapi.streams.ContractAction;
 import com.hedera.hapi.streams.ContractActionType;
@@ -31,95 +29,51 @@ import org.jspecify.annotations.NonNull;
 public class MirrorOperationActionTracer implements ActionSidecarContentTracer {
 
     private final TraceProperties traceProperties;
+
     private final CommonEntityAccessor commonEntityAccessor;
 
     @Override
-    public void tracePreExecution(final @NonNull MessageFrame frame) {
-        if (frame.getCurrentOperation() != null
-                && BALANCE_OPERATION_NAME.equals(frame.getCurrentOperation().getName())) {
-            ContractCallContext.get().setBalanceCall(true);
-        }
+    public void tracePreExecution(@NonNull final MessageFrame frame) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
-    public void tracePostExecution(
-            final @NonNull MessageFrame frame, final Operation.@NonNull OperationResult operationResult) {
-        // Reset the balance call flag after BALANCE opcode completes
-        if (frame.getCurrentOperation() != null
-                && BALANCE_OPERATION_NAME.equals(frame.getCurrentOperation().getName())) {
-            ContractCallContext.get().setBalanceCall(false);
-        }
-
-        if (!traceProperties.isEnabled()) {
-            return;
-        }
-
-        if (traceProperties.stateFilterCheck(frame.getState())) {
-            return;
-        }
-
-        final var recipientAddress = frame.getRecipientAddress();
-        final var recipientNum = recipientAddress != null
-                ? commonEntityAccessor.get(recipientAddress, Optional.empty())
-                : Optional.empty();
-
-        if (recipientNum.isPresent()
-                && traceProperties.contractFilterCheck(
-                        CommonUtils.hex(toEvmAddress(((Entity) recipientNum.get()).getId())))) {
-            return;
-        }
-
-        log.info(
-                "type={} operation={}, callDepth={}, contract={}, sender={}, recipient={}, remainingGas={}, revertReason={}, input={}, output={}, return={}",
-                frame.getType(),
-                frame.getCurrentOperation() != null
-                        ? frame.getCurrentOperation().getName()
-                        : StringUtils.EMPTY,
-                frame.getDepth(),
-                frame.getContractAddress().toShortHexString(),
-                frame.getSenderAddress().toShortHexString(),
-                frame.getRecipientAddress().toShortHexString(),
-                frame.getRemainingGas(),
-                frame.getRevertReason()
-                        .orElse(org.apache.tuweni.bytes.Bytes.EMPTY)
-                        .toHexString(),
-                frame.getInputData().toShortHexString(),
-                frame.getOutputData().toShortHexString(),
-                frame.getReturnData().toShortHexString());
+    public void tracePostExecution(@NonNull final MessageFrame frame, final Operation.@NonNull OperationResult operationResult) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void tracePerOpcode(MessageFrame frame, long gas, ExceptionalHaltReason halt, Operation op) {
-        // NO-OP
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void traceSuspended(MessageFrame parent, MessageFrame child, CallOperationType opCall) {
-        // NO-OP
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void traceNotExecuting(MessageFrame child) {
-        // NO-OP
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void traceOriginAction(@NonNull MessageFrame frame) {
-        // NO-OP
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void sanitizeTracedActions(@NonNull MessageFrame frame) {
-        // NO-OP
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void tracePrecompileResult(@NonNull MessageFrame frame, @NonNull ContractActionType type) {
-        // NO-OP
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public List<ContractAction> contractActions() {
-        return List.of();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

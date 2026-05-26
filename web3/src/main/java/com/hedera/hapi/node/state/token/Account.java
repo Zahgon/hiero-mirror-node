@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package com.hedera.hapi.node.state.token;
 
 import static java.util.Objects.requireNonNull;
-
 import com.hedera.hapi.node.base.AccountID;
 import com.hedera.hapi.node.base.Key;
 import com.hedera.hapi.node.base.NftID;
@@ -105,131 +103,29 @@ import java.util.function.Supplier;
  *                    doubly-linked list of hooks.
  * @param numberLambdaStorageSlots <b>(38)</b> The number of storage slots in use by this account's lambdas.
  */
-public record Account(
-        @Nullable AccountID accountId,
-        @Nonnull Bytes alias,
-        @Nullable Key key,
-        long expirationSecond,
-        Supplier<Long> tinybarBalanceSupplier,
-        @Nonnull String memo,
-        boolean deleted,
-        long stakedToMe,
-        long stakePeriodStart,
-        OneOf<StakedIdOneOfType> stakedId,
-        boolean declineReward,
-        boolean receiverSigRequired,
-        @Nullable TokenID headTokenId,
-        @Nullable NftID headNftId,
-        long headNftSerialNumber,
-        Supplier<Long> numberOwnedNftsSupplier,
-        int maxAutoAssociations,
-        int usedAutoAssociations,
-        Supplier<Integer> numberAssociationsSupplier,
-        boolean smartContract,
-        Supplier<Integer> numberPositiveBalancesSupplier,
-        long ethereumNonce,
-        long stakeAtStartOfLastRewardedPeriod,
-        @Nullable AccountID autoRenewAccountId,
-        long autoRenewSeconds,
-        int contractKvPairsNumber,
-        @Nonnull Supplier<List<AccountCryptoAllowance>> cryptoAllowancesSupplier,
-        @Nonnull Supplier<List<AccountApprovalForAllAllowance>> approveForAllNftAllowancesSupplier,
-        @Nonnull Supplier<List<AccountFungibleTokenAllowance>> tokenAllowancesSupplier,
-        int numberTreasuryTitles,
-        boolean expiredAndPendingRemoval,
-        @Nonnull Bytes firstContractStorageKey,
-        @Nullable PendingAirdropId headPendingAirdropId,
-        long numberPendingAirdrops,
-        long numberHooksInUse,
-        long firstHookId,
-        long numberLambdaStorageSlots) {
-    /** Protobuf codec for reading and writing in protobuf format */
+public record Account(@Nullable AccountID accountId, @Nonnull Bytes alias, @Nullable Key key, long expirationSecond, Supplier<Long> tinybarBalanceSupplier, @Nonnull String memo, boolean deleted, long stakedToMe, long stakePeriodStart, OneOf<StakedIdOneOfType> stakedId, boolean declineReward, boolean receiverSigRequired, @Nullable TokenID headTokenId, @Nullable NftID headNftId, long headNftSerialNumber, Supplier<Long> numberOwnedNftsSupplier, int maxAutoAssociations, int usedAutoAssociations, Supplier<Integer> numberAssociationsSupplier, boolean smartContract, Supplier<Integer> numberPositiveBalancesSupplier, long ethereumNonce, long stakeAtStartOfLastRewardedPeriod, @Nullable AccountID autoRenewAccountId, long autoRenewSeconds, int contractKvPairsNumber, @Nonnull Supplier<List<AccountCryptoAllowance>> cryptoAllowancesSupplier, @Nonnull Supplier<List<AccountApprovalForAllAllowance>> approveForAllNftAllowancesSupplier, @Nonnull Supplier<List<AccountFungibleTokenAllowance>> tokenAllowancesSupplier, int numberTreasuryTitles, boolean expiredAndPendingRemoval, @Nonnull Bytes firstContractStorageKey, @Nullable PendingAirdropId headPendingAirdropId, long numberPendingAirdrops, long numberHooksInUse, long firstHookId, long numberLambdaStorageSlots) {
+
+    /**
+     * Protobuf codec for reading and writing in protobuf format
+     */
     public static final Codec<Account> PROTOBUF = new com.hedera.hapi.node.state.token.codec.AccountProtoCodec();
-    /** JSON codec for reading and writing in JSON format */
+
+    /**
+     * JSON codec for reading and writing in JSON format
+     */
     public static final JsonCodec<Account> JSON = new com.hedera.hapi.node.state.token.codec.AccountJsonCodec();
 
-    /** Default instance with all fields set to default values */
+    /**
+     * Default instance with all fields set to default values
+     */
     public static final Account DEFAULT = newBuilder().build();
 
     private static final Supplier<Long> DEFAULT_LONG_SUPPLIER = () -> 0L;
+
     private static final Supplier<Integer> DEFAULT_INTEGER_SUPPLIER = () -> 0;
 
-    public Account(
-            AccountID accountId,
-            Bytes alias,
-            Key key,
-            long expirationSecond,
-            long tinybarBalance,
-            String memo,
-            boolean deleted,
-            long stakedToMe,
-            long stakePeriodStart,
-            OneOf<Account.StakedIdOneOfType> stakedId,
-            boolean declineReward,
-            boolean receiverSigRequired,
-            TokenID headTokenId,
-            NftID headNftId,
-            long headNftSerialNumber,
-            long numberOwnedNfts,
-            int maxAutoAssociations,
-            int usedAutoAssociations,
-            int numberAssociations,
-            boolean smartContract,
-            int numberPositiveBalances,
-            long ethereumNonce,
-            long stakeAtStartOfLastRewardedPeriod,
-            AccountID autoRenewAccountId,
-            long autoRenewSeconds,
-            int contractKvPairsNumber,
-            List<AccountCryptoAllowance> cryptoAllowances,
-            List<AccountApprovalForAllAllowance> approveForAllNftAllowances,
-            List<AccountFungibleTokenAllowance> tokenAllowances,
-            int numberTreasuryTitles,
-            boolean expiredAndPendingRemoval,
-            Bytes firstContractStorageKey,
-            PendingAirdropId headPendingAirdropId,
-            long numberPendingAirdrops,
-            long numberHooksInUse,
-            long firstHookId,
-            long numberLambdaStorageSlots) {
-        this(
-                accountId,
-                alias,
-                key,
-                expirationSecond,
-                () -> tinybarBalance,
-                memo,
-                deleted,
-                stakedToMe,
-                stakePeriodStart,
-                stakedId,
-                declineReward,
-                receiverSigRequired,
-                headTokenId,
-                headNftId,
-                headNftSerialNumber,
-                () -> numberOwnedNfts,
-                maxAutoAssociations,
-                usedAutoAssociations,
-                () -> numberAssociations,
-                smartContract,
-                () -> numberPositiveBalances,
-                ethereumNonce,
-                stakeAtStartOfLastRewardedPeriod,
-                autoRenewAccountId,
-                autoRenewSeconds,
-                contractKvPairsNumber,
-                () -> cryptoAllowances,
-                () -> approveForAllNftAllowances,
-                () -> tokenAllowances,
-                numberTreasuryTitles,
-                expiredAndPendingRemoval,
-                firstContractStorageKey,
-                headPendingAirdropId,
-                numberPendingAirdrops,
-                numberHooksInUse,
-                firstHookId,
-                numberLambdaStorageSlots);
+    public Account(AccountID accountId, Bytes alias, Key key, long expirationSecond, long tinybarBalance, String memo, boolean deleted, long stakedToMe, long stakePeriodStart, OneOf<Account.StakedIdOneOfType> stakedId, boolean declineReward, boolean receiverSigRequired, TokenID headTokenId, NftID headNftId, long headNftSerialNumber, long numberOwnedNfts, int maxAutoAssociations, int usedAutoAssociations, int numberAssociations, boolean smartContract, int numberPositiveBalances, long ethereumNonce, long stakeAtStartOfLastRewardedPeriod, AccountID autoRenewAccountId, long autoRenewSeconds, int contractKvPairsNumber, List<AccountCryptoAllowance> cryptoAllowances, List<AccountApprovalForAllAllowance> approveForAllNftAllowances, List<AccountFungibleTokenAllowance> tokenAllowances, int numberTreasuryTitles, boolean expiredAndPendingRemoval, Bytes firstContractStorageKey, PendingAirdropId headPendingAirdropId, long numberPendingAirdrops, long numberHooksInUse, long firstHookId, long numberLambdaStorageSlots) {
+        this(accountId, alias, key, expirationSecond, () -> tinybarBalance, memo, deleted, stakedToMe, stakePeriodStart, stakedId, declineReward, receiverSigRequired, headTokenId, headNftId, headNftSerialNumber, () -> numberOwnedNfts, maxAutoAssociations, usedAutoAssociations, () -> numberAssociations, smartContract, () -> numberPositiveBalances, ethereumNonce, stakeAtStartOfLastRewardedPeriod, autoRenewAccountId, autoRenewSeconds, contractKvPairsNumber, () -> cryptoAllowances, () -> approveForAllNftAllowances, () -> tokenAllowances, numberTreasuryTitles, expiredAndPendingRemoval, firstContractStorageKey, headPendingAirdropId, numberPendingAirdrops, numberHooksInUse, firstHookId, numberLambdaStorageSlots);
     }
 
     /**
@@ -238,7 +134,7 @@ public record Account(
      * @return a new builder
      */
     public static Builder newBuilder() {
-        return new Builder();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -247,152 +143,7 @@ public record Account(
      */
     @Override
     public int hashCode() {
-        int result = 1;
-        if (accountId != null && !accountId.equals(DEFAULT.accountId)) {
-            result = 31 * result + accountId.hashCode();
-        }
-        if (!alias.equals(DEFAULT.alias)) {
-            result = 31 * result + alias.hashCode();
-        }
-        if (key != null && !key.equals(DEFAULT.key)) {
-            result = 31 * result + key.hashCode();
-        }
-        if (expirationSecond != DEFAULT.expirationSecond) {
-            result = 31 * result + Long.hashCode(expirationSecond);
-        }
-        if (tinybarBalanceSupplier != null
-                && DEFAULT.tinybarBalanceSupplier != null
-                && !tinybarBalanceSupplier.get().equals(DEFAULT.tinybarBalanceSupplier.get())) {
-            result = 31 * result + Long.hashCode(tinybarBalanceSupplier.get());
-        }
-        if (!memo.equals(DEFAULT.memo)) {
-            result = 31 * result + memo.hashCode();
-        }
-        if (deleted != DEFAULT.deleted) {
-            result = 31 * result + Boolean.hashCode(deleted);
-        }
-        if (stakedToMe != DEFAULT.stakedToMe) {
-            result = 31 * result + Long.hashCode(stakedToMe);
-        }
-        if (stakePeriodStart != DEFAULT.stakePeriodStart) {
-            result = 31 * result + Long.hashCode(stakePeriodStart);
-        }
-        if (stakedId != null && !stakedId.equals(DEFAULT.stakedId)) {
-            result = 31 * result + stakedId.hashCode();
-        }
-        if (declineReward != DEFAULT.declineReward) {
-            result = 31 * result + Boolean.hashCode(declineReward);
-        }
-        if (receiverSigRequired != DEFAULT.receiverSigRequired) {
-            result = 31 * result + Boolean.hashCode(receiverSigRequired);
-        }
-        if (headTokenId != null && !headTokenId.equals(DEFAULT.headTokenId)) {
-            result = 31 * result + headTokenId.hashCode();
-        }
-        if (headNftId != null && !headNftId.equals(DEFAULT.headNftId)) {
-            result = 31 * result + headNftId.hashCode();
-        }
-        if (headNftSerialNumber != DEFAULT.headNftSerialNumber) {
-            result = 31 * result + Long.hashCode(headNftSerialNumber);
-        }
-        if (numberOwnedNftsSupplier != null
-                && DEFAULT.numberOwnedNftsSupplier != null
-                && !numberOwnedNftsSupplier.get().equals(DEFAULT.numberOwnedNftsSupplier.get())) {
-            result = 31 * result + Long.hashCode(numberOwnedNftsSupplier.get());
-        }
-        if (maxAutoAssociations != DEFAULT.maxAutoAssociations) {
-            result = 31 * result + Integer.hashCode(maxAutoAssociations);
-        }
-        if (usedAutoAssociations != DEFAULT.usedAutoAssociations) {
-            result = 31 * result + Integer.hashCode(usedAutoAssociations);
-        }
-        if (numberAssociationsSupplier != null
-                && DEFAULT.numberAssociationsSupplier != null
-                && !numberAssociationsSupplier.get().equals(DEFAULT.numberAssociationsSupplier.get())) {
-            result = 31 * result + Integer.hashCode(numberAssociationsSupplier.get());
-        }
-        if (smartContract != DEFAULT.smartContract) {
-            result = 31 * result + Boolean.hashCode(smartContract);
-        }
-        if (numberPositiveBalancesSupplier != null
-                && DEFAULT.numberPositiveBalancesSupplier != null
-                && !numberPositiveBalancesSupplier.get().equals(DEFAULT.numberPositiveBalancesSupplier.get())) {
-            result = 31 * result + Integer.hashCode(numberPositiveBalancesSupplier.get());
-        }
-        if (ethereumNonce != DEFAULT.ethereumNonce) {
-            result = 31 * result + Long.hashCode(ethereumNonce);
-        }
-        if (stakeAtStartOfLastRewardedPeriod != DEFAULT.stakeAtStartOfLastRewardedPeriod) {
-            result = 31 * result + Long.hashCode(stakeAtStartOfLastRewardedPeriod);
-        }
-        if (autoRenewAccountId != null && !autoRenewAccountId.equals(DEFAULT.autoRenewAccountId)) {
-            result = 31 * result + autoRenewAccountId.hashCode();
-        }
-        if (autoRenewSeconds != DEFAULT.autoRenewSeconds) {
-            result = 31 * result + Long.hashCode(autoRenewSeconds);
-        }
-        if (contractKvPairsNumber != DEFAULT.contractKvPairsNumber) {
-            result = 31 * result + Integer.hashCode(contractKvPairsNumber);
-        }
-
-        for (Object o : cryptoAllowancesSupplier.get()) {
-            if (o != null) {
-                result = 31 * result + o.hashCode();
-            } else {
-                result = 31 * result;
-            }
-        }
-        for (Object o : approveForAllNftAllowancesSupplier.get()) {
-            if (o != null) {
-                result = 31 * result + o.hashCode();
-            } else {
-                result = 31 * result;
-            }
-        }
-        for (Object o : tokenAllowancesSupplier.get()) {
-            if (o != null) {
-                result = 31 * result + o.hashCode();
-            } else {
-                result = 31 * result;
-            }
-        }
-        if (numberTreasuryTitles != DEFAULT.numberTreasuryTitles) {
-            result = 31 * result + Integer.hashCode(numberTreasuryTitles);
-        }
-        if (expiredAndPendingRemoval != DEFAULT.expiredAndPendingRemoval) {
-            result = 31 * result + Boolean.hashCode(expiredAndPendingRemoval);
-        }
-        if (!firstContractStorageKey.equals(DEFAULT.firstContractStorageKey)) {
-            result = 31 * result + firstContractStorageKey.hashCode();
-        }
-        if (headPendingAirdropId != null && !headPendingAirdropId.equals(DEFAULT.headPendingAirdropId)) {
-            result = 31 * result + headPendingAirdropId.hashCode();
-        }
-        if (numberPendingAirdrops != DEFAULT.numberPendingAirdrops) {
-            result = 31 * result + Long.hashCode(numberPendingAirdrops);
-        }
-        if (numberHooksInUse != DEFAULT.numberHooksInUse) {
-            result = 31 * result + Long.hashCode(numberHooksInUse);
-        }
-        if (firstHookId != DEFAULT.firstHookId) {
-            result = 31 * result + Long.hashCode(firstHookId);
-        }
-        if (numberLambdaStorageSlots != DEFAULT.numberLambdaStorageSlots) {
-            result = 31 * result + Long.hashCode(numberLambdaStorageSlots);
-        }
-        long hashCode = result;
-        // Shifts: 30, 27, 16, 20, 5, 18, 10, 24, 30
-        hashCode += hashCode << 30;
-        hashCode ^= hashCode >>> 27;
-        hashCode += hashCode << 16;
-        hashCode ^= hashCode >>> 20;
-        hashCode += hashCode << 5;
-        hashCode ^= hashCode >>> 18;
-        hashCode += hashCode << 10;
-        hashCode ^= hashCode >>> 24;
-        hashCode += hashCode << 30;
-
-        return (int) hashCode;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -400,173 +151,12 @@ public record Account(
      */
     @Override
     public boolean equals(Object that) {
-        if (that == null || this.getClass() != that.getClass()) {
-            return false;
-        }
-        Account thatObj = (Account) that;
-        if (accountId == null && thatObj.accountId != null) {
-            return false;
-        }
-        if (accountId != null && !accountId.equals(thatObj.accountId)) {
-            return false;
-        }
-        if (!alias.equals(thatObj.alias)) {
-            return false;
-        }
-        if (key == null && thatObj.key != null) {
-            return false;
-        }
-        if (key != null && !key.equals(thatObj.key)) {
-            return false;
-        }
-        if (expirationSecond != thatObj.expirationSecond) {
-            return false;
-        }
-        if (tinybarBalanceSupplier == null && thatObj.tinybarBalanceSupplier != null) {
-            return false;
-        }
-        if (tinybarBalanceSupplier != null && thatObj.tinybarBalanceSupplier == null) {
-            return false;
-        }
-        if (tinybarBalanceSupplier != null
-                && !tinybarBalanceSupplier.get().equals(thatObj.tinybarBalanceSupplier.get())) {
-            return false;
-        }
-        if (!memo.equals(thatObj.memo)) {
-            return false;
-        }
-        if (deleted != thatObj.deleted) {
-            return false;
-        }
-        if (stakedToMe != thatObj.stakedToMe) {
-            return false;
-        }
-        if (stakePeriodStart != thatObj.stakePeriodStart) {
-            return false;
-        }
-        if (stakedId == null && thatObj.stakedId != null) {
-            return false;
-        }
-        if (stakedId != null && !stakedId.equals(thatObj.stakedId)) {
-            return false;
-        }
-        if (declineReward != thatObj.declineReward) {
-            return false;
-        }
-        if (receiverSigRequired != thatObj.receiverSigRequired) {
-            return false;
-        }
-        if (headTokenId == null && thatObj.headTokenId != null) {
-            return false;
-        }
-        if (headTokenId != null && !headTokenId.equals(thatObj.headTokenId)) {
-            return false;
-        }
-        if (headNftId == null && thatObj.headNftId != null) {
-            return false;
-        }
-        if (headNftId != null && !headNftId.equals(thatObj.headNftId)) {
-            return false;
-        }
-        if (headNftSerialNumber != thatObj.headNftSerialNumber) {
-            return false;
-        }
-        if (numberOwnedNftsSupplier == null && thatObj.numberOwnedNftsSupplier != null) {
-            return false;
-        }
-        if (numberOwnedNftsSupplier != null && thatObj.numberOwnedNftsSupplier == null) {
-            return false;
-        }
-        if (numberOwnedNftsSupplier != null
-                && !numberOwnedNftsSupplier.get().equals(thatObj.numberOwnedNftsSupplier.get())) {
-            return false;
-        }
-        if (maxAutoAssociations != thatObj.maxAutoAssociations) {
-            return false;
-        }
-        if (usedAutoAssociations != thatObj.usedAutoAssociations) {
-            return false;
-        }
-        if (numberAssociationsSupplier == null && thatObj.numberAssociationsSupplier != null) {
-            return false;
-        }
-        if (numberAssociationsSupplier != null && thatObj.numberAssociationsSupplier == null) {
-            return false;
-        }
-        if (numberAssociationsSupplier != null
-                && !numberAssociationsSupplier.get().equals(thatObj.numberAssociationsSupplier.get())) {
-            return false;
-        }
-        if (smartContract != thatObj.smartContract) {
-            return false;
-        }
-        if (numberPositiveBalancesSupplier == null && thatObj.numberPositiveBalancesSupplier != null) {
-            return false;
-        }
-        if (numberPositiveBalancesSupplier != null && thatObj.numberPositiveBalancesSupplier == null) {
-            return false;
-        }
-        if (numberPositiveBalancesSupplier != null
-                && !numberPositiveBalancesSupplier.get().equals(thatObj.numberPositiveBalancesSupplier.get())) {
-            return false;
-        }
-        if (ethereumNonce != thatObj.ethereumNonce) {
-            return false;
-        }
-        if (stakeAtStartOfLastRewardedPeriod != thatObj.stakeAtStartOfLastRewardedPeriod) {
-            return false;
-        }
-        if (autoRenewAccountId == null && thatObj.autoRenewAccountId != null) {
-            return false;
-        }
-        if (autoRenewAccountId != null && !autoRenewAccountId.equals(thatObj.autoRenewAccountId)) {
-            return false;
-        }
-        if (autoRenewSeconds != thatObj.autoRenewSeconds) {
-            return false;
-        }
-        if (contractKvPairsNumber != thatObj.contractKvPairsNumber) {
-            return false;
-        }
-        if (!cryptoAllowancesSupplier.get().equals(thatObj.cryptoAllowancesSupplier.get())) {
-            return false;
-        }
-        if (!approveForAllNftAllowancesSupplier.get().equals(thatObj.approveForAllNftAllowancesSupplier.get())) {
-            return false;
-        }
-        if (!tokenAllowancesSupplier.get().equals(thatObj.tokenAllowancesSupplier.get())) {
-            return false;
-        }
-        if (numberTreasuryTitles != thatObj.numberTreasuryTitles) {
-            return false;
-        }
-        if (expiredAndPendingRemoval != thatObj.expiredAndPendingRemoval) {
-            return false;
-        }
-        if (!firstContractStorageKey.equals(thatObj.firstContractStorageKey)) {
-            return false;
-        }
-        if (headPendingAirdropId == null && thatObj.headPendingAirdropId != null) {
-            return false;
-        }
-        if (headPendingAirdropId != null && !headPendingAirdropId.equals(thatObj.headPendingAirdropId)) {
-            return false;
-        }
-        if (numberPendingAirdrops != thatObj.numberPendingAirdrops) {
-            return false;
-        }
-        if (numberHooksInUse != thatObj.numberHooksInUse) {
-            return false;
-        }
-        if (firstHookId != thatObj.firstHookId) {
-            return false;
-        }
-        return numberLambdaStorageSlots == thatObj.numberLambdaStorageSlots;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public String toString() {
-        return alias.toString();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -575,7 +165,7 @@ public record Account(
      * @return true of the accountId has a value
      */
     public boolean hasAccountId() {
-        return accountId != null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -586,7 +176,7 @@ public record Account(
      * @return the value for accountId if it has a value, or else returns the default value
      */
     public AccountID accountIdOrElse(@Nonnull final AccountID defaultValue) {
-        return hasAccountId() ? accountId : defaultValue;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -596,8 +186,9 @@ public record Account(
      * @return the value for accountId if it has a value
      * @throws NullPointerException if accountId is null
      */
-    public @Nonnull AccountID accountIdOrThrow() {
-        return requireNonNull(accountId, "Field accountId is null");
+    @Nonnull
+    public AccountID accountIdOrThrow() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -606,9 +197,7 @@ public record Account(
      * @param ifPresent the {@link Consumer} to execute
      */
     public void ifAccountId(@Nonnull final Consumer<AccountID> ifPresent) {
-        if (hasAccountId()) {
-            ifPresent.accept(accountId);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -617,7 +206,7 @@ public record Account(
      * @return true of the key has a value
      */
     public boolean hasKey() {
-        return key != null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -628,7 +217,7 @@ public record Account(
      * @return the value for key if it has a value, or else returns the default value
      */
     public Key keyOrElse(@Nonnull final Key defaultValue) {
-        return hasKey() ? key : defaultValue;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -638,8 +227,9 @@ public record Account(
      * @return the value for key if it has a value
      * @throws NullPointerException if key is null
      */
-    public @Nonnull Key keyOrThrow() {
-        return requireNonNull(key, "Field key is null");
+    @Nonnull
+    public Key keyOrThrow() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -648,9 +238,7 @@ public record Account(
      * @param ifPresent the {@link Consumer} to execute
      */
     public void ifKey(@Nonnull final Consumer<Key> ifPresent) {
-        if (hasKey()) {
-            ifPresent.accept(key);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -659,7 +247,7 @@ public record Account(
      * @return true of the headTokenId has a value
      */
     public boolean hasHeadTokenId() {
-        return headTokenId != null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -670,7 +258,7 @@ public record Account(
      * @return the value for headTokenId if it has a value, or else returns the default value
      */
     public TokenID headTokenIdOrElse(@Nonnull final TokenID defaultValue) {
-        return hasHeadTokenId() ? headTokenId : defaultValue;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -680,8 +268,9 @@ public record Account(
      * @return the value for headTokenId if it has a value
      * @throws NullPointerException if headTokenId is null
      */
-    public @Nonnull TokenID headTokenIdOrThrow() {
-        return requireNonNull(headTokenId, "Field headTokenId is null");
+    @Nonnull
+    public TokenID headTokenIdOrThrow() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -690,9 +279,7 @@ public record Account(
      * @param ifPresent the {@link Consumer} to execute
      */
     public void ifHeadTokenId(@Nonnull final Consumer<TokenID> ifPresent) {
-        if (hasHeadTokenId()) {
-            ifPresent.accept(headTokenId);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -701,7 +288,7 @@ public record Account(
      * @return true of the headNftId has a value
      */
     public boolean hasHeadNftId() {
-        return headNftId != null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -712,7 +299,7 @@ public record Account(
      * @return the value for headNftId if it has a value, or else returns the default value
      */
     public NftID headNftIdOrElse(@Nonnull final NftID defaultValue) {
-        return hasHeadNftId() ? headNftId : defaultValue;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -722,8 +309,9 @@ public record Account(
      * @return the value for headNftId if it has a value
      * @throws NullPointerException if headNftId is null
      */
-    public @Nonnull NftID headNftIdOrThrow() {
-        return requireNonNull(headNftId, "Field headNftId is null");
+    @Nonnull
+    public NftID headNftIdOrThrow() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -732,9 +320,7 @@ public record Account(
      * @param ifPresent the {@link Consumer} to execute
      */
     public void ifHeadNftId(@Nonnull final Consumer<NftID> ifPresent) {
-        if (hasHeadNftId()) {
-            ifPresent.accept(headNftId);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -743,7 +329,7 @@ public record Account(
      * @return true of the autoRenewAccountId has a value
      */
     public boolean hasAutoRenewAccountId() {
-        return autoRenewAccountId != null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -754,7 +340,7 @@ public record Account(
      * @return the value for autoRenewAccountId if it has a value, or else returns the default value
      */
     public AccountID autoRenewAccountIdOrElse(@Nonnull final AccountID defaultValue) {
-        return hasAutoRenewAccountId() ? autoRenewAccountId : defaultValue;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -764,8 +350,9 @@ public record Account(
      * @return the value for autoRenewAccountId if it has a value
      * @throws NullPointerException if autoRenewAccountId is null
      */
-    public @Nonnull AccountID autoRenewAccountIdOrThrow() {
-        return requireNonNull(autoRenewAccountId, "Field autoRenewAccountId is null");
+    @Nonnull
+    public AccountID autoRenewAccountIdOrThrow() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -774,9 +361,7 @@ public record Account(
      * @param ifPresent the {@link Consumer} to execute
      */
     public void ifAutoRenewAccountId(@Nonnull final Consumer<AccountID> ifPresent) {
-        if (hasAutoRenewAccountId()) {
-            ifPresent.accept(autoRenewAccountId);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -785,7 +370,7 @@ public record Account(
      * @return true of the headPendingAirdropId has a value
      */
     public boolean hasHeadPendingAirdropId() {
-        return headPendingAirdropId != null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -796,7 +381,7 @@ public record Account(
      * @return the value for headPendingAirdropId if it has a value, or else returns the default value
      */
     public PendingAirdropId headPendingAirdropIdOrElse(@Nonnull final PendingAirdropId defaultValue) {
-        return hasHeadPendingAirdropId() ? headPendingAirdropId : defaultValue;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -806,8 +391,9 @@ public record Account(
      * @return the value for headPendingAirdropId if it has a value
      * @throws NullPointerException if headPendingAirdropId is null
      */
-    public @Nonnull PendingAirdropId headPendingAirdropIdOrThrow() {
-        return requireNonNull(headPendingAirdropId, "Field headPendingAirdropId is null");
+    @Nonnull
+    public PendingAirdropId headPendingAirdropIdOrThrow() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -816,9 +402,7 @@ public record Account(
      * @param ifPresent the {@link Consumer} to execute
      */
     public void ifHeadPendingAirdropId(@Nonnull final Consumer<PendingAirdropId> ifPresent) {
-        if (hasHeadPendingAirdropId()) {
-            ifPresent.accept(headPendingAirdropId);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -826,8 +410,9 @@ public record Account(
      *
      * @return one of value or null if one of is not set or a different one of value
      */
-    public @Nullable AccountID stakedAccountId() {
-        return stakedId.kind() == StakedIdOneOfType.STAKED_ACCOUNT_ID ? (AccountID) stakedId.value() : null;
+    @Nullable
+    public AccountID stakedAccountId() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -836,7 +421,7 @@ public record Account(
      * @return true of the one of kind is STAKED_ACCOUNT_ID
      */
     public boolean hasStakedAccountId() {
-        return stakedId.kind() == StakedIdOneOfType.STAKED_ACCOUNT_ID;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -847,7 +432,7 @@ public record Account(
      * @return the value for stakedAccountId if it has a value, or else returns the default value
      */
     public AccountID stakedAccountIdOrElse(@Nonnull final AccountID defaultValue) {
-        return hasStakedAccountId() ? stakedAccountId() : defaultValue;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -856,8 +441,9 @@ public record Account(
      * @return the value for stakedAccountId if it has a value
      * @throws NullPointerException if stakedAccountId is null
      */
-    public @Nonnull AccountID stakedAccountIdOrThrow() {
-        return requireNonNull(stakedAccountId(), "Field stakedAccountId is null");
+    @Nonnull
+    public AccountID stakedAccountIdOrThrow() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -865,8 +451,9 @@ public record Account(
      *
      * @return one of value or null if one of is not set or a different one of value
      */
-    public @Nullable Long stakedNodeId() {
-        return stakedId.kind() == StakedIdOneOfType.STAKED_NODE_ID ? (Long) stakedId.value() : null;
+    @Nullable
+    public Long stakedNodeId() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -875,7 +462,7 @@ public record Account(
      * @return true of the one of kind is STAKED_NODE_ID
      */
     public boolean hasStakedNodeId() {
-        return stakedId.kind() == StakedIdOneOfType.STAKED_NODE_ID;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -886,7 +473,7 @@ public record Account(
      * @return the value for stakedNodeId if it has a value, or else returns the default value
      */
     public Long stakedNodeIdOrElse(@Nonnull final Long defaultValue) {
-        return hasStakedNodeId() ? stakedNodeId() : defaultValue;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -895,8 +482,9 @@ public record Account(
      * @return the value for stakedNodeId if it has a value
      * @throws NullPointerException if stakedNodeId is null
      */
-    public @Nonnull Long stakedNodeIdOrThrow() {
-        return requireNonNull(stakedNodeId(), "Field stakedNodeId is null");
+    @Nonnull
+    public Long stakedNodeIdOrThrow() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -906,97 +494,65 @@ public record Account(
      * @return a pre-populated builder
      */
     public Builder copyBuilder() {
-        return new Builder(
-                accountId,
-                alias,
-                key,
-                expirationSecond,
-                tinybarBalanceSupplier,
-                memo,
-                deleted,
-                stakedToMe,
-                stakePeriodStart,
-                stakedId,
-                declineReward,
-                receiverSigRequired,
-                headTokenId,
-                headNftId,
-                headNftSerialNumber,
-                numberOwnedNftsSupplier,
-                maxAutoAssociations,
-                usedAutoAssociations,
-                numberAssociationsSupplier,
-                smartContract,
-                numberPositiveBalancesSupplier,
-                ethereumNonce,
-                stakeAtStartOfLastRewardedPeriod,
-                autoRenewAccountId,
-                autoRenewSeconds,
-                contractKvPairsNumber,
-                cryptoAllowancesSupplier,
-                approveForAllNftAllowancesSupplier,
-                tokenAllowancesSupplier,
-                numberTreasuryTitles,
-                expiredAndPendingRemoval,
-                firstContractStorageKey,
-                headPendingAirdropId,
-                numberPendingAirdrops,
-                numberHooksInUse,
-                firstHookId,
-                numberLambdaStorageSlots);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public long tinybarBalance() {
-        return tinybarBalanceSupplier.get();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public int numberAssociations() {
-        return numberAssociationsSupplier.get();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public int numberPositiveBalances() {
-        return numberPositiveBalancesSupplier.get();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public long numberOwnedNfts() {
-        return numberOwnedNftsSupplier.get();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public List<AccountCryptoAllowance> cryptoAllowances() {
-        return cryptoAllowancesSupplier.get();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public List<AccountApprovalForAllAllowance> approveForAllNftAllowances() {
-        return approveForAllNftAllowancesSupplier.get();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public List<AccountFungibleTokenAllowance> tokenAllowances() {
-        return tokenAllowancesSupplier.get();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
      * Enum for the type of "staked_id" oneof value
      */
     public enum StakedIdOneOfType implements com.hedera.pbj.runtime.EnumWithProtoMetadata {
+
         /**
          * Enum value for a unset OneOf, to avoid null OneOfs
          */
         UNSET(-1, "UNSET"),
-
-        /**<b>(10)</b> ID of the new account to which this account is staking. If set to the sentinel <code>0.0.0</code> AccountID,
-         * this field removes this account's staked account ID.
+        /**
+         * <b>(10)</b> ID of the new account to which this account is staking. If set to the sentinel <code>0.0.0</code> AccountID,
+         *  this field removes this account's staked account ID.
          */
         STAKED_ACCOUNT_ID(10, "staked_account_id"),
-
-        /**<b>(11)</b> ID of the new node this account is staked to. If set to the sentinel <code>-1</code>, this field
-         * removes this account's staked node ID.
+        /**
+         * <b>(11)</b> ID of the new node this account is staked to. If set to the sentinel <code>-1</code>, this field
+         *  removes this account's staked node ID.
          */
         STAKED_NODE_ID(11, "staked_node_id");
 
-        /** The field ordinal in protobuf for this type */
+        /**
+         * The field ordinal in protobuf for this type
+         */
         private final int protoOrdinal;
 
-        /** The original field name in protobuf for this type */
+        /**
+         * The original field name in protobuf for this type
+         */
         private final String protoName;
 
         /**
@@ -1018,13 +574,7 @@ public record Account(
          * @throws IllegalArgumentException if ordinal doesn't exist
          */
         public static StakedIdOneOfType fromProtobufOrdinal(int ordinal) {
-            return switch (ordinal) {
-                case 10 -> STAKED_ACCOUNT_ID;
-
-                case 11 -> STAKED_NODE_ID;
-
-                default -> throw new IllegalArgumentException("Unknown protobuf ordinal " + ordinal);
-            };
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1034,13 +584,7 @@ public record Account(
          * @return enum for matching name
          */
         public static StakedIdOneOfType fromString(String name) {
-            return switch (name) {
-                case "staked_account_id", "STAKED_ACCOUNT_ID" -> STAKED_ACCOUNT_ID;
-
-                case "staked_node_id", "STAKED_NODE_ID" -> STAKED_NODE_ID;
-
-                default -> throw new IllegalArgumentException("Unknown token kyc status " + name);
-            };
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1049,7 +593,7 @@ public record Account(
          * @return The oneof field ordinal in protobuf for this type
          */
         public int protoOrdinal() {
-            return protoOrdinal;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1058,7 +602,7 @@ public record Account(
          * @return The original field name in protobuf for this type
          */
         public String protoName() {
-            return protoName;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
     }
 
@@ -1067,6 +611,7 @@ public record Account(
      * paths use the constructor directly.
      */
     public static final class Builder {
+
         @Nullable
         private AccountID accountId = null;
 
@@ -1077,17 +622,22 @@ public record Account(
         private Key key = null;
 
         private long expirationSecond = 0;
+
         private Supplier<Long> tinybarBalanceSupplier = DEFAULT_LONG_SUPPLIER;
 
         @Nonnull
         private String memo = "";
 
         private boolean deleted = false;
+
         private long stakedToMe = 0;
+
         private long stakePeriodStart = 0;
-        private OneOf<Account.StakedIdOneOfType> stakedId =
-                com.hedera.hapi.node.state.token.codec.AccountProtoCodec.STAKED_ID_UNSET;
+
+        private OneOf<Account.StakedIdOneOfType> stakedId = com.hedera.hapi.node.state.token.codec.AccountProtoCodec.STAKED_ID_UNSET;
+
         private boolean declineReward = false;
+
         private boolean receiverSigRequired = false;
 
         @Nullable
@@ -1097,32 +647,41 @@ public record Account(
         private NftID headNftId = null;
 
         private long headNftSerialNumber = 0;
+
         private Supplier<Long> numberOwnedNftsSupplier = DEFAULT_LONG_SUPPLIER;
+
         private int maxAutoAssociations = 0;
+
         private int usedAutoAssociations = 0;
+
         private Supplier<Integer> numberAssociationsSupplier = DEFAULT_INTEGER_SUPPLIER;
+
         private boolean smartContract = false;
+
         private Supplier<Integer> numberPositiveBalancesSupplier = DEFAULT_INTEGER_SUPPLIER;
+
         private long ethereumNonce = 0;
+
         private long stakeAtStartOfLastRewardedPeriod = 0;
 
         @Nullable
         private AccountID autoRenewAccountId = null;
 
         private long autoRenewSeconds = 0;
+
         private int contractKvPairsNumber = 0;
 
         @Nonnull
         private Supplier<List<AccountCryptoAllowance>> cryptoAllowancesSupplier = Collections::emptyList;
 
         @Nonnull
-        private Supplier<List<AccountApprovalForAllAllowance>> approveForAllNftAllowancesSupplier =
-                Collections::emptyList;
+        private Supplier<List<AccountApprovalForAllAllowance>> approveForAllNftAllowancesSupplier = Collections::emptyList;
 
         @Nonnull
         private Supplier<List<AccountFungibleTokenAllowance>> tokenAllowancesSupplier = Collections::emptyList;
 
         private int numberTreasuryTitles = 0;
+
         private boolean expiredAndPendingRemoval = false;
 
         @Nonnull
@@ -1142,7 +701,8 @@ public record Account(
         /**
          * Create an empty builder
          */
-        public Builder() {}
+        public Builder() {
+        }
 
         /**
          * Create a pre-populated Builder.
@@ -1218,44 +778,7 @@ public record Account(
          * @param numberLambdaStorageSlots <b>(38)</b> The number of storage slots in use by this account's lambdas.
          */
         @SuppressWarnings("java:S107")
-        public Builder(
-                AccountID accountId,
-                Bytes alias,
-                Key key,
-                long expirationSecond,
-                Supplier<Long> tinybarBalanceSupplier,
-                String memo,
-                boolean deleted,
-                long stakedToMe,
-                long stakePeriodStart,
-                OneOf<Account.StakedIdOneOfType> stakedId,
-                boolean declineReward,
-                boolean receiverSigRequired,
-                TokenID headTokenId,
-                NftID headNftId,
-                long headNftSerialNumber,
-                Supplier<Long> numberOwnedNftsSupplier,
-                int maxAutoAssociations,
-                int usedAutoAssociations,
-                Supplier<Integer> numberAssociationsSupplier,
-                boolean smartContract,
-                Supplier<Integer> numberPositiveBalancesSupplier,
-                long ethereumNonce,
-                long stakeAtStartOfLastRewardedPeriod,
-                AccountID autoRenewAccountId,
-                long autoRenewSeconds,
-                int contractKvPairsNumber,
-                Supplier<List<AccountCryptoAllowance>> cryptoAllowancesSupplier,
-                Supplier<List<AccountApprovalForAllAllowance>> approveForAllNftAllowancesSupplier,
-                Supplier<List<AccountFungibleTokenAllowance>> tokenAllowancesSupplier,
-                int numberTreasuryTitles,
-                boolean expiredAndPendingRemoval,
-                Bytes firstContractStorageKey,
-                PendingAirdropId headPendingAirdropId,
-                long numberPendingAirdrops,
-                long numberHooksInUse,
-                long firstHookId,
-                long numberLambdaStorageSlots) {
+        public Builder(AccountID accountId, Bytes alias, Key key, long expirationSecond, Supplier<Long> tinybarBalanceSupplier, String memo, boolean deleted, long stakedToMe, long stakePeriodStart, OneOf<Account.StakedIdOneOfType> stakedId, boolean declineReward, boolean receiverSigRequired, TokenID headTokenId, NftID headNftId, long headNftSerialNumber, Supplier<Long> numberOwnedNftsSupplier, int maxAutoAssociations, int usedAutoAssociations, Supplier<Integer> numberAssociationsSupplier, boolean smartContract, Supplier<Integer> numberPositiveBalancesSupplier, long ethereumNonce, long stakeAtStartOfLastRewardedPeriod, AccountID autoRenewAccountId, long autoRenewSeconds, int contractKvPairsNumber, Supplier<List<AccountCryptoAllowance>> cryptoAllowancesSupplier, Supplier<List<AccountApprovalForAllAllowance>> approveForAllNftAllowancesSupplier, Supplier<List<AccountFungibleTokenAllowance>> tokenAllowancesSupplier, int numberTreasuryTitles, boolean expiredAndPendingRemoval, Bytes firstContractStorageKey, PendingAirdropId headPendingAirdropId, long numberPendingAirdrops, long numberHooksInUse, long firstHookId, long numberLambdaStorageSlots) {
             this.accountId = accountId;
             this.alias = alias != null ? alias : Bytes.EMPTY;
             this.key = key;
@@ -1282,13 +805,9 @@ public record Account(
             this.autoRenewAccountId = autoRenewAccountId;
             this.autoRenewSeconds = autoRenewSeconds;
             this.contractKvPairsNumber = contractKvPairsNumber;
-            this.cryptoAllowancesSupplier =
-                    cryptoAllowancesSupplier == null ? Collections::emptyList : cryptoAllowancesSupplier;
-            this.approveForAllNftAllowancesSupplier = approveForAllNftAllowancesSupplier == null
-                    ? Collections::emptyList
-                    : approveForAllNftAllowancesSupplier;
-            this.tokenAllowancesSupplier =
-                    tokenAllowancesSupplier == null ? Collections::emptyList : tokenAllowancesSupplier;
+            this.cryptoAllowancesSupplier = cryptoAllowancesSupplier == null ? Collections::emptyList : cryptoAllowancesSupplier;
+            this.approveForAllNftAllowancesSupplier = approveForAllNftAllowancesSupplier == null ? Collections::emptyList : approveForAllNftAllowancesSupplier;
+            this.tokenAllowancesSupplier = tokenAllowancesSupplier == null ? Collections::emptyList : tokenAllowancesSupplier;
             this.numberTreasuryTitles = numberTreasuryTitles;
             this.expiredAndPendingRemoval = expiredAndPendingRemoval;
             this.firstContractStorageKey = firstContractStorageKey != null ? firstContractStorageKey : Bytes.EMPTY;
@@ -1305,44 +824,7 @@ public record Account(
          * @return new model record with data set
          */
         public Account build() {
-            return new Account(
-                    accountId,
-                    alias,
-                    key,
-                    expirationSecond,
-                    tinybarBalanceSupplier,
-                    memo,
-                    deleted,
-                    stakedToMe,
-                    stakePeriodStart,
-                    stakedId,
-                    declineReward,
-                    receiverSigRequired,
-                    headTokenId,
-                    headNftId,
-                    headNftSerialNumber,
-                    numberOwnedNftsSupplier,
-                    maxAutoAssociations,
-                    usedAutoAssociations,
-                    numberAssociationsSupplier,
-                    smartContract,
-                    numberPositiveBalancesSupplier,
-                    ethereumNonce,
-                    stakeAtStartOfLastRewardedPeriod,
-                    autoRenewAccountId,
-                    autoRenewSeconds,
-                    contractKvPairsNumber,
-                    cryptoAllowancesSupplier,
-                    approveForAllNftAllowancesSupplier,
-                    tokenAllowancesSupplier,
-                    numberTreasuryTitles,
-                    expiredAndPendingRemoval,
-                    firstContractStorageKey,
-                    headPendingAirdropId,
-                    numberPendingAirdrops,
-                    numberHooksInUse,
-                    firstHookId,
-                    numberLambdaStorageSlots);
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1352,8 +834,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder accountId(@Nullable AccountID accountId) {
-            this.accountId = accountId;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1363,8 +844,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder accountId(AccountID.Builder builder) {
-            this.accountId = builder.build();
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1374,8 +854,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder alias(@Nonnull Bytes alias) {
-            this.alias = alias;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1387,8 +866,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder key(@Nullable Key key) {
-            this.key = key;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1400,8 +878,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder key(Key.Builder builder) {
-            this.key = builder.build();
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1411,8 +888,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder expirationSecond(long expirationSecond) {
-            this.expirationSecond = expirationSecond;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1422,8 +898,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder tinybarBalance(long tinybarBalance) {
-            this.tinybarBalanceSupplier = () -> tinybarBalance;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1433,8 +908,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder tinybarBalance(Supplier<Long> tinybarBalanceSupplier) {
-            this.tinybarBalanceSupplier = tinybarBalanceSupplier;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1444,8 +918,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder memo(@Nonnull String memo) {
-            this.memo = memo;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1455,8 +928,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder deleted(boolean deleted) {
-            this.deleted = deleted;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1466,8 +938,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder stakedToMe(long stakedToMe) {
-            this.stakedToMe = stakedToMe;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1478,8 +949,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder stakePeriodStart(long stakePeriodStart) {
-            this.stakePeriodStart = stakePeriodStart;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1490,8 +960,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder stakedAccountId(@Nullable AccountID stakedAccountId) {
-            this.stakedId = new OneOf<>(Account.StakedIdOneOfType.STAKED_ACCOUNT_ID, stakedAccountId);
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1502,8 +971,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder stakedAccountId(AccountID.Builder builder) {
-            this.stakedId = new OneOf<>(Account.StakedIdOneOfType.STAKED_ACCOUNT_ID, builder.build());
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1514,8 +982,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder stakedNodeId(long stakedNodeId) {
-            this.stakedId = new OneOf<>(Account.StakedIdOneOfType.STAKED_NODE_ID, stakedNodeId);
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1525,8 +992,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder declineReward(boolean declineReward) {
-            this.declineReward = declineReward;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1536,8 +1002,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder receiverSigRequired(boolean receiverSigRequired) {
-            this.receiverSigRequired = receiverSigRequired;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1547,8 +1012,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder headTokenId(@Nullable TokenID headTokenId) {
-            this.headTokenId = headTokenId;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1558,8 +1022,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder headTokenId(TokenID.Builder builder) {
-            this.headTokenId = builder.build();
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1569,8 +1032,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder headNftId(@Nullable NftID headNftId) {
-            this.headNftId = headNftId;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1580,8 +1042,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder headNftId(NftID.Builder builder) {
-            this.headNftId = builder.build();
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1591,8 +1052,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder headNftSerialNumber(long headNftSerialNumber) {
-            this.headNftSerialNumber = headNftSerialNumber;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1602,8 +1062,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder numberOwnedNfts(long numberOwnedNfts) {
-            this.numberOwnedNftsSupplier = () -> numberOwnedNfts;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1613,8 +1072,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder numberOwnedNfts(Supplier<Long> numberOwnedNftsSupplier) {
-            this.numberOwnedNftsSupplier = numberOwnedNftsSupplier;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1624,8 +1082,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder maxAutoAssociations(int maxAutoAssociations) {
-            this.maxAutoAssociations = maxAutoAssociations;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1635,8 +1092,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder usedAutoAssociations(int usedAutoAssociations) {
-            this.usedAutoAssociations = usedAutoAssociations;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1647,8 +1103,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder numberAssociations(int numberAssociations) {
-            this.numberAssociationsSupplier = () -> numberAssociations;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1659,8 +1114,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder numberAssociations(Supplier<Integer> numberAssociationsSupplier) {
-            this.numberAssociationsSupplier = numberAssociationsSupplier;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1670,8 +1124,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder smartContract(boolean smartContract) {
-            this.smartContract = smartContract;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1682,8 +1135,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder numberPositiveBalances(int numberPositiveBalances) {
-            this.numberPositiveBalancesSupplier = () -> numberPositiveBalances;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1694,8 +1146,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder numberPositiveBalances(Supplier<Integer> numberPositiveBalancesSupplier) {
-            this.numberPositiveBalancesSupplier = numberPositiveBalancesSupplier;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1705,8 +1156,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder ethereumNonce(long ethereumNonce) {
-            this.ethereumNonce = ethereumNonce;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1716,8 +1166,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder stakeAtStartOfLastRewardedPeriod(long stakeAtStartOfLastRewardedPeriod) {
-            this.stakeAtStartOfLastRewardedPeriod = stakeAtStartOfLastRewardedPeriod;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1729,8 +1178,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder autoRenewAccountId(@Nullable AccountID autoRenewAccountId) {
-            this.autoRenewAccountId = autoRenewAccountId;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1742,8 +1190,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder autoRenewAccountId(AccountID.Builder builder) {
-            this.autoRenewAccountId = builder.build();
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1756,8 +1203,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder autoRenewSeconds(long autoRenewSeconds) {
-            this.autoRenewSeconds = autoRenewSeconds;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1768,8 +1214,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder contractKvPairsNumber(int contractKvPairsNumber) {
-            this.contractKvPairsNumber = contractKvPairsNumber;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1781,8 +1226,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder cryptoAllowances(@Nonnull List<AccountCryptoAllowance> cryptoAllowances) {
-            this.cryptoAllowancesSupplier = () -> cryptoAllowances;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1794,8 +1238,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder cryptoAllowances(@Nonnull Supplier<List<AccountCryptoAllowance>> cryptoAllowancesSupplier) {
-            this.cryptoAllowancesSupplier = cryptoAllowancesSupplier;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1807,10 +1250,8 @@ public record Account(
          * @param approveForAllNftAllowances value to set
          * @return builder to continue building with
          */
-        public Builder approveForAllNftAllowances(
-                @Nonnull List<AccountApprovalForAllAllowance> approveForAllNftAllowances) {
-            this.approveForAllNftAllowancesSupplier = () -> approveForAllNftAllowances;
-            return this;
+        public Builder approveForAllNftAllowances(@Nonnull List<AccountApprovalForAllAllowance> approveForAllNftAllowances) {
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1822,10 +1263,8 @@ public record Account(
          * @param approveForAllNftAllowancesSupplier value to set
          * @return builder to continue building with
          */
-        public Builder approveForAllNftAllowances(
-                @Nonnull Supplier<List<AccountApprovalForAllAllowance>> approveForAllNftAllowancesSupplier) {
-            this.approveForAllNftAllowancesSupplier = approveForAllNftAllowancesSupplier;
-            return this;
+        public Builder approveForAllNftAllowances(@Nonnull Supplier<List<AccountApprovalForAllAllowance>> approveForAllNftAllowancesSupplier) {
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1837,8 +1276,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder tokenAllowances(@Nonnull List<AccountFungibleTokenAllowance> tokenAllowances) {
-            this.tokenAllowancesSupplier = () -> tokenAllowances;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1850,8 +1288,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder tokenAllowances(@Nonnull Supplier<List<AccountFungibleTokenAllowance>> tokenAllowancesSupplier) {
-            this.tokenAllowancesSupplier = tokenAllowancesSupplier;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1861,8 +1298,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder numberTreasuryTitles(int numberTreasuryTitles) {
-            this.numberTreasuryTitles = numberTreasuryTitles;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1877,8 +1313,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder expiredAndPendingRemoval(boolean expiredAndPendingRemoval) {
-            this.expiredAndPendingRemoval = expiredAndPendingRemoval;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1889,8 +1324,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder firstContractStorageKey(@Nonnull Bytes firstContractStorageKey) {
-            this.firstContractStorageKey = firstContractStorageKey;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1906,8 +1340,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder headPendingAirdropId(@Nullable PendingAirdropId headPendingAirdropId) {
-            this.headPendingAirdropId = headPendingAirdropId;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1923,8 +1356,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder headPendingAirdropId(PendingAirdropId.Builder builder) {
-            this.headPendingAirdropId = builder.build();
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1935,8 +1367,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder numberPendingAirdrops(long numberPendingAirdrops) {
-            this.numberPendingAirdrops = numberPendingAirdrops;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1946,8 +1377,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder numberHooksInUse(long numberHooksInUse) {
-            this.numberHooksInUse = numberHooksInUse;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1957,8 +1387,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder firstHookId(long firstHookId) {
-            this.firstHookId = firstHookId;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1968,8 +1397,7 @@ public record Account(
          * @return builder to continue building with
          */
         public Builder numberLambdaStorageSlots(long numberLambdaStorageSlots) {
-            this.numberLambdaStorageSlots = numberLambdaStorageSlots;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
     }
 }

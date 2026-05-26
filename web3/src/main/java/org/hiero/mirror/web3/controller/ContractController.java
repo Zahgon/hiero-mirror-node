@@ -1,12 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.controller;
 
 import static org.hiero.mirror.web3.convert.BytesDecoder.hexToBytes;
 import static org.hiero.mirror.web3.service.model.CallServiceParameters.CallType.ETH_CALL;
 import static org.hiero.mirror.web3.service.model.CallServiceParameters.CallType.ETH_ESTIMATE_GAS;
 import static org.hiero.mirror.web3.validation.HexValidator.HEX_PREFIX;
-
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.CustomLog;
@@ -31,30 +29,19 @@ import org.springframework.web.bind.annotation.RestController;
 class ContractController {
 
     private final ContractExecutionService contractExecutionService;
+
     private final EvmProperties evmProperties;
+
     private final ThrottleManager throttleManager;
 
     @PostMapping(value = "/call")
     ContractCallResponse call(@RequestBody @Valid ContractCallRequest request, HttpServletResponse response) {
-        try {
-            throttleManager.throttle(request);
-            validateContractMaxGasLimit(request);
-
-            final var params = constructServiceParameters(request);
-            final var result = contractExecutionService.processCall(params);
-            return new ContractCallResponse(result);
-        } catch (InvalidParametersException e) {
-            // The validation failed, but no processing occurred so restore the consumed tokens.
-            throttleManager.restore(request.getGas());
-            throw e;
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private ContractExecutionParameters constructServiceParameters(ContractCallRequest request) {
         final var fromAddress = request.getFrom() != null ? Address.fromHexString(request.getFrom()) : Address.ZERO;
-
         Address receiver;
-
         /*In case of an empty "to" field, we set a default value of the zero address
         to avoid any potential NullPointerExceptions throughout the process.*/
         if (request.getTo() == null || request.getTo().isEmpty()) {
@@ -62,37 +49,21 @@ class ContractController {
         } else {
             receiver = Address.fromHexString(request.getTo());
         }
-
         String data;
         try {
             data = request.getData() != null ? request.getData() : HEX_PREFIX;
         } catch (final Exception e) {
-            throw new InvalidParametersException(
-                    "data field '%s' contains invalid odd length characters".formatted(request.getData()));
+            throw new InvalidParametersException("data field '%s' contains invalid odd length characters".formatted(request.getData()));
         }
-
         final var isStaticCall = false;
         final var callType = request.isEstimate() ? ETH_ESTIMATE_GAS : ETH_CALL;
         final var block = request.getBlock();
-
-        return ContractExecutionParameters.builder()
-                .block(block)
-                .callData(hexToBytes(data))
-                .callType(callType)
-                .gas(request.getGas())
-                .gasPrice(request.getGasPrice())
-                .isEstimate(request.isEstimate())
-                .isStatic(isStaticCall)
-                .receiver(receiver)
-                .sender(fromAddress)
-                .value(request.getValue())
-                .build();
+        return ContractExecutionParameters.builder().block(block).callData(hexToBytes(data)).callType(callType).gas(request.getGas()).gasPrice(request.getGasPrice()).isEstimate(request.isEstimate()).isStatic(isStaticCall).receiver(receiver).sender(fromAddress).value(request.getValue()).build();
     }
 
     private void validateContractMaxGasLimit(ContractCallRequest request) {
         if (request.getGas() > evmProperties.getMaxGasLimit()) {
-            throw new InvalidParametersException(
-                    "gas field must be less than or equal to %d".formatted(evmProperties.getMaxGasLimit()));
+            throw new InvalidParametersException("gas field must be less than or equal to %d".formatted(evmProperties.getMaxGasLimit()));
         }
     }
 }

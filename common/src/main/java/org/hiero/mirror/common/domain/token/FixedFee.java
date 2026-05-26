@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.token;
 
 import jakarta.persistence.Convert;
@@ -27,6 +26,6 @@ public class FixedFee extends AbstractFee {
 
     @Override
     public boolean isChargedInToken(EntityId tokenId) {
-        return tokenId.equals(denominatingTokenId);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

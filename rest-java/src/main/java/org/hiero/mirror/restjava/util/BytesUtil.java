@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.restjava.util;
 
 import org.apache.tuweni.bytes.MutableBytes32;
@@ -11,10 +10,10 @@ public final class BytesUtil {
     }
 
     public static byte[] incrementByteArray(byte[] bytes) {
-        return MutableBytes32.wrap(bytes).increment().toArrayUnsafe();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public static byte[] decrementByteArray(byte[] bytes) {
-        return MutableBytes32.wrap(bytes).decrement().toArrayUnsafe();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

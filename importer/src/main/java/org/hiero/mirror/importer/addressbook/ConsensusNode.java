@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.addressbook;
 
 import java.security.PublicKey;
@@ -12,7 +11,7 @@ import org.jspecify.annotations.NonNull;
 public interface ConsensusNode extends Comparable<ConsensusNode> {
 
     default int compareTo(@NonNull ConsensusNode other) {
-        return Long.compare(getNodeId(), other.getNodeId());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     EntityId getNodeAccountId();

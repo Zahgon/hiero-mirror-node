@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.transactionhandler;
 
 import com.hederahashgraph.api.proto.java.HookCall;
@@ -19,16 +18,13 @@ import org.jspecify.annotations.NullMarked;
  * The execution order is: allowExecHookIds → allowPreExecHookIds → allowPostExecHookIds
  */
 @NullMarked
-record HookExecutionCollector(
-        List<AbstractHook.Id> allowExecHookIds,
-        List<AbstractHook.Id> allowPreExecHookIds,
-        List<AbstractHook.Id> allowPostExecHookIds) {
+record HookExecutionCollector(List<AbstractHook.Id> allowExecHookIds, List<AbstractHook.Id> allowPreExecHookIds, List<AbstractHook.Id> allowPostExecHookIds) {
 
     /**
      * Creates a new HookExecutionCollector with empty lists.
      */
     static HookExecutionCollector create() {
-        return new HookExecutionCollector(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -38,9 +34,7 @@ record HookExecutionCollector(
      * @param ownerId  the owner ID for the hook
      */
     void addAllowExecHook(HookCall hookCall, long ownerId) {
-        if (hookCall.hasHookId()) {
-            allowExecHookIds.add(new AbstractHook.Id(hookCall.getHookId(), ownerId));
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -50,11 +44,7 @@ record HookExecutionCollector(
      * @param ownerId  the owner ID for the hook
      */
     void addPrePostExecHook(HookCall hookCall, long ownerId) {
-        if (hookCall.hasHookId()) {
-            final var hookId = new AbstractHook.Id(hookCall.getHookId(), ownerId);
-            allowPreExecHookIds.add(hookId);
-            allowPostExecHookIds.add(hookId);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -64,10 +54,6 @@ record HookExecutionCollector(
      * @return ArrayDeque containing all hook IDs in execution order
      */
     ArrayDeque<AbstractHook.Id> buildExecutionQueue() {
-        final var hookExecutionQueue = new ArrayDeque<AbstractHook.Id>();
-        hookExecutionQueue.addAll(allowExecHookIds);
-        hookExecutionQueue.addAll(allowPreExecHookIds);
-        hookExecutionQueue.addAll(allowPostExecHookIds);
-        return hookExecutionQueue;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

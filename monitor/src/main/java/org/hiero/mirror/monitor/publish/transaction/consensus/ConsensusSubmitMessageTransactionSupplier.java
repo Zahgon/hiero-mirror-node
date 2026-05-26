@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.publish.transaction.consensus;
 
 import com.hedera.hashgraph.sdk.Hbar;
@@ -38,12 +37,6 @@ public class ConsensusSubmitMessageTransactionSupplier implements TransactionSup
 
     @Override
     public TopicMessageSubmitTransaction get() {
-        return new TopicMessageSubmitTransaction()
-                .setMaxTransactionFee(Hbar.fromTinybars(maxTransactionFee))
-                .setMessage(
-                        !message.isEmpty()
-                                ? message.getBytes(StandardCharsets.UTF_8)
-                                : Utility.generateMessage(messageSize))
-                .setTopicId(getConsensusTopicId());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

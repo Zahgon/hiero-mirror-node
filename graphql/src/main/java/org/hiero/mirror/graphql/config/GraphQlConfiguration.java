@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.graphql.config;
 
 import com.fasterxml.jackson.core.StreamReadConstraints;
@@ -30,61 +29,30 @@ class GraphQlConfiguration {
 
     static {
         // Configure GraphQL parsing limits to reject malicious input
-        Consumer<Builder> consumer =
-                b -> b.maxCharacters(10000).maxRuleDepth(100).maxTokens(1000).maxWhitespaceTokens(1000);
-        ParserOptions.setDefaultParserOptions(
-                ParserOptions.getDefaultParserOptions().transform(consumer));
-        ParserOptions.setDefaultOperationParserOptions(
-                ParserOptions.getDefaultOperationParserOptions().transform(consumer));
+        Consumer<Builder> consumer = b -> b.maxCharacters(10000).maxRuleDepth(100).maxTokens(1000).maxWhitespaceTokens(1000);
+        ParserOptions.setDefaultParserOptions(ParserOptions.getDefaultParserOptions().transform(consumer));
+        ParserOptions.setDefaultOperationParserOptions(ParserOptions.getDefaultOperationParserOptions().transform(consumer));
     }
 
     @Bean
     GraphQlSourceBuilderCustomizer graphQlCustomizer(PreparsedDocumentProvider provider) {
-        var maxQueryComplexity = new MaxQueryComplexityInstrumentation(200);
-        var maxQueryDepth = new MaxQueryDepthInstrumentation(10);
-        var instrumentation = new ChainedInstrumentation(maxQueryComplexity, maxQueryDepth);
-
-        return b -> b.configureGraphQl(
-                graphQL -> graphQL.instrumentation(instrumentation).preparsedDocumentProvider(provider));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Bean
     RuntimeWiringConfigurer runtimeWiringConfigurer() {
-        return wiringBuilder -> wiringBuilder
-                .directiveWiring(validationDirectives())
-                .scalar(ExtendedScalars.GraphQLLong)
-                .scalar(ExtendedScalars.Object)
-                .scalar(GraphQlDuration.INSTANCE)
-                .scalar(GraphQlTimestamp.INSTANCE);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Bean
     SchemaDirectiveWiring validationDirectives() {
-        var validationRules = ValidationRules.newValidationRules()
-                .onValidationErrorStrategy(OnValidationErrorStrategy.RETURN_NULL)
-                .build();
-        return new ValidationSchemaWiring(validationRules);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     // Configure JSON parsing limits to reject malicious input
     @Bean
     @SuppressWarnings("removal")
     Jackson2ObjectMapperBuilderCustomizer jacksonCustomizer() {
-        return builder -> {
-            var streamReadConstraints = StreamReadConstraints.builder()
-                    .maxDocumentLength(11000)
-                    .maxNameLength(100)
-                    .maxNestingDepth(10)
-                    .maxNumberLength(19)
-                    .maxStringLength(11000)
-                    .maxTokenCount(100)
-                    .build();
-            var streamWriteConstraints =
-                    StreamWriteConstraints.builder().maxNestingDepth(100).build();
-            var factory = new MappingJsonFactory();
-            factory.setStreamReadConstraints(streamReadConstraints);
-            factory.setStreamWriteConstraints(streamWriteConstraints);
-            builder.factory(factory);
-        };
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

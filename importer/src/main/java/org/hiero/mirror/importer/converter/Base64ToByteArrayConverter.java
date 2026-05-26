@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.converter;
 
 import jakarta.inject.Named;
@@ -15,6 +14,6 @@ final class Base64ToByteArrayConverter implements Converter<String, byte[]> {
 
     @Override
     public byte[] convert(final String source) {
-        return Base64.getDecoder().decode(source);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

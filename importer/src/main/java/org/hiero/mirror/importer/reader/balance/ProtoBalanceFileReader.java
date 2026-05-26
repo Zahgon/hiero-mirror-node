@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.reader.balance;
 
 import com.hedera.services.stream.proto.AllAccountBalances;
@@ -26,48 +25,21 @@ public class ProtoBalanceFileReader implements BalanceFileReader {
 
     @Override
     public boolean supports(StreamFileData streamFileData) {
-        return FILE_EXTENSION.equals(
-                streamFileData.getStreamFilename().getExtension().getName());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public AccountBalanceFile read(StreamFileData streamFileData) {
-        try {
-            var bytes = streamFileData.getDecompressedBytes();
-            var allAccountBalances = AllAccountBalances.parseFrom(bytes);
-
-            if (!allAccountBalances.hasConsensusTimestamp()) {
-                throw new InvalidStreamFileException("Missing required consensusTimestamp field");
-            }
-
-            long consensusTimestamp = DomainUtils.timestampInNanosMax(allAccountBalances.getConsensusTimestamp());
-            var items = allAccountBalances.getAllAccountsList().stream()
-                    .map(ab -> toAccountBalance(consensusTimestamp, ab))
-                    .toList();
-
-            AccountBalanceFile accountBalanceFile = new AccountBalanceFile();
-            accountBalanceFile.setBytes(streamFileData.getBytes());
-            accountBalanceFile.setConsensusTimestamp(consensusTimestamp);
-            accountBalanceFile.setFileHash(DigestUtils.sha384Hex(bytes));
-            accountBalanceFile.setItems(items);
-            accountBalanceFile.setLoadStart(streamFileData.getStreamFilename().getTimestamp());
-            accountBalanceFile.setName(streamFileData.getFilename());
-            return accountBalanceFile;
-        } catch (IOException e) {
-            throw new StreamFileReaderException(e);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private AccountBalance toAccountBalance(long consensusTimestamp, SingleAccountBalances balances) {
         EntityId accountId = EntityId.of(balances.getAccountID());
-        List<TokenBalance> tokenBalances = balances.getTokenUnitBalancesList().stream()
-                .map(tokenBalance -> {
-                    EntityId tokenId = EntityId.of(tokenBalance.getTokenId());
-                    TokenBalance.Id id = new TokenBalance.Id(consensusTimestamp, accountId, tokenId);
-                    return new TokenBalance(tokenBalance.getBalance(), id);
-                })
-                .toList();
-        return new AccountBalance(
-                balances.getHbarBalance(), tokenBalances, new AccountBalance.Id(consensusTimestamp, accountId));
+        List<TokenBalance> tokenBalances = balances.getTokenUnitBalancesList().stream().map(tokenBalance -> {
+            EntityId tokenId = EntityId.of(tokenBalance.getTokenId());
+            TokenBalance.Id id = new TokenBalance.Id(consensusTimestamp, accountId, tokenId);
+            return new TokenBalance(tokenBalance.getBalance(), id);
+        }).toList();
+        return new AccountBalance(balances.getHbarBalance(), tokenBalances, new AccountBalance.Id(consensusTimestamp, accountId));
     }
 }

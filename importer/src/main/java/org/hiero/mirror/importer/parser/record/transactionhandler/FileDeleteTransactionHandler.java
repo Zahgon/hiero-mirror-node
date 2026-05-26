@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.transactionhandler;
 
 import jakarta.inject.Named;
@@ -20,13 +19,11 @@ class FileDeleteTransactionHandler extends AbstractEntityCrudTransactionHandler 
 
     @Override
     public EntityId getEntity(RecordItem recordItem) {
-        return EntityId.of(recordItem.getTransactionBody().getFileDelete().getFileID());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     protected void doUpdateEntity(Entity entity, RecordItem recordItem) {
-        entity.setDeleted(true);
-        entity.setType(EntityType.FILE);
-        entityListener.onEntity(entity);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

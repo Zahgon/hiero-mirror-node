@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.publish.transaction.account;
 
 import com.hedera.hashgraph.sdk.AccountId;
@@ -37,19 +36,6 @@ public class AccountUpdateTransactionSupplier implements TransactionSupplier<Acc
 
     @Override
     public AccountUpdateTransaction get() {
-        AccountUpdateTransaction transaction = new AccountUpdateTransaction()
-                .setAccountId(AccountId.fromString(accountId))
-                .setAccountMemo(Utility.getMemo("Mirror node updated test account"))
-                .setExpirationTime(expirationTime)
-                .setMaxTransactionFee(Hbar.fromTinybars(maxTransactionFee))
-                .setReceiverSignatureRequired(receiverSignatureRequired);
-
-        if (proxyAccountId != null) {
-            transaction.setProxyAccountId(AccountId.fromString(proxyAccountId));
-        }
-        if (publicKey != null) {
-            transaction.setKey(PublicKey.fromString(publicKey));
-        }
-        return transaction;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

@@ -1,11 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.entity;
 
 import static org.hiero.mirror.common.domain.transaction.TransactionType.CONSENSUSSUBMITMESSAGE;
 import static org.hiero.mirror.common.domain.transaction.TransactionType.SCHEDULECREATE;
 import static org.hiero.mirror.common.domain.transaction.TransactionType.SCHEDULESIGN;
-
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.util.EnumSet;
@@ -121,21 +119,19 @@ public class EntityProperties {
         }
 
         public boolean isTokenAirdrops() {
-            return tokenAirdrops && tokens;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         public boolean shouldPersistEntityTransaction(final EntityId entityId) {
-            return shouldPersistEntityTransaction(entityId, entityTransactions)
-                    && !entityTransactionExclusion.contains(entityId);
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         public boolean shouldPersistEntityNftTransaction(final EntityId entityId) {
-            return shouldPersistEntityTransaction(entityId, entityNftTransactions);
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         public boolean shouldPersistTransactionHash(TransactionType transactionType) {
-            return transactionHash
-                    && (transactionHashTypes.isEmpty() || transactionHashTypes.contains(transactionType));
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         private static boolean shouldPersistEntityTransaction(final EntityId entityId, final boolean enabled) {

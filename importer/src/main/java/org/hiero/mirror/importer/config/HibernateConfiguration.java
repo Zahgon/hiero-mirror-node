@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.config;
 
 import static org.hibernate.cfg.JdbcSettings.STATEMENT_INSPECTOR;
-
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.resource.jdbc.spi.StatementInspector;
@@ -14,15 +12,14 @@ import org.springframework.context.annotation.Configuration;
 @Configuration(proxyBeanMethods = false)
 @RequiredArgsConstructor
 class HibernateConfiguration implements HibernatePropertiesCustomizer {
+
     private final DBProperties dbProperties;
 
     private static final String NO_LOAD_BALANCE = "/* NO PGPOOL LOAD BALANCE */\n";
 
     @Override
     public void customize(Map<String, Object> hibernateProperties) {
-        if (!dbProperties.isLoadBalance()) {
-            hibernateProperties.put(STATEMENT_INSPECTOR, statementInspector());
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**

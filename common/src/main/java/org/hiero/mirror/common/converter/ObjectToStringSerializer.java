@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.converter;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -20,29 +19,24 @@ import org.hiero.mirror.common.domain.entity.EntityId;
 public class ObjectToStringSerializer extends JsonSerializer<Object> {
 
     public static final ObjectToStringSerializer INSTANCE = new ObjectToStringSerializer();
+
     public static final ObjectMapper OBJECT_MAPPER;
 
     static {
         var module = new SimpleModule();
         module.addDeserializer(EntityId.class, EntityIdDeserializer.INSTANCE);
         module.addSerializer(EntityId.class, EntityIdSerializer.INSTANCE);
-
-        OBJECT_MAPPER = new ObjectMapper()
-                .registerModule(module)
-                .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
-                .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-
+        OBJECT_MAPPER = new ObjectMapper().registerModule(module).setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE).disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
         // Configure hyperpersistence utils so that JsonBinaryType uses the same object mapper
         JsonConfiguration.INSTANCE.getObjectMapperWrapper().setObjectMapper(OBJECT_MAPPER);
     }
 
     public static void init() {
-        // Called by other classes to ensure the static initializer runs
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void serialize(Object o, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-        var json = OBJECT_MAPPER.writeValueAsString(o);
-        gen.writeString(json);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

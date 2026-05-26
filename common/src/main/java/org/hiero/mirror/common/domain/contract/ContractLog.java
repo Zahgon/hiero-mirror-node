@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.contract;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -20,7 +19,8 @@ import org.hiero.mirror.common.domain.entity.EntityId;
 import org.hiero.mirror.common.util.LogsBloomFilter;
 import org.springframework.data.domain.Persistable;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE) // For Builder
+// For Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 @Data
 @EqualsAndHashCode(exclude = "contractResult")
@@ -76,40 +76,28 @@ public class ContractLog implements Persistable<ContractLog.Id> {
     @Override
     @JsonIgnore
     public Id getId() {
-        Id id = new Id();
-        id.setConsensusTimestamp(consensusTimestamp);
-        id.setIndex(index);
-        return id;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @JsonIgnore
     @Override
     public boolean isNew() {
-        return true;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public void setBloom(final byte[] bloom) {
-        if (bloom == null) {
-            return;
-        }
-
-        this.bloom = bloom;
-        if (synthetic && contractResult != null) {
-            final var existingResultBloom = contractResult.getBloom();
-            final var aggregatedBloom = bloom.length == LogsBloomFilter.BYTE_SIZE
-                    ? LogsBloomFilter.or(existingResultBloom, bloom)
-                    : existingResultBloom;
-
-            contractResult.setBloom(aggregatedBloom);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
     public static class Id implements Serializable {
+
         private static final long serialVersionUID = -6192177810161178246L;
+
         private long consensusTimestamp;
+
         private int index;
     }
 }

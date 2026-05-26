@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package com.hedera.hapi.node.state.token;
 
 import static java.util.Objects.requireNonNull;
 import static org.hiero.mirror.web3.utils.Suppliers.areSuppliersEqual;
-
 import com.hedera.hapi.node.base.AccountID;
 import com.hedera.hapi.node.base.TokenID;
 import com.hedera.pbj.runtime.Codec;
@@ -29,24 +27,23 @@ import java.util.function.Supplier;
  * @param previousToken <b>(7)</b> The previous token id of account's association linked list
  * @param nextToken <b>(8)</b> The next token id of account's association linked list
  */
-public record TokenRelation(
-        @Nullable TokenID tokenId,
-        @Nullable AccountID accountId,
-        @Nullable Supplier<Long> balanceSupplier,
-        boolean frozen,
-        boolean kycGranted,
-        boolean automaticAssociation,
-        @Nullable TokenID previousToken,
-        @Nullable TokenID nextToken) {
-    /** Protobuf codec for reading and writing in protobuf format */
-    public static final Codec<TokenRelation> PROTOBUF =
-            new com.hedera.hapi.node.state.token.codec.TokenRelationProtoCodec();
-    /** JSON codec for reading and writing in JSON format */
-    public static final JsonCodec<TokenRelation> JSON =
-            new com.hedera.hapi.node.state.token.codec.TokenRelationJsonCodec();
+public record TokenRelation(@Nullable TokenID tokenId, @Nullable AccountID accountId, @Nullable Supplier<Long> balanceSupplier, boolean frozen, boolean kycGranted, boolean automaticAssociation, @Nullable TokenID previousToken, @Nullable TokenID nextToken) {
 
-    /** Default instance with all fields set to default values */
+    /**
+     * Protobuf codec for reading and writing in protobuf format
+     */
+    public static final Codec<TokenRelation> PROTOBUF = new com.hedera.hapi.node.state.token.codec.TokenRelationProtoCodec();
+
+    /**
+     * JSON codec for reading and writing in JSON format
+     */
+    public static final JsonCodec<TokenRelation> JSON = new com.hedera.hapi.node.state.token.codec.TokenRelationJsonCodec();
+
+    /**
+     * Default instance with all fields set to default values
+     */
     public static final TokenRelation DEFAULT = newBuilder().build();
+
     /**
      * Create a pre-populated TokenRelation.
      *
@@ -59,15 +56,7 @@ public record TokenRelation(
      * @param previousToken <b>(7)</b> The previous token id of account's association linked list,
      * @param nextToken <b>(8)</b> The next token id of account's association linked list
      */
-    public TokenRelation(
-            TokenID tokenId,
-            AccountID accountId,
-            long balance,
-            boolean frozen,
-            boolean kycGranted,
-            boolean automaticAssociation,
-            TokenID previousToken,
-            TokenID nextToken) {
+    public TokenRelation(TokenID tokenId, AccountID accountId, long balance, boolean frozen, boolean kycGranted, boolean automaticAssociation, TokenID previousToken, TokenID nextToken) {
         this(tokenId, accountId, () -> balance, frozen, kycGranted, automaticAssociation, previousToken, nextToken);
     }
 
@@ -77,7 +66,7 @@ public record TokenRelation(
      * @return a new builder
      */
     public static Builder newBuilder() {
-        return new Builder();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -86,49 +75,7 @@ public record TokenRelation(
      */
     @Override
     public int hashCode() {
-        int result = 1;
-        if (tokenId != null && !tokenId.equals(DEFAULT.tokenId)) {
-            result = 31 * result + tokenId.hashCode();
-        }
-        if (accountId != null && !accountId.equals(DEFAULT.accountId)) {
-            result = 31 * result + accountId.hashCode();
-        }
-        if (balanceSupplier != null) {
-            Long currentValue = balanceSupplier.get();
-            Long defaultValue = (DEFAULT.balanceSupplier != null) ? DEFAULT.balanceSupplier.get() : null;
-
-            if (currentValue != null && !currentValue.equals(defaultValue)) {
-                result = 31 * result + Long.hashCode(currentValue);
-            }
-        }
-        if (frozen != DEFAULT.frozen) {
-            result = 31 * result + Boolean.hashCode(frozen);
-        }
-        if (kycGranted != DEFAULT.kycGranted) {
-            result = 31 * result + Boolean.hashCode(kycGranted);
-        }
-        if (automaticAssociation != DEFAULT.automaticAssociation) {
-            result = 31 * result + Boolean.hashCode(automaticAssociation);
-        }
-        if (previousToken != null && !previousToken.equals(DEFAULT.previousToken)) {
-            result = 31 * result + previousToken.hashCode();
-        }
-        if (nextToken != null && !nextToken.equals(DEFAULT.nextToken)) {
-            result = 31 * result + nextToken.hashCode();
-        }
-        long hashCode = result;
-        // Shifts: 30, 27, 16, 20, 5, 18, 10, 24, 30
-        hashCode += hashCode << 30;
-        hashCode ^= hashCode >>> 27;
-        hashCode += hashCode << 16;
-        hashCode ^= hashCode >>> 20;
-        hashCode += hashCode << 5;
-        hashCode ^= hashCode >>> 18;
-        hashCode += hashCode << 10;
-        hashCode ^= hashCode >>> 24;
-        hashCode += hashCode << 30;
-
-        return (int) hashCode;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -136,44 +83,7 @@ public record TokenRelation(
      */
     @Override
     public boolean equals(Object that) {
-        if (that == null || this.getClass() != that.getClass()) {
-            return false;
-        }
-        TokenRelation thatObj = (TokenRelation) that;
-        if (tokenId == null && thatObj.tokenId != null) {
-            return false;
-        }
-        if (tokenId != null && !tokenId.equals(thatObj.tokenId)) {
-            return false;
-        }
-        if (accountId == null && thatObj.accountId != null) {
-            return false;
-        }
-        if (accountId != null && !accountId.equals(thatObj.accountId)) {
-            return false;
-        }
-        if (!areSuppliersEqual(balanceSupplier, thatObj.balanceSupplier)) {
-            return false;
-        }
-        if (frozen != thatObj.frozen) {
-            return false;
-        }
-        if (kycGranted != thatObj.kycGranted) {
-            return false;
-        }
-        if (automaticAssociation != thatObj.automaticAssociation) {
-            return false;
-        }
-        if (previousToken == null && thatObj.previousToken != null) {
-            return false;
-        }
-        if (previousToken != null && !previousToken.equals(thatObj.previousToken)) {
-            return false;
-        }
-        if (nextToken == null && thatObj.nextToken != null) {
-            return false;
-        }
-        return nextToken == null || nextToken.equals(thatObj.nextToken);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -182,7 +92,7 @@ public record TokenRelation(
      * @return true of the tokenId has a value
      */
     public boolean hasTokenId() {
-        return tokenId != null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -193,7 +103,7 @@ public record TokenRelation(
      * @return the value for tokenId if it has a value, or else returns the default value
      */
     public TokenID tokenIdOrElse(@Nonnull final TokenID defaultValue) {
-        return hasTokenId() ? tokenId : defaultValue;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -203,8 +113,9 @@ public record TokenRelation(
      * @return the value for tokenId if it has a value
      * @throws NullPointerException if tokenId is null
      */
-    public @Nonnull TokenID tokenIdOrThrow() {
-        return requireNonNull(tokenId, "Field tokenId is null");
+    @Nonnull
+    public TokenID tokenIdOrThrow() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -213,9 +124,7 @@ public record TokenRelation(
      * @param ifPresent the {@link Consumer} to execute
      */
     public void ifTokenId(@Nonnull final Consumer<TokenID> ifPresent) {
-        if (hasTokenId()) {
-            ifPresent.accept(tokenId);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -224,7 +133,7 @@ public record TokenRelation(
      * @return true of the accountId has a value
      */
     public boolean hasAccountId() {
-        return accountId != null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -235,7 +144,7 @@ public record TokenRelation(
      * @return the value for accountId if it has a value, or else returns the default value
      */
     public AccountID accountIdOrElse(@Nonnull final AccountID defaultValue) {
-        return hasAccountId() ? accountId : defaultValue;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -245,8 +154,9 @@ public record TokenRelation(
      * @return the value for accountId if it has a value
      * @throws NullPointerException if accountId is null
      */
-    public @Nonnull AccountID accountIdOrThrow() {
-        return requireNonNull(accountId, "Field accountId is null");
+    @Nonnull
+    public AccountID accountIdOrThrow() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -255,9 +165,7 @@ public record TokenRelation(
      * @param ifPresent the {@link Consumer} to execute
      */
     public void ifAccountId(@Nonnull final Consumer<AccountID> ifPresent) {
-        if (hasAccountId()) {
-            ifPresent.accept(accountId);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -266,7 +174,7 @@ public record TokenRelation(
      * @return true of the previousToken has a value
      */
     public boolean hasPreviousToken() {
-        return previousToken != null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -277,7 +185,7 @@ public record TokenRelation(
      * @return the value for previousToken if it has a value, or else returns the default value
      */
     public TokenID previousTokenOrElse(@Nonnull final TokenID defaultValue) {
-        return hasPreviousToken() ? previousToken : defaultValue;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -287,8 +195,9 @@ public record TokenRelation(
      * @return the value for previousToken if it has a value
      * @throws NullPointerException if previousToken is null
      */
-    public @Nonnull TokenID previousTokenOrThrow() {
-        return requireNonNull(previousToken, "Field previousToken is null");
+    @Nonnull
+    public TokenID previousTokenOrThrow() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -297,9 +206,7 @@ public record TokenRelation(
      * @param ifPresent the {@link Consumer} to execute
      */
     public void ifPreviousToken(@Nonnull final Consumer<TokenID> ifPresent) {
-        if (hasPreviousToken()) {
-            ifPresent.accept(previousToken);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -308,7 +215,7 @@ public record TokenRelation(
      * @return true of the nextToken has a value
      */
     public boolean hasNextToken() {
-        return nextToken != null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -319,7 +226,7 @@ public record TokenRelation(
      * @return the value for nextToken if it has a value, or else returns the default value
      */
     public TokenID nextTokenOrElse(@Nonnull final TokenID defaultValue) {
-        return hasNextToken() ? nextToken : defaultValue;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -329,8 +236,9 @@ public record TokenRelation(
      * @return the value for nextToken if it has a value
      * @throws NullPointerException if nextToken is null
      */
-    public @Nonnull TokenID nextTokenOrThrow() {
-        return requireNonNull(nextToken, "Field nextToken is null");
+    @Nonnull
+    public TokenID nextTokenOrThrow() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -339,16 +247,14 @@ public record TokenRelation(
      * @param ifPresent the {@link Consumer} to execute
      */
     public void ifNextToken(@Nonnull final Consumer<TokenID> ifPresent) {
-        if (hasNextToken()) {
-            ifPresent.accept(nextToken);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
      * @return The balance of the token relationship
      */
     public long balance() {
-        return balanceSupplier == null ? 0 : balanceSupplier.get();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -358,15 +264,7 @@ public record TokenRelation(
      * @return a pre-populated builder
      */
     public Builder copyBuilder() {
-        return new Builder(
-                tokenId,
-                accountId,
-                balanceSupplier,
-                frozen,
-                kycGranted,
-                automaticAssociation,
-                previousToken,
-                nextToken);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -374,6 +272,7 @@ public record TokenRelation(
      * paths use the constructor directly.
      */
     public static final class Builder {
+
         @Nullable
         private TokenID tokenId = null;
 
@@ -384,7 +283,9 @@ public record TokenRelation(
         private Supplier<Long> balanceSupplier = null;
 
         private boolean frozen = false;
+
         private boolean kycGranted = false;
+
         private boolean automaticAssociation = false;
 
         @Nullable
@@ -396,7 +297,8 @@ public record TokenRelation(
         /**
          * Create an empty builder
          */
-        public Builder() {}
+        public Builder() {
+        }
 
         /**
          * Create a pre-populated Builder.
@@ -411,15 +313,7 @@ public record TokenRelation(
          * @param nextToken <b>(8)</b> The next token id of account's association linked list
          */
         @SuppressWarnings("java:S107")
-        public Builder(
-                TokenID tokenId,
-                AccountID accountId,
-                Supplier<Long> balanceSupplier,
-                boolean frozen,
-                boolean kycGranted,
-                boolean automaticAssociation,
-                TokenID previousToken,
-                TokenID nextToken) {
+        public Builder(TokenID tokenId, AccountID accountId, Supplier<Long> balanceSupplier, boolean frozen, boolean kycGranted, boolean automaticAssociation, TokenID previousToken, TokenID nextToken) {
             this.tokenId = tokenId;
             this.accountId = accountId;
             this.balanceSupplier = balanceSupplier;
@@ -436,15 +330,7 @@ public record TokenRelation(
          * @return new model record with data set
          */
         public TokenRelation build() {
-            return new TokenRelation(
-                    tokenId,
-                    accountId,
-                    balanceSupplier,
-                    frozen,
-                    kycGranted,
-                    automaticAssociation,
-                    previousToken,
-                    nextToken);
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -454,8 +340,7 @@ public record TokenRelation(
          * @return builder to continue building with
          */
         public Builder tokenId(@Nullable TokenID tokenId) {
-            this.tokenId = tokenId;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -465,8 +350,7 @@ public record TokenRelation(
          * @return builder to continue building with
          */
         public Builder tokenId(TokenID.Builder builder) {
-            this.tokenId = builder.build();
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -476,8 +360,7 @@ public record TokenRelation(
          * @return builder to continue building with
          */
         public Builder accountId(@Nullable AccountID accountId) {
-            this.accountId = accountId;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -487,8 +370,7 @@ public record TokenRelation(
          * @return builder to continue building with
          */
         public Builder accountId(AccountID.Builder builder) {
-            this.accountId = builder.build();
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -498,8 +380,7 @@ public record TokenRelation(
          * @return builder to continue building with
          */
         public Builder balance(long balance) {
-            this.balanceSupplier = () -> balance;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -509,8 +390,7 @@ public record TokenRelation(
          * @return builder to continue building with
          */
         public Builder balanceSupplier(@Nullable Supplier<Long> balanceSupplier) {
-            this.balanceSupplier = balanceSupplier;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -520,8 +400,7 @@ public record TokenRelation(
          * @return builder to continue building with
          */
         public Builder frozen(boolean frozen) {
-            this.frozen = frozen;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -531,8 +410,7 @@ public record TokenRelation(
          * @return builder to continue building with
          */
         public Builder kycGranted(boolean kycGranted) {
-            this.kycGranted = kycGranted;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -542,8 +420,7 @@ public record TokenRelation(
          * @return builder to continue building with
          */
         public Builder automaticAssociation(boolean automaticAssociation) {
-            this.automaticAssociation = automaticAssociation;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -553,8 +430,7 @@ public record TokenRelation(
          * @return builder to continue building with
          */
         public Builder previousToken(@Nullable TokenID previousToken) {
-            this.previousToken = previousToken;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -564,8 +440,7 @@ public record TokenRelation(
          * @return builder to continue building with
          */
         public Builder previousToken(TokenID.Builder builder) {
-            this.previousToken = builder.build();
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -575,8 +450,7 @@ public record TokenRelation(
          * @return builder to continue building with
          */
         public Builder nextToken(@Nullable TokenID nextToken) {
-            this.nextToken = nextToken;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -586,8 +460,7 @@ public record TokenRelation(
          * @return builder to continue building with
          */
         public Builder nextToken(TokenID.Builder builder) {
-            this.nextToken = builder.build();
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
     }
 }

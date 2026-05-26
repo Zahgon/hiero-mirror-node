@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.grpc.config;
 
 import io.grpc.netty.NettyServerBuilder;
@@ -19,18 +18,11 @@ class GrpcConfiguration {
     @Bean
     @Qualifier("readOnly")
     TransactionOperations transactionOperationsReadOnly(PlatformTransactionManager transactionManager) {
-        var transactionTemplate = new TransactionTemplate(transactionManager);
-        transactionTemplate.setReadOnly(true);
-        return transactionTemplate;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Bean
-    ServerBuilderCustomizer<NettyServerBuilder> grpcServerConfigurer(
-            GrpcProperties grpcProperties, Executor applicationTaskExecutor) {
-        final var nettyProperties = grpcProperties.getNetty();
-        return serverBuilder -> {
-            serverBuilder.executor(applicationTaskExecutor);
-            serverBuilder.maxConcurrentCallsPerConnection(nettyProperties.getMaxConcurrentCallsPerConnection());
-        };
+    ServerBuilderCustomizer<NettyServerBuilder> grpcServerConfigurer(GrpcProperties grpcProperties, Executor applicationTaskExecutor) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

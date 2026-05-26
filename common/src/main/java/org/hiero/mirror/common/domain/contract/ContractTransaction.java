@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.contract;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -24,6 +23,7 @@ import org.springframework.data.domain.Persistable;
 @Builder
 @IdClass(ContractTransaction.Id.class)
 public class ContractTransaction implements Persistable<ContractTransaction.Id> {
+
     @jakarta.persistence.Id
     private Long consensusTimestamp;
 
@@ -39,23 +39,25 @@ public class ContractTransaction implements Persistable<ContractTransaction.Id> 
     @Override
     @JsonIgnore
     public Id getId() {
-        return new ContractTransaction.Id(consensusTimestamp, entityId);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     @JsonIgnore
     public boolean isNew() {
-        return true;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
     public static class Id implements Serializable {
+
         @Serial
         private static final long serialVersionUID = -6807023295883699004L;
 
         private long consensusTimestamp;
+
         private long entityId;
     }
 }

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.restjava.config;
 
 import static org.hiero.mirror.common.util.RuntimeHintsHelper.CONSTRUCTORS_AND_METHODS;
@@ -8,7 +7,6 @@ import static org.hiero.mirror.common.util.RuntimeHintsHelper.registerAnnotatedP
 import static org.hiero.mirror.common.util.RuntimeHintsHelper.registerPackage;
 import static org.hiero.mirror.common.util.RuntimeHintsHelper.registerReflectionTypes;
 import static org.hiero.mirror.common.util.RuntimeHintsHelper.registerResourcePatterns;
-
 import com.hedera.node.app.hapi.utils.sysfiles.domain.throttling.ThrottleGroup;
 import com.swirlds.config.api.ConfigData;
 import java.time.Instant;
@@ -58,24 +56,10 @@ import org.springframework.core.type.filter.AssignableTypeFilter;
 final class RuntimeHintsConfiguration {
 
     static final class CustomRuntimeHints implements RuntimeHintsRegistrar {
+
         @Override
         public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
-            final var loader = classLoader != null ? classLoader : getClass().getClassLoader();
-            registerOpenApiModels(hints);
-            registerRequestParameters(hints, loader);
-
-            registerAnnotatedPackage(hints, loader, "com.hedera.node.config.data", ConfigData.class);
-            registerPackage(hints, loader, ThrottleGroup.class.getPackageName());
-            registerPackage(hints, loader, NumberRangeParameter.class.getPackageName());
-
-            registerResourcePatterns(
-                    hints,
-                    "com/hedera/nativelib/hints/**",
-                    "com/hedera/nativelib/wraps/**",
-                    "*.properties",
-                    "genesis/**");
-
-            registerJooqClasses(hints, loader);
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -86,12 +70,7 @@ final class RuntimeHintsConfiguration {
         private void registerOpenApiModels(RuntimeHints hints) {
             final var scanner = new ClassPathScanningCandidateComponentProvider(false);
             scanner.addIncludeFilter(new AssignableTypeFilter(Object.class));
-            scanner.findCandidateComponents(Error.class.getPackageName()).forEach(b -> hints.reflection()
-                    .registerType(
-                            TypeReference.of(Objects.requireNonNull(b.getBeanClassName())),
-                            MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS,
-                            MemberCategory.ACCESS_DECLARED_FIELDS,
-                            MemberCategory.INVOKE_PUBLIC_METHODS));
+            scanner.findCandidateComponents(Error.class.getPackageName()).forEach(b -> hints.reflection().registerType(TypeReference.of(Objects.requireNonNull(b.getBeanClassName())), MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS, MemberCategory.ACCESS_DECLARED_FIELDS, MemberCategory.INVOKE_PUBLIC_METHODS));
         }
 
         /**
@@ -101,67 +80,11 @@ final class RuntimeHintsConfiguration {
          * @param hints The RuntimeHints to modify
          */
         private void registerRequestParameters(RuntimeHints hints, ClassLoader loader) {
-            registerPackage(
-                    hints,
-                    loader,
-                    NetworkNodeRequest.class.getPackageName(),
-                    MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS,
-                    MemberCategory.ACCESS_DECLARED_FIELDS,
-                    MemberCategory.INVOKE_PUBLIC_METHODS);
+            registerPackage(hints, loader, NetworkNodeRequest.class.getPackageName(), MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS, MemberCategory.ACCESS_DECLARED_FIELDS, MemberCategory.INVOKE_PUBLIC_METHODS);
         }
 
         private void registerJooqClasses(RuntimeHints hints, ClassLoader loader) {
-            registerReflectionTypes(
-                    hints,
-                    NONE,
-                    DayToSecond.class,
-                    DayToSecond[].class,
-                    UByte.class,
-                    UByte[].class,
-                    UInteger.class,
-                    UInteger[].class,
-                    ULong.class,
-                    ULong[].class,
-                    UShort.class,
-                    UShort[].class,
-                    YearToMonth.class,
-                    YearToMonth[].class,
-                    YearToSecond.class,
-                    YearToSecond[].class,
-                    LocalDate.class,
-                    LocalTime.class,
-                    LocalDateTime.class,
-                    OffsetTime.class,
-                    OffsetDateTime.class,
-                    Instant.class,
-                    Instant[].class,
-                    Year.class,
-                    LocalDate[].class,
-                    LocalTime[].class,
-                    LocalDateTime[].class,
-                    OffsetTime[].class,
-                    OffsetDateTime[].class,
-                    Year[].class,
-                    XML.class,
-                    XML[].class,
-                    Result.class,
-                    Result[].class,
-                    RowId.class,
-                    RowId[].class,
-                    Decfloat.class,
-                    Decfloat[].class,
-                    Field[].class,
-                    Geography.class,
-                    Geography[].class,
-                    Geometry.class,
-                    Geometry[].class,
-                    JSON.class,
-                    JSON[].class,
-                    JSONB.class,
-                    JSONB[].class,
-                    org.jooq.Record.class,
-                    org.jooq.Record[].class);
-
+            registerReflectionTypes(hints, NONE, DayToSecond.class, DayToSecond[].class, UByte.class, UByte[].class, UInteger.class, UInteger[].class, ULong.class, ULong[].class, UShort.class, UShort[].class, YearToMonth.class, YearToMonth[].class, YearToSecond.class, YearToSecond[].class, LocalDate.class, LocalTime.class, LocalDateTime.class, OffsetTime.class, OffsetDateTime.class, Instant.class, Instant[].class, Year.class, LocalDate[].class, LocalTime[].class, LocalDateTime[].class, OffsetTime[].class, OffsetDateTime[].class, Year[].class, XML.class, XML[].class, Result.class, Result[].class, RowId.class, RowId[].class, Decfloat.class, Decfloat[].class, Field[].class, Geography.class, Geography[].class, Geometry.class, Geometry[].class, JSON.class, JSON[].class, JSONB.class, JSONB[].class, org.jooq.Record.class, org.jooq.Record[].class);
             registerPackage(hints, loader, NftAllowanceRecord.class.getPackageName(), CONSTRUCTORS_AND_METHODS);
         }
     }

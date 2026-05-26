@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.utils;
 
 import java.util.Objects;
@@ -7,7 +6,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 public class Suppliers {
-    private Suppliers() {}
+
+    private Suppliers() {
+    }
 
     /**
      * Returns a supplier which caches the instance retrieved during the first call to {@code get()}
@@ -25,17 +26,7 @@ public class Suppliers {
      * returned directly.
      */
     public static <T> Supplier<T> memoize(Supplier<T> delegate) {
-        final var value = new AtomicReference<T>();
-        return () -> {
-            final T previousValue = value.get();
-            if (previousValue != null) {
-                return previousValue;
-            }
-
-            final T newValue = delegate.get();
-            value.set(newValue);
-            return newValue;
-        };
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -47,16 +38,6 @@ public class Suppliers {
      * @return true if both suppliers produce equal values, or if both are null; false otherwise
      */
     public static <T> boolean areSuppliersEqual(final Supplier<T> supplier1, final Supplier<T> supplier2) {
-        if (supplier1 == null && supplier2 == null) {
-            return true;
-        }
-        if (supplier1 == null || supplier2 == null) {
-            return false;
-        }
-
-        T value1 = supplier1.get();
-        T value2 = supplier2.get();
-
-        return Objects.equals(value1, value2);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

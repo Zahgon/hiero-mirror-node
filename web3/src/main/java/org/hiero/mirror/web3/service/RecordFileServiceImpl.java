@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.service;
 
 import java.util.Optional;
@@ -17,19 +16,11 @@ public class RecordFileServiceImpl implements RecordFileService {
 
     @Override
     public Optional<RecordFile> findByBlockType(BlockType block) {
-        if (block == BlockType.EARLIEST) {
-            return recordFileRepository.findEarliest();
-        } else if (block == BlockType.LATEST) {
-            return recordFileRepository.findLatest();
-        } else if (block.isHash()) {
-            return recordFileRepository.findByHash(block.name());
-        }
-
-        return recordFileRepository.findByIndex(block.number());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public Optional<RecordFile> findByTimestamp(Long timestamp) {
-        return recordFileRepository.findByTimestamp(timestamp);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

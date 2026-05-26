@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.util;
 
 import java.nio.charset.StandardCharsets;
@@ -26,44 +25,14 @@ public class Utility {
      * @return the parsed Instant
      */
     public static Instant getTimestamp(byte[] bytes) {
-        try {
-            if (bytes == null) {
-                return null;
-            }
-
-            String message = new String(bytes, StandardCharsets.US_ASCII);
-            String[] parts = StringUtils.split(message, ' ');
-            if (parts == null || parts.length <= 1) {
-                return null;
-            }
-
-            long now = System.currentTimeMillis();
-            Long timestamp = Long.parseLong(parts[0]);
-
-            // Discard unreasonable values
-            if (timestamp == null || timestamp < (now - MILLIS_OFFSET) || timestamp > (now + MILLIS_OFFSET)) {
-                return null;
-            }
-
-            return Instant.ofEpochMilli(timestamp);
-        } catch (Exception e) {
-            return null;
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public static byte[] generateMessage(int requestedMessageSize) {
-        String message = System.currentTimeMillis() + " ";
-        final var random = ThreadLocalRandom.current();
-
-        if (message.length() < requestedMessageSize) {
-            int length = requestedMessageSize - message.length();
-            message += RandomStringUtils.random(length, 0, 0, true, false, null, random);
-        }
-
-        return message.getBytes(StandardCharsets.US_ASCII);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public static String getMemo(String message) {
-        return System.currentTimeMillis() + " " + message;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

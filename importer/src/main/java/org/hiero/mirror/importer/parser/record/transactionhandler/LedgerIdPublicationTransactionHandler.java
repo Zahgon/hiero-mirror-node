@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.transactionhandler;
 
 import jakarta.inject.Named;
@@ -17,22 +16,16 @@ import org.jspecify.annotations.NullMarked;
 final class LedgerIdPublicationTransactionHandler extends AbstractTransactionHandler {
 
     private final EntityListener entityListener;
+
     private final LedgerIdPublicationTransactionParser ledgerIdPublicationTransactionParser;
 
     @Override
     protected void doUpdateTransaction(final Transaction transaction, final RecordItem recordItem) {
-        if (!recordItem.isSuccessful()) {
-            return;
-        }
-
-        final var ledger = ledgerIdPublicationTransactionParser.parse(
-                recordItem.getConsensusTimestamp(),
-                recordItem.getTransactionBody().getLedgerIdPublication());
-        entityListener.onLedger(ledger);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public TransactionType getType() {
-        return TransactionType.LEDGERIDPUBLICATION;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

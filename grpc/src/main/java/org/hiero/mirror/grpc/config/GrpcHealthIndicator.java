@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.grpc.config;
 
 import jakarta.inject.Named;
@@ -23,24 +22,21 @@ public class GrpcHealthIndicator implements HealthIndicator {
 
     @Override
     public Health health() {
-        return Health.status(status.get()).build();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @EventListener
     public void onStart(GrpcServerStartedEvent event) {
-        log.info("Started gRPC server on {}:{}", event.getAddress(), event.getPort());
-        status.set(Status.UP);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @EventListener
     public void onStop(GrpcServerShutdownEvent event) {
-        log.info("Stopping gRPC server");
-        status.set(Status.OUT_OF_SERVICE);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @EventListener
     public void onTermination(GrpcServerTerminatedEvent event) {
-        log.info("Stopped gRPC server");
-        status.set(Status.DOWN);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.transactionhandler;
 
 import com.google.common.collect.Range;
@@ -18,22 +17,11 @@ class NodeDeleteTransactionHandler extends AbstractNodeTransactionHandler {
 
     @Override
     public TransactionType getType() {
-        return TransactionType.NODEDELETE;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public Node parseNode(RecordItem recordItem) {
-        if (recordItem.isSuccessful()) {
-            long consensusTimestamp = recordItem.getConsensusTimestamp();
-            var body = recordItem.getTransactionBody().getNodeDelete();
-
-            return Node.builder()
-                    .deleted(true)
-                    .nodeId(body.getNodeId())
-                    .timestampRange(Range.atLeast(consensusTimestamp))
-                    .build();
-        }
-
-        return null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

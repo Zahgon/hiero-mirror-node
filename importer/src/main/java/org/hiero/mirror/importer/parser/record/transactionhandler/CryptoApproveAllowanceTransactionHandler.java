@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.transactionhandler;
 
 import com.google.common.collect.Range;
@@ -37,38 +36,27 @@ import org.hiero.mirror.importer.util.Utility;
 class CryptoApproveAllowanceTransactionHandler extends AbstractTransactionHandler {
 
     private final EntityIdService entityIdService;
+
     private final EntityListener entityListener;
+
     private final SyntheticContractLogService syntheticContractLogService;
+
     private final SyntheticContractResultService syntheticContractResultService;
 
     @Override
     public TransactionType getType() {
-        return TransactionType.CRYPTOAPPROVEALLOWANCE;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     protected void doUpdateTransaction(Transaction transaction, RecordItem recordItem) {
-        if (!recordItem.isSuccessful()) {
-            return;
-        }
-
-        var transactionBody = recordItem.getTransactionBody().getCryptoApproveAllowance();
-        parseCryptoAllowances(transactionBody.getCryptoAllowancesList(), recordItem);
-        parseNftAllowances(transactionBody.getNftAllowancesList(), recordItem);
-        parseTokenAllowances(transactionBody.getTokenAllowancesList(), recordItem);
-
-        if (transactionBody.getTokenAllowancesCount() > 0 || transactionBody.getNftAllowancesCount() > 0) {
-            syntheticContractResultService.create(
-                    new ApproveAllowanceContractResult(recordItem, EntityId.EMPTY, recordItem.getPayerAccountId()));
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    private void parseCryptoAllowances(
-            List<com.hederahashgraph.api.proto.java.CryptoAllowance> cryptoAllowances, RecordItem recordItem) {
+    private void parseCryptoAllowances(List<com.hederahashgraph.api.proto.java.CryptoAllowance> cryptoAllowances, RecordItem recordItem) {
         var consensusTimestamp = recordItem.getConsensusTimestamp();
         var cryptoAllowanceState = new HashMap<AbstractCryptoAllowance.Id, CryptoAllowance>();
         var payerAccountId = recordItem.getPayerAccountId();
-
         // iterate the crypto allowance list in reverse order and honor the last allowance for the same owner and
         // spender
         var iterator = cryptoAllowances.listIterator(cryptoAllowances.size());
@@ -79,7 +67,6 @@ class CryptoApproveAllowanceTransactionHandler extends AbstractTransactionHandle
                 Utility.handleRecoverableError("Empty ownerAccountId at consensusTimestamp {}", consensusTimestamp);
                 continue;
             }
-
             var cryptoAllowance = new CryptoAllowance();
             var spender = EntityId.of(cryptoApproval.getSpender());
             cryptoAllowance.setAmountGranted(cryptoApproval.getAmount());
@@ -88,7 +75,6 @@ class CryptoApproveAllowanceTransactionHandler extends AbstractTransactionHandle
             cryptoAllowance.setPayerAccountId(payerAccountId);
             cryptoAllowance.setSpender(spender.getId());
             cryptoAllowance.setTimestampLower(consensusTimestamp);
-
             if (cryptoAllowanceState.putIfAbsent(cryptoAllowance.getId(), cryptoAllowance) == null) {
                 entityListener.onCryptoAllowance(cryptoAllowance);
                 recordItem.addEntityId(ownerAccountId);
@@ -97,8 +83,7 @@ class CryptoApproveAllowanceTransactionHandler extends AbstractTransactionHandle
         }
     }
 
-    private void parseNftAllowances(
-            List<com.hederahashgraph.api.proto.java.NftAllowance> nftAllowances, RecordItem recordItem) {
+    private void parseNftAllowances(List<com.hederahashgraph.api.proto.java.NftAllowance> nftAllowances, RecordItem recordItem) {
         var consensusTimestamp = recordItem.getConsensusTimestamp();
         var payerAccountId = recordItem.getPayerAccountId();
         var nftAllowanceState = new HashMap<AbstractNftAllowance.Id, NftAllowance>();
@@ -114,36 +99,23 @@ class CryptoApproveAllowanceTransactionHandler extends AbstractTransactionHandle
                 // ownerAccountId will be EMPTY only when getOwnerAccountId fails to resolve the owner in the alias form
                 continue;
             }
-
             var spenderId = EntityId.of(nftApproval.getSpender());
             var tokenId = EntityId.of(nftApproval.getTokenId());
             boolean hasApprovedForAll = nftApproval.hasApprovedForAll();
-            parseNftApproveForAll(
-                    recordItem, nftAllowanceState, nftApproval, ownerAccountId, spenderId, tokenId, hasApprovedForAll);
-
+            parseNftApproveForAll(recordItem, nftAllowanceState, nftApproval, ownerAccountId, spenderId, tokenId, hasApprovedForAll);
             var delegatingSpenderId = EntityId.of(nftApproval.getDelegatingSpender());
             var delegatingSpender = EntityId.isEmpty(delegatingSpenderId) ? null : delegatingSpenderId.getId();
             for (var serialNumber : nftApproval.getSerialNumbersList()) {
                 // services allows the same serial number of a nft token appears in multiple nft allowances to
                 // different spenders. The last spender will be granted such allowance.
-                var nft = Nft.builder()
-                        .accountId(ownerAccountId)
-                        .delegatingSpender(delegatingSpender)
-                        .serialNumber(serialNumber)
-                        .spender(spenderId.getId())
-                        .timestampRange(Range.atLeast(consensusTimestamp))
-                        .tokenId(tokenId.getId())
-                        .build();
-
+                var nft = Nft.builder().accountId(ownerAccountId).delegatingSpender(delegatingSpender).serialNumber(serialNumber).spender(spenderId.getId()).timestampRange(Range.atLeast(consensusTimestamp)).tokenId(tokenId.getId()).build();
                 if (nftSerialAllowanceState.putIfAbsent(nft.getId(), nft) == null) {
                     entityListener.onNft(nft);
                     if (!hasApprovedForAll) {
-                        syntheticContractLogService.create(new ApproveAllowanceIndexedContractLog(
-                                recordItem, tokenId, ownerAccountId, spenderId, serialNumber));
+                        syntheticContractLogService.create(new ApproveAllowanceIndexedContractLog(recordItem, tokenId, ownerAccountId, spenderId, serialNumber));
                     }
                 }
             }
-
             recordItem.addEntityId(delegatingSpenderId);
             recordItem.addEntityId(ownerAccountId);
             recordItem.addEntityId(spenderId);
@@ -151,21 +123,12 @@ class CryptoApproveAllowanceTransactionHandler extends AbstractTransactionHandle
         }
     }
 
-    private void parseNftApproveForAll(
-            RecordItem recordItem,
-            HashMap<AbstractNftAllowance.Id, NftAllowance> nftAllowanceState,
-            com.hederahashgraph.api.proto.java.NftAllowance nftApproval,
-            EntityId ownerAccountId,
-            EntityId spender,
-            EntityId tokenId,
-            boolean hasApprovedForAll) {
+    private void parseNftApproveForAll(RecordItem recordItem, HashMap<AbstractNftAllowance.Id, NftAllowance> nftAllowanceState, com.hederahashgraph.api.proto.java.NftAllowance nftApproval, EntityId ownerAccountId, EntityId spender, EntityId tokenId, boolean hasApprovedForAll) {
         if (!hasApprovedForAll) {
             return;
         }
-
         long consensusTimestamp = recordItem.getConsensusTimestamp();
         var payerAccountId = recordItem.getPayerAccountId();
-
         boolean approvedForAll = nftApproval.getApprovedForAll().getValue();
         var nftAllowance = new NftAllowance();
         nftAllowance.setApprovedForAll(approvedForAll);
@@ -174,20 +137,16 @@ class CryptoApproveAllowanceTransactionHandler extends AbstractTransactionHandle
         nftAllowance.setSpender(spender.getId());
         nftAllowance.setTokenId(tokenId.getId());
         nftAllowance.setTimestampLower(consensusTimestamp);
-
         if (nftAllowanceState.putIfAbsent(nftAllowance.getId(), nftAllowance) == null) {
             entityListener.onNftAllowance(nftAllowance);
-            syntheticContractLogService.create(new ApproveForAllAllowanceContractLog(
-                    recordItem, tokenId, ownerAccountId, spender, approvedForAll));
-
+            syntheticContractLogService.create(new ApproveForAllAllowanceContractLog(recordItem, tokenId, ownerAccountId, spender, approvedForAll));
             recordItem.addEntityId(ownerAccountId);
             recordItem.addEntityId(spender);
             recordItem.addEntityId(tokenId);
         }
     }
 
-    private void parseTokenAllowances(
-            List<com.hederahashgraph.api.proto.java.TokenAllowance> tokenAllowances, RecordItem recordItem) {
+    private void parseTokenAllowances(List<com.hederahashgraph.api.proto.java.TokenAllowance> tokenAllowances, RecordItem recordItem) {
         long consensusTimestamp = recordItem.getConsensusTimestamp();
         var payerAccountId = recordItem.getPayerAccountId();
         var tokenAllowanceState = new HashMap<AbstractTokenAllowance.Id, TokenAllowance>();
@@ -203,7 +162,6 @@ class CryptoApproveAllowanceTransactionHandler extends AbstractTransactionHandle
             }
             var spenderId = EntityId.of(tokenApproval.getSpender());
             var tokenId = EntityId.of(tokenApproval.getTokenId());
-
             var tokenAllowance = new TokenAllowance();
             tokenAllowance.setAmountGranted(tokenApproval.getAmount());
             tokenAllowance.setAmount(tokenApproval.getAmount());
@@ -212,12 +170,9 @@ class CryptoApproveAllowanceTransactionHandler extends AbstractTransactionHandle
             tokenAllowance.setSpender(spenderId.getId());
             tokenAllowance.setTokenId(tokenId.getId());
             tokenAllowance.setTimestampLower(consensusTimestamp);
-
             if (tokenAllowanceState.putIfAbsent(tokenAllowance.getId(), tokenAllowance) == null) {
                 entityListener.onTokenAllowance(tokenAllowance);
-                syntheticContractLogService.create(new ApproveAllowanceContractLog(
-                        recordItem, tokenId, ownerAccountId, spenderId, tokenApproval.getAmount()));
-
+                syntheticContractLogService.create(new ApproveAllowanceContractLog(recordItem, tokenId, ownerAccountId, spenderId, tokenApproval.getAmount()));
                 recordItem.addEntityId(ownerAccountId);
                 recordItem.addEntityId(spenderId);
                 recordItem.addEntityId(tokenId);
@@ -239,7 +194,6 @@ class CryptoApproveAllowanceTransactionHandler extends AbstractTransactionHandle
             var ownerAccountId = entityId.get();
             return !EntityId.isEmpty(ownerAccountId) ? ownerAccountId : payerAccountId;
         }
-
         return EntityId.EMPTY;
     }
 }

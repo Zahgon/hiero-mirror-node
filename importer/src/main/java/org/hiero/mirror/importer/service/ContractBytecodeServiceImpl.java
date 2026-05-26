@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.service;
 
 import jakarta.inject.Named;
@@ -15,16 +14,6 @@ class ContractBytecodeServiceImpl implements ContractBytecodeService {
 
     @Override
     public byte[] get(EntityId fileId) {
-        try {
-            byte[] hexBytecode = fileDataService.get(fileId);
-            if (hexBytecode == null) {
-                return null;
-            }
-
-            return Utility.decodeBytecode(hexBytecode);
-        } catch (Exception e) {
-            Utility.handleRecoverableError("Failed to decode contract bytecode from file {}", fileId, e);
-            return null;
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

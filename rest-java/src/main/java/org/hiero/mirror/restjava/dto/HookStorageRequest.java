@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.restjava.dto;
 
 import static org.hiero.mirror.restjava.common.Constants.CONSENSUS_TIMESTAMP;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -41,29 +39,14 @@ public class HookStorageRequest {
     private final Bound timestamp = Bound.EMPTY;
 
     public List<byte[]> getKeysInRange() {
-        if (keys.isEmpty()) {
-            return List.of();
-        }
-
-        return keys.stream()
-                .filter(key -> Arrays.compareUnsigned(key, keyLowerBound) >= 0
-                        && Arrays.compareUnsigned(key, keyUpperBound) <= 0)
-                .toList();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public PageRequest getPageRequest() {
-        Sort sort;
-
-        if (isHistorical()) {
-            sort = Sort.by(new Sort.Order(order, Constants.KEY), new Sort.Order(Direction.DESC, CONSENSUS_TIMESTAMP));
-        } else {
-            sort = Sort.by(order, Constants.KEY);
-        }
-
-        return PageRequest.of(0, limit, sort);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public boolean isHistorical() {
-        return !timestamp.isEmpty();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

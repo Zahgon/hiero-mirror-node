@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.base.crypto.engine;
 
 import static com.swirlds.logging.legacy.LogMarker.TESTING_EXCEPTIONS;
 import static org.hiero.base.utility.CommonUtils.hex;
-
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
@@ -24,8 +22,7 @@ import org.hiero.base.crypto.TransactionSignature;
  * This implementation only supports Ed25519 signatures
  * and uses the built-in JDK Ed25519 support introduced in Java 15 (JEP 339).
  */
-public class Ed25519VerificationProvider
-        extends OperationProvider<TransactionSignature, Void, Boolean, Signature, SignatureType> {
+public class Ed25519VerificationProvider extends OperationProvider<TransactionSignature, Void, Boolean, Signature, SignatureType> {
 
     private static final Logger logger = LogManager.getLogger(Ed25519VerificationProvider.class);
 
@@ -39,9 +36,7 @@ public class Ed25519VerificationProvider
      * 3 bytes 2b 65 70     — OID 1.3.101.112 (id-EdDSA / Ed25519) 03 21        — BIT STRING, 33 bytes 00 — 0 unused
      * bits (followed by the 32 raw key bytes)
      */
-    private static final byte[] ED25519_DER_PREFIX = {
-        0x30, 0x2a, 0x30, 0x05, 0x06, 0x03, 0x2b, 0x65, 0x70, 0x03, 0x21, 0x00
-    };
+    private static final byte[] ED25519_DER_PREFIX = { 0x30, 0x2a, 0x30, 0x05, 0x06, 0x03, 0x2b, 0x65, 0x70, 0x03, 0x21, 0x00 };
 
     /**
      * Encodes a raw 32-byte Ed25519 public key into a DER/X.509 format by prepending the Ed25519 ASN.1
@@ -64,28 +59,15 @@ public class Ed25519VerificationProvider
      */
     @Override
     protected Signature loadAlgorithm(final SignatureType algorithmType) {
-        try {
-            return Signature.getInstance(ALGORITHM);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Ed25519 algorithm not available in this JDK (requires Java 15+)", e);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected Boolean handleItem(
-            final Signature algorithm,
-            final SignatureType algorithmType,
-            final TransactionSignature sig,
-            final Void optionalData) {
-        return compute(
-                algorithm,
-                algorithmType,
-                sig.getMessage().toByteArray(),
-                sig.getSignature().toByteArray(),
-                sig.getPublicKey().toByteArray());
+    protected Boolean handleItem(final Signature algorithm, final SignatureType algorithmType, final TransactionSignature sig, final Void optionalData) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -98,12 +80,7 @@ public class Ed25519VerificationProvider
      * @param publicKey     the raw 32-byte Ed25519 public key
      * @return true if the provided signature is valid; false otherwise
      */
-    private boolean compute(
-            final Signature algorithm,
-            final SignatureType algorithmType,
-            final byte[] message,
-            final byte[] signature,
-            final byte[] publicKey) {
+    private boolean compute(final Signature algorithm, final SignatureType algorithmType, final byte[] message, final byte[] signature, final byte[] publicKey) {
         try {
             final var keySpec = new X509EncodedKeySpec(toDerEncodedPublicKey(publicKey));
             final var pub = KeyFactory.getInstance(ALGORITHM).generatePublic(keySpec);
@@ -114,13 +91,7 @@ public class Ed25519VerificationProvider
             throw new RuntimeException("Ed25519 algorithm not available in this JDK (requires Java 15+)", e);
         } catch (InvalidKeySpecException | InvalidKeyException | SignatureException e) {
             if (logger.isDebugEnabled()) {
-                logger.debug(
-                        TESTING_EXCEPTIONS.getMarker(),
-                        "Adv Crypto Subsystem: Signature Verification Failure for signature type {} [ publicKey = {}, "
-                                + "signature = {} ]",
-                        algorithmType,
-                        hex(publicKey),
-                        hex(signature));
+                logger.debug(TESTING_EXCEPTIONS.getMarker(), "Adv Crypto Subsystem: Signature Verification Failure for signature type {} [ publicKey = {}, " + "signature = {} ]", algorithmType, hex(publicKey), hex(signature));
             }
             return false;
         }

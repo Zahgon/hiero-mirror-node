@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -52,42 +51,22 @@ public class NodeProperties {
     }
 
     public String getEndpoint() {
-        // Allow for in-process testing of gRPC stubs
-        if (host.startsWith("in-process:")) {
-            return host;
-        }
-        return host + ":" + port;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public long getNodeId() {
-        if (nodeId == null) {
-            var nodeAccountId = AccountId.fromString(accountId);
-            return nodeAccountId.num - 3;
-        }
-        return nodeId;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @SneakyThrows
     public NodeAddress toNodeAddress() {
-        var ipAddressV4 = toIpAddressV4();
-        var nodeAccountId = getAccountIds().get(0);
-
-        return NodeAddress.newBuilder()
-                .setNodeCertHash(certHash != null ? ByteString.copyFromUtf8(certHash) : ByteString.EMPTY)
-                .setNodeAccountId(AccountID.parseFrom(nodeAccountId.toBytes()))
-                .setNodeId(getNodeId())
-                .addServiceEndpoint(ServiceEndpoint.newBuilder()
-                        .setDomainName(ipAddressV4.isEmpty() ? host : "")
-                        .setIpAddressV4(ipAddressV4)
-                        .setPort(port))
-                .build();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private ByteString toIpAddressV4() throws UnknownHostException {
         if (!InetAddresses.isInetAddress(host)) {
             return ByteString.EMPTY;
         }
-
         var address = InetAddress.getByName(host).getAddress();
         return ByteString.copyFrom(address);
     }

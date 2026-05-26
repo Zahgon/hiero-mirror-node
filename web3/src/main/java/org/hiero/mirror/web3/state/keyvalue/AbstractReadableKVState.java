@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.state.keyvalue;
 
 import com.swirlds.state.spi.ReadableKVStateBase;
@@ -15,6 +14,6 @@ public abstract class AbstractReadableKVState<K, V> extends ReadableKVStateBase<
     @Override
     @SuppressWarnings("deprecation")
     public long size() {
-        return 0;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

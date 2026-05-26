@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.downloader.block.tss;
 
 import com.hedera.hapi.node.tss.legacy.LedgerIdPublicationTransactionBody;
@@ -18,21 +17,6 @@ import org.jspecify.annotations.NullMarked;
 public final class LedgerIdPublicationTransactionParser {
 
     public Ledger parse(final long consensusTimestamp, final LedgerIdPublicationTransactionBody transactionBody) {
-        final var protoNodeContributions = transactionBody.getNodeContributionsList();
-        final List<LedgerNodeContribution> nodeContributions = new ArrayList<>(protoNodeContributions.size());
-        for (final var nodeContribution : protoNodeContributions) {
-            nodeContributions.add(LedgerNodeContribution.builder()
-                    .historyProofKey(DomainUtils.toBytes(nodeContribution.getHistoryProofKey()))
-                    .nodeId(nodeContribution.getNodeId())
-                    .weight(nodeContribution.getWeight())
-                    .build());
-        }
-
-        return Ledger.builder()
-                .consensusTimestamp(consensusTimestamp)
-                .historyProofVerificationKey(DomainUtils.toBytes(transactionBody.getHistoryProofVerificationKey()))
-                .ledgerId(DomainUtils.toBytes(transactionBody.getLedgerId()))
-                .nodeContributions(nodeContributions)
-                .build();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

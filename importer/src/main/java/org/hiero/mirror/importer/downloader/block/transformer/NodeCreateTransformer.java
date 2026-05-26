@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.downloader.block.transformer;
 
 import jakarta.inject.Named;
@@ -10,21 +9,11 @@ final class NodeCreateTransformer extends AbstractBlockTransactionTransformer {
 
     @Override
     protected void doTransform(BlockTransactionTransformation blockTransactionTransformation) {
-        var blockTransaction = blockTransactionTransformation.blockTransaction();
-        if (!blockTransaction.isSuccessful()) {
-            return;
-        }
-
-        var receiptBuilder = blockTransactionTransformation
-                .recordItemBuilder()
-                .transactionRecordBuilder()
-                .getReceiptBuilder();
-        receiptBuilder.setNodeId(
-                blockTransaction.getStateChangeContext().getNewNodeId().orElseThrow());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public TransactionType getType() {
-        return TransactionType.NODECREATE;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

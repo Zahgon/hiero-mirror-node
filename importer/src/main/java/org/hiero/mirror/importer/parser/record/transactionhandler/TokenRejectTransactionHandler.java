@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.transactionhandler;
 
 import jakarta.inject.Named;
@@ -17,14 +16,11 @@ class TokenRejectTransactionHandler extends AbstractTransactionHandler {
 
     @Override
     public EntityId getEntity(RecordItem recordItem) {
-        var tokenReject = recordItem.getTransactionBody().getTokenReject();
-        return tokenReject.hasOwner()
-                ? entityIdService.lookup(tokenReject.getOwner()).orElse(EntityId.EMPTY)
-                : recordItem.getPayerAccountId();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public TransactionType getType() {
-        return TransactionType.TOKENREJECT;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

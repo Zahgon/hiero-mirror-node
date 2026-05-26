@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.throttle;
 
 import jakarta.validation.constraints.NotBlank;
@@ -29,14 +28,13 @@ final class RequestFilter implements Predicate<ContractCallRequest> {
 
     @Override
     public boolean test(ContractCallRequest request) {
-        var value = field.getExtractor().apply(request);
-        var stringValue = value instanceof String s ? s : String.valueOf(value);
-        return type.getPredicate().test(stringValue, expression);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Getter
     @RequiredArgsConstructor
     enum FilterField {
+
         BLOCK(ContractCallRequest::getBlock),
         DATA(ContractCallRequest::getData),
         ESTIMATE(ContractCallRequest::isEstimate),
@@ -51,8 +49,8 @@ final class RequestFilter implements Predicate<ContractCallRequest> {
     @Getter
     @RequiredArgsConstructor
     enum FilterType {
-        CONTAINS(Strings.CI::contains),
-        EQUALS(String::equalsIgnoreCase);
+
+        CONTAINS(Strings.CI::contains), EQUALS(String::equalsIgnoreCase);
 
         private final BiPredicate<String, String> predicate;
     }

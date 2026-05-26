@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.restjava.controller;
 
 import static org.hiero.mirror.restjava.common.Constants.APPLICATION_JSON;
-
 import lombok.CustomLog;
 import lombok.RequiredArgsConstructor;
 import org.hiero.mirror.rest.model.Topic;
@@ -24,15 +22,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class TopicController {
 
     private final CustomFeeService customFeeService;
+
     private final EntityService entityService;
+
     private final TopicMapper topicMapper;
+
     private final TopicService topicService;
 
     @GetMapping(value = "/{id}")
     Topic getTopic(@PathVariable EntityIdNumParameter id) {
-        var topic = topicService.findById(id.id());
-        var entity = entityService.findById(id.id());
-        var customFee = customFeeService.findById(id.id());
-        return topicMapper.map(customFee, entity, topic);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

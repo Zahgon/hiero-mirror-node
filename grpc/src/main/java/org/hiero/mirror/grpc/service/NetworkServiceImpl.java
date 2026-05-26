@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.grpc.service;
 
 import jakarta.inject.Named;
@@ -36,44 +35,28 @@ import reactor.util.repeat.RepeatSpec;
 public class NetworkServiceImpl implements NetworkService {
 
     static final String INVALID_FILE_ID = "Not a valid address book file";
+
     private static final long NODE_STAKE_EMPTY_TABLE_TIMESTAMP = 0L;
 
     private final AddressBookProperties addressBookProperties;
+
     private final AddressBookRepository addressBookRepository;
+
     private final AddressBookEntryRepository addressBookEntryRepository;
+
     private final NodeStakeRepository nodeStakeRepository;
+
     private final SystemEntity systemEntity;
 
     @Qualifier("readOnly")
     private final TransactionOperations transactionOperations;
 
     @Getter(lazy = true, value = AccessLevel.PRIVATE)
-    private final Set<EntityId> validFileIds =
-            Set.of(systemEntity.addressBookFile101(), systemEntity.addressBookFile102());
+    private final Set<EntityId> validFileIds = Set.of(systemEntity.addressBookFile101(), systemEntity.addressBookFile102());
 
     @Override
     public Flux<AddressBookEntry> getNodes(AddressBookFilter filter) {
-        var fileId = filter.getFileId();
-        if (!getValidFileIds().contains(fileId)) {
-            throw new IllegalArgumentException(INVALID_FILE_ID);
-        }
-
-        long addressBookTimestamp = addressBookRepository
-                .findLatestTimestamp(fileId.getId())
-                .orElseThrow(() -> new EntityNotFoundException(fileId));
-        long nodeStakeTimestamp = nodeStakeRepository.findLatestTimestamp().orElse(NODE_STAKE_EMPTY_TABLE_TIMESTAMP);
-        var nodeStakeMap = nodeStakeRepository.findAllStakeByConsensusTimestamp(nodeStakeTimestamp);
-        var context = new AddressBookContext(addressBookTimestamp, nodeStakeMap);
-
-        return Flux.defer(() -> page(context))
-                .repeatWhen(RepeatSpec.create(c -> !context.isComplete(), Long.MAX_VALUE)
-                        .jitter(0.5)
-                        .withFixedDelay(addressBookProperties.getPageDelay())
-                        .withScheduler(Schedulers.boundedElastic()))
-                .take(filter.getLimit() > 0 ? filter.getLimit() : Long.MAX_VALUE)
-                .doOnNext(context::onNext)
-                .doOnSubscribe(s -> log.info("Querying for address book: {}", filter))
-                .doOnComplete(() -> log.info("Retrieved {} nodes from the address book", context.getCount()));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private Flux<AddressBookEntry> page(AddressBookContext context) {
@@ -82,27 +65,18 @@ public class NetworkServiceImpl implements NetworkService {
             var nodeStakeMap = context.getNodeStakeMap();
             var nextNodeId = context.getNextNodeId();
             var pageSize = addressBookProperties.getPageSize();
-            var nodes = addressBookEntryRepository.findByConsensusTimestampAndNodeId(
-                    addressBookTimestamp, nextNodeId, pageSize);
+            var nodes = addressBookEntryRepository.findByConsensusTimestampAndNodeId(addressBookTimestamp, nextNodeId, pageSize);
             var endpoints = new AtomicInteger(0);
-
             nodes.forEach(node -> {
                 // Override node stake
                 node.setStake(nodeStakeMap.getOrDefault(node.getNodeId(), 0L));
                 // This hack ensures that the nested serviceEndpoints is loaded eagerly and voids lazy init exceptions
                 endpoints.addAndGet(node.getServiceEndpoints().size());
             });
-
             if (nodes.size() < pageSize) {
                 context.completed();
             }
-
-            log.info(
-                    "Retrieved {} address book entries and {} endpoints for timestamp {} and node ID {}",
-                    nodes.size(),
-                    endpoints,
-                    addressBookTimestamp,
-                    nextNodeId);
+            log.info("Retrieved {} address book entries and {} endpoints for timestamp {} and node ID {}", nodes.size(), endpoints, addressBookTimestamp, nextNodeId);
             return Flux.fromIterable(nodes);
         });
     }
@@ -111,27 +85,29 @@ public class NetworkServiceImpl implements NetworkService {
     private static class AddressBookContext {
 
         private final AtomicBoolean complete = new AtomicBoolean(false);
+
         private final AtomicLong count = new AtomicLong(0L);
+
         private final AtomicReference<AddressBookEntry> last = new AtomicReference<>();
+
         private final long addressBookTimestamp;
+
         private final Map<Long, Long> nodeStakeMap;
 
         void onNext(AddressBookEntry entry) {
-            count.incrementAndGet();
-            last.set(entry);
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         long getNextNodeId() {
-            AddressBookEntry entry = last.get();
-            return entry != null ? entry.getNodeId() + 1 : 0L;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         boolean isComplete() {
-            return complete.get();
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         void completed() {
-            complete.set(true);
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
     }
 }

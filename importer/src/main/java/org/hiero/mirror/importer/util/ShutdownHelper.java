@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.util;
 
 import jakarta.inject.Named;
@@ -23,7 +22,7 @@ public class ShutdownHelper {
     }
 
     public static boolean isStopping() {
-        return stopping;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private static void onExit() {

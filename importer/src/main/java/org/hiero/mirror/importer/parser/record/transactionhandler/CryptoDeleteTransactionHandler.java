@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.transactionhandler;
 
 import jakarta.inject.Named;
@@ -23,23 +22,11 @@ class CryptoDeleteTransactionHandler extends AbstractEntityCrudTransactionHandle
 
     @Override
     public EntityId getEntity(RecordItem recordItem) {
-        return EntityId.of(recordItem.getTransactionBody().getCryptoDelete().getDeleteAccountID());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     protected void doUpdateEntity(Entity entity, RecordItem recordItem) {
-        var transactionBody = recordItem.getTransactionBody().getCryptoDelete();
-        var obtainerId =
-                entityIdService.lookup(transactionBody.getTransferAccountID()).orElse(EntityId.EMPTY);
-        if (EntityId.isEmpty(obtainerId)) {
-            Utility.handleRecoverableError(
-                    "Unable to lookup ObtainerId at consensusTimestamp {}", recordItem.getConsensusTimestamp());
-        } else {
-            entity.setObtainerId(obtainerId);
-        }
-
-        entity.setType(EntityType.ACCOUNT);
-        entityListener.onEntity(entity);
-        recordItem.addEntityId(obtainerId);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

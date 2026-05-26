@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -30,22 +29,31 @@ public final class EntityId implements Comparable<EntityId> {
     public static final EntityId EMPTY = new EntityId(0L);
 
     static final int NUM_BITS = 38;
+
     static final int REALM_BITS = 16;
+
     static final int SHARD_BITS = 10;
 
     private static final long NUM_MASK = (1L << NUM_BITS) - 1;
+
     private static final long REALM_MASK = (1L << REALM_BITS) - 1;
+
     private static final long SHARD_MASK = (1L << SHARD_BITS) - 1;
 
     private static final String CACHE_DEFAULT = "expireAfterAccess=60m,maximumSize=500000,recordStats";
+
     private static final String CACHE_PROPERTY = "HIERO_MIRROR_COMMON_CACHE_ENTITYID";
+
     private static final String CACHE_SPEC = System.getProperty(CACHE_PROPERTY, CACHE_DEFAULT);
+
     private static final Cache<Long, EntityId> CACHE = Caffeine.from(CACHE_SPEC).build();
 
-    private static final Comparator<EntityId> COMPARATOR =
-            Comparator.nullsFirst(Comparator.comparingLong(EntityId::getId));
+    private static final Comparator<EntityId> COMPARATOR = Comparator.nullsFirst(Comparator.comparingLong(EntityId::getId));
+
     private static final Range<Long> DEFAULT_RANGE = Range.atLeast(0L);
+
     private static final String DOT = ".";
+
     private static final Splitter SPLITTER = Splitter.on('.').omitEmptyStrings().trimResults();
 
     @JsonValue
@@ -71,161 +79,106 @@ public final class EntityId implements Comparable<EntityId> {
         if (shard > SHARD_MASK || shard < 0 || realm > REALM_MASK || realm < 0 || num > NUM_MASK || num < 0) {
             throw new InvalidEntityException("Invalid entity ID: " + shard + "." + realm + "." + num);
         }
-
         if (shard == 0 && realm == 0) {
             return num;
         }
-
         return (num & NUM_MASK) | (realm & REALM_MASK) << NUM_BITS | (shard & SHARD_MASK) << (REALM_BITS + NUM_BITS);
     }
 
     public static EntityId of(AccountID accountID) {
-        return of(accountID.getShardNum(), accountID.getRealmNum(), accountID.getAccountNum());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public static EntityId of(ContractID contractID) {
-        return of(contractID.getShardNum(), contractID.getRealmNum(), contractID.getContractNum());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public static EntityId of(FileID fileID) {
-        return of(fileID.getShardNum(), fileID.getRealmNum(), fileID.getFileNum());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public static EntityId of(TopicID topicID) {
-        return of(topicID.getShardNum(), topicID.getRealmNum(), topicID.getTopicNum());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public static EntityId of(TokenID tokenID) {
-        return of(tokenID.getShardNum(), tokenID.getRealmNum(), tokenID.getTokenNum());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public static EntityId of(ScheduleID scheduleID) {
-        return of(scheduleID.getShardNum(), scheduleID.getRealmNum(), scheduleID.getScheduleNum());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public static EntityId of(String entityId) {
-        List<Long> parts = SPLITTER.splitToStream(Objects.requireNonNullElse(entityId, ""))
-                .map(Long::valueOf)
-                .filter(n -> n >= 0)
-                .toList();
-
-        if (parts.size() != 3) {
-            throw new IllegalArgumentException("Invalid entity ID: " + entityId);
-        }
-
-        return of(parts.get(0), parts.get(1), parts.get(2));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public static boolean isValid(String entityId) {
-        try {
-            if (StringUtils.isBlank(entityId)) {
-                return false;
-            }
-
-            of(entityId);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public static EntityId of(long shard, long realm, long num) {
-        long id = encode(shard, realm, num);
-        return of(id);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public static EntityId of(long id) {
-        if (id == 0) {
-            return EMPTY;
-        }
-
-        return CACHE.get(id, k -> new EntityId(id));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public static boolean isEmpty(EntityId entityId) {
-        return entityId == null || EMPTY.equals(entityId);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Transient
     public long getNum() {
-        return id & NUM_MASK;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Transient
     public long getRealm() {
-        return (id >> NUM_BITS) & REALM_MASK;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Transient
     public long getShard() {
-        return (id >> (NUM_BITS + REALM_BITS)) & SHARD_MASK;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public AccountID toAccountID() {
-        return AccountID.newBuilder()
-                .setShardNum(getShard())
-                .setRealmNum(getRealm())
-                .setAccountNum(getNum())
-                .build();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public ContractID toContractID() {
-        return ContractID.newBuilder()
-                .setShardNum(getShard())
-                .setRealmNum(getRealm())
-                .setContractNum(getNum())
-                .build();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public Entity toEntity() {
-        Entity entity = new Entity();
-        entity.setId(id);
-        entity.setNum(getNum());
-        entity.setRealm(getRealm());
-        entity.setShard(getShard());
-        entity.setTimestampRange(DEFAULT_RANGE);
-        return entity;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public FileID toFileID() {
-        return FileID.newBuilder()
-                .setShardNum(getShard())
-                .setRealmNum(getRealm())
-                .setFileNum(getNum())
-                .build();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public ScheduleID toScheduleID() {
-        return ScheduleID.newBuilder()
-                .setShardNum(getShard())
-                .setRealmNum(getRealm())
-                .setScheduleNum(getNum())
-                .build();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public TokenID toTokenID() {
-        return TokenID.newBuilder()
-                .setShardNum(getShard())
-                .setRealmNum(getRealm())
-                .setTokenNum(getNum())
-                .build();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public TopicID toTopicID() {
-        return TopicID.newBuilder()
-                .setShardNum(getShard())
-                .setRealmNum(getRealm())
-                .setTopicNum(getNum())
-                .build();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public int compareTo(EntityId other) {
-        return COMPARATOR.compare(this, other);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public String toString() {
-        return getShard() + DOT + getRealm() + DOT + getNum();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

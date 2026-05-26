@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.downloader.block.transformer;
 
 import static org.hiero.mirror.importer.util.Utility.DEFAULT_RUNNING_HASH_VERSION;
-
 import jakarta.inject.Named;
 import org.hiero.mirror.common.domain.transaction.TransactionType;
 import org.hiero.mirror.common.util.DomainUtils;
@@ -14,32 +12,11 @@ final class ConsensusSubmitMessageTransformer extends AbstractBlockTransactionTr
 
     @Override
     protected void doTransform(BlockTransactionTransformation blockTransactionTransformation) {
-        var blockTransaction = blockTransactionTransformation.blockTransaction();
-        if (!blockTransaction.isSuccessful()) {
-            return;
-        }
-
-        var receiptBuilder = blockTransactionTransformation
-                .recordItemBuilder()
-                .transactionRecordBuilder()
-                .getReceiptBuilder()
-                .setTopicRunningHashVersion(DEFAULT_RUNNING_HASH_VERSION);
-
-        var topicMessage = blockTransaction.getTopicMessage();
-        if (topicMessage == null) {
-            Utility.handleRecoverableError(
-                    "Missing topic message runningHash and sequence number at {}",
-                    blockTransaction.getConsensusTimestamp());
-            return;
-        }
-
-        receiptBuilder
-                .setTopicRunningHash(DomainUtils.fromBytes(topicMessage.getRunningHash()))
-                .setTopicSequenceNumber(topicMessage.getSequenceNumber());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public TransactionType getType() {
-        return TransactionType.CONSENSUSSUBMITMESSAGE;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

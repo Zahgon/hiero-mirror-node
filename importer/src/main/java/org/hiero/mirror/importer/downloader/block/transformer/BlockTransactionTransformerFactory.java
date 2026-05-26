@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.downloader.block.transformer;
 
 import com.hederahashgraph.api.proto.java.TransactionBody;
@@ -16,19 +15,16 @@ import org.hiero.mirror.common.domain.transaction.TransactionType;
 public class BlockTransactionTransformerFactory {
 
     private final BlockTransactionTransformer defaultTransformer;
+
     private final Map<TransactionType, BlockTransactionTransformer> transformers;
 
     BlockTransactionTransformerFactory(List<BlockTransactionTransformer> transformers) {
-        this.transformers = transformers.stream()
-                .collect(Collectors.toUnmodifiableMap(BlockTransactionTransformer::getType, Function.identity()));
+        this.transformers = transformers.stream().collect(Collectors.toUnmodifiableMap(BlockTransactionTransformer::getType, Function.identity()));
         this.defaultTransformer = this.transformers.get(TransactionType.UNKNOWN);
     }
 
     public void transform(BlockTransaction blockTransaction, RecordItem.RecordItemBuilder builder) {
-        var transactionBody = blockTransaction.getTransactionBody();
-        var blockItemTransformer = get(transactionBody);
-        // pass transactionBody for performance
-        blockItemTransformer.transform(new BlockTransactionTransformation(blockTransaction, builder));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private BlockTransactionTransformer get(TransactionBody transactionBody) {

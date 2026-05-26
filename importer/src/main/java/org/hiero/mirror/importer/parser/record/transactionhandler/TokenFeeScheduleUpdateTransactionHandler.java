@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.transactionhandler;
 
 import static org.hiero.mirror.common.domain.transaction.TransactionType.TOKENCREATION;
-
 import com.google.common.collect.Range;
 import jakarta.inject.Named;
 import java.util.Collection;
@@ -31,27 +29,22 @@ import org.hiero.mirror.importer.util.Utility;
 class TokenFeeScheduleUpdateTransactionHandler extends AbstractTransactionHandler {
 
     private final EntityListener entityListener;
+
     private final EntityProperties entityProperties;
 
     @Override
     public EntityId getEntity(RecordItem recordItem) {
-        return EntityId.of(
-                recordItem.getTransactionBody().getTokenFeeScheduleUpdate().getTokenId());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public TransactionType getType() {
-        return TransactionType.TOKENFEESCHEDULEUPDATE;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     protected void doUpdateTransaction(Transaction transaction, RecordItem recordItem) {
-        if (!entityProperties.getPersist().isTokens() || !recordItem.isSuccessful()) {
-            return;
-        }
-
-        var transactionBody = recordItem.getTransactionBody().getTokenFeeScheduleUpdate();
-        updateCustomFees(transactionBody.getCustomFeesList(), recordItem, transaction);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -61,78 +54,8 @@ class TokenFeeScheduleUpdateTransactionHandler extends AbstractTransactionHandle
      * @param protoCustomFees protobuf custom fee list
      * @return A list of collectors automatically associated with the token if it's a token create transaction
      */
-    Set<EntityId> updateCustomFees(
-            Collection<com.hederahashgraph.api.proto.java.CustomFee> protoCustomFees,
-            RecordItem recordItem,
-            Transaction transaction) {
-        var autoAssociatedAccounts = new HashSet<EntityId>();
-        var consensusTimestamp = transaction.getConsensusTimestamp();
-        var tokenId = transaction.getEntityId();
-        var customFee = new CustomFee();
-        customFee.setEntityId(tokenId.getId());
-        customFee.setTimestampRange(Range.atLeast(consensusTimestamp));
-
-        // For empty custom fees, add a single row with only the timestamp and tokenId.
-        if (protoCustomFees.isEmpty()) {
-            entityListener.onCustomFee(customFee);
-            return autoAssociatedAccounts;
-        }
-
-        for (var protoCustomFee : protoCustomFees) {
-            var feeCase = protoCustomFee.getFeeCase();
-            AbstractFee fee;
-            EntityId denominatingTokenId = null;
-
-            switch (feeCase) {
-                case FIXED_FEE:
-                    var fixedFee = parseFixedFee(protoCustomFee.getFixedFee(), tokenId);
-                    customFee.addFixedFee(fixedFee);
-                    denominatingTokenId = fixedFee.getDenominatingTokenId();
-                    fee = fixedFee;
-                    break;
-                case FRACTIONAL_FEE:
-                    // Only FT can have fractional fee
-                    var fractionalFee = parseFractionalFee(protoCustomFee.getFractionalFee());
-                    customFee.addFractionalFee(fractionalFee);
-                    fee = fractionalFee;
-                    break;
-                case ROYALTY_FEE:
-                    // Only NFT can have royalty fee, and fee can't be paid in NFT. Thus, though royalty fee has a
-                    // fixed fee fallback, the denominating token of the fixed fee can't be the NFT itself.
-                    var royaltyFee = parseRoyaltyFee(protoCustomFee.getRoyaltyFee(), tokenId);
-                    customFee.addRoyaltyFee(royaltyFee);
-                    var fallbackFee = royaltyFee.getFallbackFee();
-                    if (fallbackFee != null && !EntityId.isEmpty(fallbackFee.getDenominatingTokenId())) {
-                        denominatingTokenId = fallbackFee.getDenominatingTokenId();
-                    }
-
-                    fee = royaltyFee;
-                    break;
-                default:
-                    Utility.handleRecoverableError("Invalid CustomFee FeeCase at {}: {}", consensusTimestamp, feeCase);
-                    continue;
-            }
-
-            var allCollectorsAreExempt = protoCustomFee.getAllCollectorsAreExempt();
-            var collector = EntityId.of(protoCustomFee.getFeeCollectorAccountId());
-            fee.setAllCollectorsAreExempt(allCollectorsAreExempt);
-            fee.setCollectorAccountId(collector);
-            recordItem.addEntityId(collector);
-            recordItem.addEntityId(denominatingTokenId);
-
-            // If it's from a token create transaction, and the fee is charged in the attached token, the attached
-            // token and the collector should have been auto associated
-            if (transaction.getType() == TOKENCREATION.getProtoId() && fee.isChargedInToken(tokenId)) {
-                autoAssociatedAccounts.add(collector);
-            }
-        }
-
-        // If the fee is empty do not persist it. The protoCustomFees did not contain a parseable fee, only recoverable
-        // error(s).
-        if (!customFee.isEmptyFee()) {
-            entityListener.onCustomFee(customFee);
-        }
-        return autoAssociatedAccounts;
+    Set<EntityId> updateCustomFees(Collection<com.hederahashgraph.api.proto.java.CustomFee> protoCustomFees, RecordItem recordItem, Transaction transaction) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -150,7 +73,6 @@ class TokenFeeScheduleUpdateTransactionHandler extends AbstractTransactionHandle
             denominatingTokenId = denominatingTokenId == EntityId.EMPTY ? tokenId : denominatingTokenId;
             fixedFee.setDenominatingTokenId(denominatingTokenId);
         }
-
         return fixedFee;
     }
 
@@ -177,24 +99,20 @@ class TokenFeeScheduleUpdateTransactionHandler extends AbstractTransactionHandle
      *
      * @param protoRoyaltyFee the protobuf RoyaltyFee object
      */
-    private RoyaltyFee parseRoyaltyFee(
-            com.hederahashgraph.api.proto.java.RoyaltyFee protoRoyaltyFee, EntityId tokenId) {
+    private RoyaltyFee parseRoyaltyFee(com.hederahashgraph.api.proto.java.RoyaltyFee protoRoyaltyFee, EntityId tokenId) {
         var royaltyFee = new RoyaltyFee();
         royaltyFee.setDenominator(protoRoyaltyFee.getExchangeValueFraction().getDenominator());
         royaltyFee.setNumerator(protoRoyaltyFee.getExchangeValueFraction().getNumerator());
-
         if (protoRoyaltyFee.hasFallbackFee()) {
             var fallbackFee = new FallbackFee();
             fallbackFee.setAmount(protoRoyaltyFee.getFallbackFee().getAmount());
             if (protoRoyaltyFee.getFallbackFee().hasDenominatingTokenId()) {
-                var denominatingTokenId =
-                        EntityId.of(protoRoyaltyFee.getFallbackFee().getDenominatingTokenId());
+                var denominatingTokenId = EntityId.of(protoRoyaltyFee.getFallbackFee().getDenominatingTokenId());
                 denominatingTokenId = denominatingTokenId == EntityId.EMPTY ? tokenId : denominatingTokenId;
                 fallbackFee.setDenominatingTokenId(denominatingTokenId);
             }
             royaltyFee.setFallbackFee(fallbackFee);
         }
-
         return royaltyFee;
     }
 }

@@ -1,11 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.downloader.provider;
 
 import static java.util.Objects.requireNonNullElse;
 import static org.hiero.mirror.common.domain.StreamType.SIGNATURE_SUFFIX;
 import static org.hiero.mirror.importer.downloader.CommonDownloaderProperties.PathType.NODE_ID;
-
 import com.google.common.base.Stopwatch;
 import java.io.File;
 import java.nio.file.Files;
@@ -37,86 +35,45 @@ public final class LocalStreamFileProvider extends AbstractStreamFileProvider {
 
     private final LocalStreamFileProperties localProperties;
 
-    public LocalStreamFileProvider(
-            final CommonProperties commonProperties,
-            final CommonDownloaderProperties downloaderProperties,
-            final LocalStreamFileProperties localProperties) {
+    public LocalStreamFileProvider(final CommonProperties commonProperties, final CommonDownloaderProperties downloaderProperties, final LocalStreamFileProperties localProperties) {
         super(commonProperties, downloaderProperties);
         this.localProperties = localProperties;
     }
 
     @Override
     protected Flux<String> doDiscoverNetwork() {
-        final var basePath =
-                downloaderProperties.getImporterProperties().getStreamPath().toFile();
-        return Flux.fromIterable(FileUtils.listFilesAndDirs(basePath, DirectoryFileFilter.DIRECTORY, null))
-                .filter(d -> !d.equals(basePath))
-                .map(File::getName);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public Flux<StreamFileData> list(final ConsensusNode node, final StreamFilename lastFilename) {
-        var batchSize = downloaderProperties.getBatchSize();
-        var startAfter = lastFilename.getFilenameAfter();
-        var stopwatch = Stopwatch.createStarted();
-        var count = new AtomicLong(0L);
-
-        return listFiles(downloaderProperties.getPathType(), node, lastFilename)
-                .switchIfEmpty(listFiles(NODE_ID, node, lastFilename))
-                .timeout(downloaderProperties.getTimeout())
-                .sort()
-                .take(batchSize)
-                .map(this::toStreamFileData)
-                .doOnNext(s -> count.incrementAndGet())
-                .doOnComplete(() -> log.debug(
-                        "Completed listing node {} for {} files after {} in {}", node, count, startAfter, stopwatch));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public Mono<StreamFileData> get(final StreamFilename streamFilename) {
-        var basePath =
-                downloaderProperties.getImporterProperties().getStreamPath().toFile();
-        return Mono.fromSupplier(() -> new File(basePath, streamFilename.getBucketFilePath()))
-                .doOnNext(this::checkSize)
-                .map(file -> StreamFileData.from(file, streamFilename))
-                .timeout(downloaderProperties.getTimeout())
-                .onErrorMap(FileOperationException.class, TransientProviderException::new);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private Flux<File> listFiles(PathType pathType, ConsensusNode node, StreamFilename streamFilename) {
         var pathTypeProp = downloaderProperties.getPathType();
         var streamType = streamFilename.getStreamType();
-
         // Once a node ID based file has been processed, optimize performance by disabling auto path lookup.
         if (pathTypeProp == PathType.AUTO && streamFilename.isNodeId()) {
             downloaderProperties.setPathType(NODE_ID);
-        } // Skip when we fall back to listing by node ID, but we're not on auto.
-        else if (pathTypeProp != pathType && pathTypeProp != PathType.AUTO) {
+        } else // Skip when we fall back to listing by node ID, but we're not on auto.
+        if (pathTypeProp != pathType && pathTypeProp != PathType.AUTO) {
             return Flux.empty();
         }
-
-        return getBasePaths(streamFilename)
-                .map(basePath -> {
-                    var prefix =
-                            switch (pathType) {
-                                case ACCOUNT_ID, AUTO ->
-                                    Path.of(streamType.getPath(), streamType.getNodePrefix() + node.getNodeAccountId());
-                                case NODE_ID ->
-                                    Path.of(
-                                            downloaderProperties
-                                                    .getImporterProperties()
-                                                    .getNetwork(),
-                                            String.valueOf(commonProperties.getShard()),
-                                            String.valueOf(node.getNodeId()),
-                                            streamType.getNodeIdBasedSuffix());
-                            };
-
-                    return basePath.resolve(prefix).toFile();
-                })
-                .doOnNext(f -> log.debug("Listing files for node {} in {}", node, f))
-                .filter(File::exists)
-                .flatMapSequential(dir -> Flux.fromArray(
-                        requireNonNullElse(dir.listFiles(f -> matches(streamFilename.getFilenameAfter(), f)), EMPTY)));
+        return getBasePaths(streamFilename).map(basePath -> {
+            var prefix = switch(pathType) {
+                case ACCOUNT_ID, AUTO ->
+                    Path.of(streamType.getPath(), streamType.getNodePrefix() + node.getNodeAccountId());
+                case NODE_ID ->
+                    Path.of(downloaderProperties.getImporterProperties().getNetwork(), String.valueOf(commonProperties.getShard()), String.valueOf(node.getNodeId()), streamType.getNodeIdBasedSuffix());
+            };
+            return basePath.resolve(prefix).toFile();
+        }).doOnNext(f -> log.debug("Listing files for node {} in {}", node, f)).filter(File::exists).flatMapSequential(dir -> Flux.fromArray(requireNonNullElse(dir.listFiles(f -> matches(streamFilename.getFilenameAfter(), f)), EMPTY)));
     }
 
     /*
@@ -126,27 +83,16 @@ public final class LocalStreamFileProvider extends AbstractStreamFileProvider {
         var basePath = downloaderProperties.getImporterProperties().getStreamPath();
         var baseFile = basePath.toFile();
         baseFile.mkdirs();
-
         if (!baseFile.exists()) {
             return Flux.error(new RuntimeException("Unable to create directory: " + basePath));
         }
-
         try (var subDirs = Files.list(basePath)) {
-            var date = LocalDate.ofInstant(streamFilename.getInstant(), ZoneOffset.UTC)
-                    .toString();
-            var paths = subDirs.map(Path::toFile)
-                    .filter(f -> f.isDirectory()
-                            && f.getName().compareTo(date) >= 0
-                            && f.getName().length() == 10)
-                    .sorted()
-                    .limit(2) // Current and next day
-                    .map(File::toPath)
-                    .collect(Collectors.toSet());
-
+            var date = LocalDate.ofInstant(streamFilename.getInstant(), ZoneOffset.UTC).toString();
+            var paths = subDirs.map(Path::toFile).filter(f -> f.isDirectory() && f.getName().compareTo(date) >= 0 && f.getName().length() == 10).sorted().limit(// Current and next day
+            2).map(File::toPath).collect(Collectors.toSet());
             if (paths.isEmpty()) {
                 return Flux.just(basePath);
             }
-
             return Flux.fromIterable(paths);
         } catch (Exception e) {
             return Flux.error(new RuntimeException(e));
@@ -164,9 +110,7 @@ public final class LocalStreamFileProvider extends AbstractStreamFileProvider {
         if (!file.isFile() || !file.canRead() || file.length() > downloaderProperties.getMaxSize()) {
             return false;
         }
-
         var name = file.getName();
-
         if (name.compareTo(lastFilename) < 0) {
             try {
                 // Files before last file have been processed and can be deleted to optimize list + sort
@@ -178,7 +122,6 @@ public final class LocalStreamFileProvider extends AbstractStreamFileProvider {
             }
             return false;
         }
-
         return name.contains(SIGNATURE_SUFFIX);
     }
 

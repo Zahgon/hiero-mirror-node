@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record;
 
 import static org.hiero.mirror.importer.reader.record.ProtoRecordFileReader.VERSION;
-
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.ImmutableMap;
 import com.hederahashgraph.api.proto.java.ContractFunctionResult;
@@ -37,53 +35,38 @@ import org.springframework.transaction.annotation.Transactional;
 public class RecordFileParser extends AbstractStreamFileParser<RecordFile> {
 
     private final ApplicationEventPublisher applicationEventPublisher;
+
     private final RecordItemListener recordItemListener;
+
     private final DateRangeCalculator dateRangeCalculator;
+
     private final ParserContext parserContext;
 
     // Metrics
     private final Map<Integer, Timer> latencyMetrics;
+
     private final Map<Integer, DistributionSummary> sizeMetrics;
+
     private final Timer unknownLatencyMetric;
+
     private final DistributionSummary unknownSizeMetric;
 
     @SuppressWarnings("java:S107")
-    public RecordFileParser(
-            ApplicationEventPublisher applicationEventPublisher,
-            MeterRegistry meterRegistry,
-            RecordParserProperties parserProperties,
-            StreamFileRepository<RecordFile, Long> streamFileRepository,
-            RecordItemListener recordItemListener,
-            RecordStreamFileListener recordStreamFileListener,
-            DateRangeCalculator dateRangeCalculator,
-            ParserContext parserContext) {
+    public RecordFileParser(ApplicationEventPublisher applicationEventPublisher, MeterRegistry meterRegistry, RecordParserProperties parserProperties, StreamFileRepository<RecordFile, Long> streamFileRepository, RecordItemListener recordItemListener, RecordStreamFileListener recordStreamFileListener, DateRangeCalculator dateRangeCalculator, ParserContext parserContext) {
         super(meterRegistry, parserProperties, recordStreamFileListener, streamFileRepository);
         this.applicationEventPublisher = applicationEventPublisher;
         this.recordItemListener = recordItemListener;
         this.dateRangeCalculator = dateRangeCalculator;
         this.parserContext = parserContext;
-
         // build transaction latency metrics
         ImmutableMap.Builder<Integer, Timer> latencyMetricsBuilder = ImmutableMap.builder();
         ImmutableMap.Builder<Integer, DistributionSummary> sizeMetricsBuilder = ImmutableMap.builder();
-
         for (TransactionType type : TransactionType.values()) {
-            Timer timer = Timer.builder("hiero.mirror.importer.transaction.latency")
-                    .description("The difference in ms between the time consensus was achieved and the mirror node "
-                            + "processed the transaction")
-                    .tag("type", type.toString())
-                    .register(meterRegistry);
+            Timer timer = Timer.builder("hiero.mirror.importer.transaction.latency").description("The difference in ms between the time consensus was achieved and the mirror node " + "processed the transaction").tag("type", type.toString()).register(meterRegistry);
             latencyMetricsBuilder.put(type.getProtoId(), timer);
-
-            DistributionSummary distributionSummary = DistributionSummary.builder(
-                            "hiero.mirror.importer.transaction.size")
-                    .description("The size of the transaction in bytes")
-                    .baseUnit("bytes")
-                    .tag("type", type.toString())
-                    .register(meterRegistry);
+            DistributionSummary distributionSummary = DistributionSummary.builder("hiero.mirror.importer.transaction.size").description("The size of the transaction in bytes").baseUnit("bytes").tag("type", type.toString()).register(meterRegistry);
             sizeMetricsBuilder.put(type.getProtoId(), distributionSummary);
         }
-
         latencyMetrics = latencyMetricsBuilder.build();
         sizeMetrics = sizeMetricsBuilder.build();
         unknownLatencyMetric = latencyMetrics.get(TransactionType.UNKNOWN.getProtoId());
@@ -96,98 +79,43 @@ public class RecordFileParser extends AbstractStreamFileParser<RecordFile> {
      * @param recordFile containing information about file to be processed
      */
     @Override
-    @Retryable(
-            delayString = "#{@recordParserProperties.getRetry().getMinBackoff().toMillis()}",
-            excludes = OutOfMemoryError.class,
-            maxDelayString = "#{@recordParserProperties.getRetry().getMaxBackoff().toMillis()}",
-            maxRetriesString = "#{@recordParserProperties.getRetry().getMaxAttempts() - 1}",
-            multiplierString = "#{@recordParserProperties.getRetry().getMultiplier()}")
+    @Retryable(delayString = "#{@recordParserProperties.getRetry().getMinBackoff().toMillis()}", excludes = OutOfMemoryError.class, maxDelayString = "#{@recordParserProperties.getRetry().getMaxBackoff().toMillis()}", maxRetriesString = "#{@recordParserProperties.getRetry().getMaxAttempts() - 1}", multiplierString = "#{@recordParserProperties.getRetry().getMultiplier()}")
     @Transactional(timeoutString = "#{@recordParserProperties.getTransactionTimeout().toSeconds()}")
     public synchronized void parse(RecordFile recordFile) {
-        try {
-            super.parse(recordFile);
-        } finally {
-            parserContext.clear();
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
-    @Retryable(
-            delayString = "#{@recordParserProperties.getRetry().getMinBackoff().toMillis()}",
-            excludes = OutOfMemoryError.class,
-            maxDelayString = "#{@recordParserProperties.getRetry().getMaxBackoff().toMillis()}",
-            maxRetriesString = "#{@recordParserProperties.getRetry().getMaxAttempts() - 1}",
-            multiplierString = "#{@recordParserProperties.getRetry().getMultiplier()}")
+    @Retryable(delayString = "#{@recordParserProperties.getRetry().getMinBackoff().toMillis()}", excludes = OutOfMemoryError.class, maxDelayString = "#{@recordParserProperties.getRetry().getMaxBackoff().toMillis()}", maxRetriesString = "#{@recordParserProperties.getRetry().getMaxAttempts() - 1}", multiplierString = "#{@recordParserProperties.getRetry().getMultiplier()}")
     @Transactional(timeoutString = "#{@recordParserProperties.getTransactionTimeout().toSeconds()}")
     public synchronized void parse(List<RecordFile> recordFiles) {
-        try {
-            super.parse(recordFiles);
-        } finally {
-            parserContext.clear();
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     protected void doParse(RecordFile recordFile) {
-        var dateRangeFilter = dateRangeCalculator.getFilter(parserProperties.getStreamType());
-        var aggregator = new RecordItemAggregator();
-        var count = new AtomicLong(0L);
-        boolean shouldLog = log.isDebugEnabled() || log.isTraceEnabled();
-        final var logIndex = new AtomicInteger(0);
-
-        applicationEventPublisher.publishEvent(new RecordFileParsedEvent(this, recordFile.getConsensusEnd()));
-        recordFile.getItems().forEach(recordItem -> {
-            if (shouldLog) {
-                logItem(recordItem);
-            }
-
-            aggregator.accept(recordItem);
-
-            if (dateRangeFilter.filter(recordItem.getConsensusTimestamp())) {
-                recordItem.setLogIndex(logIndex);
-                recordItemListener.onItem(recordItem);
-                recordMetrics(recordItem);
-                count.incrementAndGet();
-            }
-        });
-
-        recordFile.setCount(count.get());
-        aggregator.update(recordFile);
-        updateIndex(recordFile);
-
-        parserContext.add(recordFile);
-        parserContext.addAll(recordFile.getSidecars());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private void logItem(RecordItem recordItem) {
         if (log.isTraceEnabled()) {
-            log.trace(
-                    "Transaction = {}, Record = {}",
-                    Utility.printProtoMessage(recordItem.getTransaction()),
-                    Utility.printProtoMessage(recordItem.getTransactionRecord()));
+            log.trace("Transaction = {}, Record = {}", Utility.printProtoMessage(recordItem.getTransaction()), Utility.printProtoMessage(recordItem.getTransactionRecord()));
         } else if (log.isDebugEnabled()) {
             log.debug("Parsing transaction with consensus timestamp {}", recordItem.getConsensusTimestamp());
         }
     }
 
     private void recordMetrics(RecordItem recordItem) {
-        sizeMetrics
-                .getOrDefault(recordItem.getTransactionType(), unknownSizeMetric)
-                .record(recordItem.getTransaction().getSerializedSize());
-
+        sizeMetrics.getOrDefault(recordItem.getTransactionType(), unknownSizeMetric).record(recordItem.getTransaction().getSerializedSize());
         var consensusTimestamp = Instant.ofEpochSecond(0, recordItem.getConsensusTimestamp());
-        latencyMetrics
-                .getOrDefault(recordItem.getTransactionType(), unknownLatencyMetric)
-                .record(Duration.between(consensusTimestamp, Instant.now()));
+        latencyMetrics.getOrDefault(recordItem.getTransactionType(), unknownLatencyMetric).record(Duration.between(consensusTimestamp, Instant.now()));
     }
 
     // Correct v5 block numbers once we receive a v6 block with a canonical number
     private void updateIndex(RecordFile recordFile) {
         var lastRecordFile = getLast();
-
         if (lastRecordFile != null && lastRecordFile.getVersion() < VERSION && recordFile.getVersion() >= VERSION) {
             long offset = recordFile.getIndex() - lastRecordFile.getIndex() - 1;
-
             if (offset != 0 && streamFileRepository instanceof RecordFileRepository repository) {
                 var stopwatch = Stopwatch.createStarted();
                 int count = repository.updateIndex(offset);
@@ -199,29 +127,16 @@ public class RecordFileParser extends AbstractStreamFileParser<RecordFile> {
     private class RecordItemAggregator implements Consumer<RecordItem> {
 
         private final LogsBloomFilter logsBloom = new LogsBloomFilter();
+
         private long gasUsed = 0L;
 
         @Override
         public void accept(RecordItem recordItem) {
-            if (!recordItem.isTopLevel()) {
-                return;
-            }
-
-            var rec = recordItem.getTransactionRecord();
-            var result = rec.hasContractCreateResult() ? rec.getContractCreateResult() : rec.getContractCallResult();
-
-            if (ContractFunctionResult.getDefaultInstance().equals(result)) {
-                return;
-            }
-
-            gasUsed += result.getGasUsed();
-            logsBloom.or(DomainUtils.toBytes(result.getBloom()));
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         public void update(RecordFile recordFile) {
-            recordFile.setGasUsed(gasUsed);
-            recordFile.setLoadEnd(System.currentTimeMillis());
-            recordFile.setLogsBloom(logsBloom.toArrayUnsafe());
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
     }
 }

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,15 +24,19 @@ import org.springframework.boot.health.contributor.Status;
 @CustomLog
 @Named
 @RequiredArgsConstructor
-@ConditionalOnMissingClass({"reactor.netty.http.server.HttpServer", "org.apache.catalina.startup.Tomcat"})
+@ConditionalOnMissingClass({ "reactor.netty.http.server.HttpServer", "org.apache.catalina.startup.Tomcat" })
 final class ActuatorHttpServer implements InitializingBean, DisposableBean {
 
     private static final String CONTENT_TYPE = "Content-Type";
+
     private static final String APPLICATION_JSON = "application/json";
+
     private static final String TEXT_PLAIN_PROMETHEUS = "text/plain; version=0.0.4; charset=utf-8";
 
     private final Function<String, Status> healthResolver;
+
     private final PrometheusMeterRegistry prometheusMeterRegistry;
+
     private final ObjectMapper objectMapper;
 
     @Value("${server.port:8080}")
@@ -43,31 +46,21 @@ final class ActuatorHttpServer implements InitializingBean, DisposableBean {
 
     // Returns the actual bound port (useful when port=0 is used in tests)
     int getPort() {
-        return server.getAddress().getPort();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     void setPort(int port) {
-        this.port = port;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void afterPropertiesSet() throws IOException {
-        server = HttpServer.create(new InetSocketAddress(port), 0);
-        server.createContext("/actuator/health/liveness", e -> handleHealth(e, "liveness"));
-        server.createContext("/actuator/health/readiness", e -> handleHealth(e, "readiness"));
-        server.createContext("/actuator/health/startup", e -> handleHealth(e, "startup"));
-        server.createContext("/actuator/prometheus", this::handlePrometheus);
-        server.setExecutor(Executors.newVirtualThreadPerTaskExecutor());
-        server.start();
-        log.info("Actuator HTTP server listening on port {}", port);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void destroy() {
-        if (server != null) {
-            server.stop(0);
-            log.info("Actuator HTTP server stopped");
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private void handleHealth(HttpExchange exchange, String group) throws IOException {

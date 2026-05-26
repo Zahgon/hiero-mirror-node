@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.reader.balance;
 
 import jakarta.inject.Named;
@@ -15,6 +14,7 @@ import org.hiero.mirror.importer.reader.balance.line.AccountBalanceLineParserV1;
 public class BalanceFileReaderImplV1 extends CsvBalanceFileReader {
 
     static final String TIMESTAMP_HEADER_PREFIX = "timestamp:";
+
     private static final int MAX_HEADER_ROWS = 10;
 
     public BalanceFileReaderImplV1(BalanceParserProperties balanceParserProperties, AccountBalanceLineParserV1 parser) {
@@ -23,12 +23,12 @@ public class BalanceFileReaderImplV1 extends CsvBalanceFileReader {
 
     @Override
     protected String getTimestampHeaderPrefix() {
-        return TIMESTAMP_HEADER_PREFIX;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     protected String getVersionHeaderPrefix() {
-        return TIMESTAMP_HEADER_PREFIX;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -46,26 +46,6 @@ public class BalanceFileReaderImplV1 extends CsvBalanceFileReader {
      */
     @Override
     protected long parseConsensusTimestamp(BufferedReader reader) {
-        String line = null;
-        try {
-            long consensusTimestamp = -1;
-            for (int i = 0; i < MAX_HEADER_ROWS; i++) {
-                line = reader.readLine();
-                if (supports(line)) {
-                    consensusTimestamp = convertTimestamp(line.substring(TIMESTAMP_HEADER_PREFIX.length()));
-                } else if (Strings.CI.startsWith(line, COLUMN_HEADER_PREFIX)) {
-                    if (consensusTimestamp == -1) {
-                        break;
-                    }
-                    return consensusTimestamp;
-                }
-            }
-        } catch (DateTimeParseException ex) {
-            throw new InvalidDatasetException("Invalid timestamp header line: " + line, ex);
-        } catch (IOException ex) {
-            throw new InvalidDatasetException("Error reading account balance file", ex);
-        }
-
-        throw new InvalidDatasetException("Timestamp / column header not found in account balance file");
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

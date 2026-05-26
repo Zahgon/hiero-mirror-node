@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.file;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -36,23 +35,23 @@ public class FileData implements Persistable<Long> {
     private Integer transactionType;
 
     public boolean transactionTypeIsAppend() {
-        return transactionType == TransactionType.FILEAPPEND.getProtoId();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @JsonIgnore
     public int getDataSize() {
-        return fileData == null ? 0 : fileData.length;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @JsonIgnore
     @Override
     public Long getId() {
-        return consensusTimestamp;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @JsonIgnore
     @Override
     public boolean isNew() {
-        return true; // Since we never update and use a natural ID, avoid Hibernate querying before insert
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.entity;
 
 import jakarta.inject.Named;
@@ -19,8 +18,6 @@ public class CompositeRecordStreamFileListener implements RecordStreamFileListen
 
     @Override
     public void onEnd(RecordFile streamFile) throws ImporterException {
-        for (int i = 0; i < listeners.size(); i++) {
-            listeners.get(i).onEnd(streamFile);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

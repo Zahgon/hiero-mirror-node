@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.token;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -60,11 +59,11 @@ public abstract class AbstractNft implements History {
 
     @JsonIgnore
     public AbstractNft.Id getId() {
-        return new Id(serialNumber, tokenId);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public static boolean shouldKeepSpender(Long spender) {
-        return spender != null && spender == RETAIN_SPENDER;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @AllArgsConstructor
@@ -76,6 +75,7 @@ public abstract class AbstractNft implements History {
         private static final long serialVersionUID = 8679156797431231527L;
 
         private long serialNumber;
+
         private long tokenId;
     }
 }

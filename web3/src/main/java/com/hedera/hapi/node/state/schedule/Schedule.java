@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package com.hedera.hapi.node.state.schedule;
 
 import static java.util.Objects.requireNonNull;
-
 import com.hedera.hapi.node.base.AccountID;
 import com.hedera.hapi.node.base.Key;
 import com.hedera.hapi.node.base.ScheduleID;
@@ -119,29 +117,23 @@ import java.util.function.Supplier;
  *                    execution, this list contains sufficient public keys to satisfy the
  *                    full requirements for signature on that transaction.
  */
-public record Schedule(
-        @Nullable ScheduleID scheduleId,
-        boolean deleted,
-        boolean executed,
-        boolean waitForExpiry,
-        @Nonnull String memo,
-        @Nullable AccountID schedulerAccountId,
-        @Nullable AccountID payerAccountId,
-        @Nullable Key adminKey,
-        @Nullable Timestamp scheduleValidStart,
-        long providedExpirationSecond,
-        long calculatedExpirationSecond,
-        @Nullable Timestamp resolutionTime,
-        @Nullable SchedulableTransactionBody scheduledTransaction,
-        @Nullable TransactionBody originalCreateTransaction,
-        @Nonnull Supplier<List<Key>> signatoriesSupplier) {
-    /** Protobuf codec for reading and writing in protobuf format */
+public record Schedule(@Nullable ScheduleID scheduleId, boolean deleted, boolean executed, boolean waitForExpiry, @Nonnull String memo, @Nullable AccountID schedulerAccountId, @Nullable AccountID payerAccountId, @Nullable Key adminKey, @Nullable Timestamp scheduleValidStart, long providedExpirationSecond, long calculatedExpirationSecond, @Nullable Timestamp resolutionTime, @Nullable SchedulableTransactionBody scheduledTransaction, @Nullable TransactionBody originalCreateTransaction, @Nonnull Supplier<List<Key>> signatoriesSupplier) {
+
+    /**
+     * Protobuf codec for reading and writing in protobuf format
+     */
     public static final Codec<Schedule> PROTOBUF = new com.hedera.hapi.node.state.schedule.codec.ScheduleProtoCodec();
-    /** JSON codec for reading and writing in JSON format */
+
+    /**
+     * JSON codec for reading and writing in JSON format
+     */
     public static final JsonCodec<Schedule> JSON = new com.hedera.hapi.node.state.schedule.codec.ScheduleJsonCodec();
 
-    /** Default instance with all fields set to default values */
+    /**
+     * Default instance with all fields set to default values
+     */
     public static final Schedule DEFAULT = newBuilder().build();
+
     /**
      * Create a pre-populated Schedule.
      *
@@ -236,38 +228,8 @@ public record Schedule(
      *                    execution, this list contains sufficient public keys to satisfy the
      *                    full requirements for signature on that transaction.
      */
-    public Schedule(
-            ScheduleID scheduleId,
-            boolean deleted,
-            boolean executed,
-            boolean waitForExpiry,
-            String memo,
-            AccountID schedulerAccountId,
-            AccountID payerAccountId,
-            Key adminKey,
-            Timestamp scheduleValidStart,
-            long providedExpirationSecond,
-            long calculatedExpirationSecond,
-            Timestamp resolutionTime,
-            SchedulableTransactionBody scheduledTransaction,
-            TransactionBody originalCreateTransaction,
-            List<Key> signatories) {
-        this(
-                scheduleId,
-                deleted,
-                executed,
-                waitForExpiry,
-                memo,
-                schedulerAccountId,
-                payerAccountId,
-                adminKey,
-                scheduleValidStart,
-                providedExpirationSecond,
-                calculatedExpirationSecond,
-                resolutionTime,
-                scheduledTransaction,
-                originalCreateTransaction,
-                () -> signatories == null ? Collections.emptyList() : signatories);
+    public Schedule(ScheduleID scheduleId, boolean deleted, boolean executed, boolean waitForExpiry, String memo, AccountID schedulerAccountId, AccountID payerAccountId, Key adminKey, Timestamp scheduleValidStart, long providedExpirationSecond, long calculatedExpirationSecond, Timestamp resolutionTime, SchedulableTransactionBody scheduledTransaction, TransactionBody originalCreateTransaction, List<Key> signatories) {
+        this(scheduleId, deleted, executed, waitForExpiry, memo, schedulerAccountId, payerAccountId, adminKey, scheduleValidStart, providedExpirationSecond, calculatedExpirationSecond, resolutionTime, scheduledTransaction, originalCreateTransaction, () -> signatories == null ? Collections.emptyList() : signatories);
     }
 
     /**
@@ -276,7 +238,7 @@ public record Schedule(
      * @return a new builder
      */
     public static Builder newBuilder() {
-        return new Builder();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -285,70 +247,7 @@ public record Schedule(
      */
     @Override
     public int hashCode() {
-        int result = 1;
-        if (scheduleId != null && !scheduleId.equals(DEFAULT.scheduleId)) {
-            result = 31 * result + scheduleId.hashCode();
-        }
-        if (deleted != DEFAULT.deleted) {
-            result = 31 * result + Boolean.hashCode(deleted);
-        }
-        if (executed != DEFAULT.executed) {
-            result = 31 * result + Boolean.hashCode(executed);
-        }
-        if (waitForExpiry != DEFAULT.waitForExpiry) {
-            result = 31 * result + Boolean.hashCode(waitForExpiry);
-        }
-        if (memo != null && !memo.equals(DEFAULT.memo)) {
-            result = 31 * result + memo.hashCode();
-        }
-        if (schedulerAccountId != null && !schedulerAccountId.equals(DEFAULT.schedulerAccountId)) {
-            result = 31 * result + schedulerAccountId.hashCode();
-        }
-        if (payerAccountId != null && !payerAccountId.equals(DEFAULT.payerAccountId)) {
-            result = 31 * result + payerAccountId.hashCode();
-        }
-        if (adminKey != null && !adminKey.equals(DEFAULT.adminKey)) {
-            result = 31 * result + adminKey.hashCode();
-        }
-        if (scheduleValidStart != null && !scheduleValidStart.equals(DEFAULT.scheduleValidStart)) {
-            result = 31 * result + scheduleValidStart.hashCode();
-        }
-        if (providedExpirationSecond != DEFAULT.providedExpirationSecond) {
-            result = 31 * result + Long.hashCode(providedExpirationSecond);
-        }
-        if (calculatedExpirationSecond != DEFAULT.calculatedExpirationSecond) {
-            result = 31 * result + Long.hashCode(calculatedExpirationSecond);
-        }
-        if (resolutionTime != null && !resolutionTime.equals(DEFAULT.resolutionTime)) {
-            result = 31 * result + resolutionTime.hashCode();
-        }
-        if (scheduledTransaction != null && !scheduledTransaction.equals(DEFAULT.scheduledTransaction)) {
-            result = 31 * result + scheduledTransaction.hashCode();
-        }
-        if (originalCreateTransaction != null && !originalCreateTransaction.equals(DEFAULT.originalCreateTransaction)) {
-            result = 31 * result + originalCreateTransaction.hashCode();
-        }
-        final List<Key> thisSignatories = signatoriesSupplier.get();
-        final List<Key> defaultSignatories = DEFAULT.signatoriesSupplier.get();
-        if (!Objects.equals(thisSignatories, defaultSignatories) && thisSignatories != null) {
-            for (Key key : thisSignatories) {
-                result = 31 * result + (key != null ? key.hashCode() : 0);
-            }
-        }
-
-        long hashCode = result;
-        // Shifts: 30, 27, 16, 20, 5, 18, 10, 24, 30
-        hashCode += hashCode << 30;
-        hashCode ^= hashCode >>> 27;
-        hashCode += hashCode << 16;
-        hashCode ^= hashCode >>> 20;
-        hashCode += hashCode << 5;
-        hashCode ^= hashCode >>> 18;
-        hashCode += hashCode << 10;
-        hashCode ^= hashCode >>> 24;
-        hashCode += hashCode << 30;
-
-        return (int) hashCode;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -356,83 +255,7 @@ public record Schedule(
      */
     @Override
     public boolean equals(Object that) {
-        if (that == null || this.getClass() != that.getClass()) {
-            return false;
-        }
-        Schedule thatObj = (Schedule) that;
-        if (scheduleId == null && thatObj.scheduleId != null) {
-            return false;
-        }
-        if (scheduleId != null && !scheduleId.equals(thatObj.scheduleId)) {
-            return false;
-        }
-        if (deleted != thatObj.deleted) {
-            return false;
-        }
-        if (executed != thatObj.executed) {
-            return false;
-        }
-        if (waitForExpiry != thatObj.waitForExpiry) {
-            return false;
-        }
-        if (memo == null && thatObj.memo != null) {
-            return false;
-        }
-        if (memo != null && !memo.equals(thatObj.memo)) {
-            return false;
-        }
-        if (schedulerAccountId == null && thatObj.schedulerAccountId != null) {
-            return false;
-        }
-        if (schedulerAccountId != null && !schedulerAccountId.equals(thatObj.schedulerAccountId)) {
-            return false;
-        }
-        if (payerAccountId == null && thatObj.payerAccountId != null) {
-            return false;
-        }
-        if (payerAccountId != null && !payerAccountId.equals(thatObj.payerAccountId)) {
-            return false;
-        }
-        if (adminKey == null && thatObj.adminKey != null) {
-            return false;
-        }
-        if (adminKey != null && !adminKey.equals(thatObj.adminKey)) {
-            return false;
-        }
-        if (scheduleValidStart == null && thatObj.scheduleValidStart != null) {
-            return false;
-        }
-        if (scheduleValidStart != null && !scheduleValidStart.equals(thatObj.scheduleValidStart)) {
-            return false;
-        }
-        if (providedExpirationSecond != thatObj.providedExpirationSecond) {
-            return false;
-        }
-        if (calculatedExpirationSecond != thatObj.calculatedExpirationSecond) {
-            return false;
-        }
-        if (resolutionTime == null && thatObj.resolutionTime != null) {
-            return false;
-        }
-        if (resolutionTime != null && !resolutionTime.equals(thatObj.resolutionTime)) {
-            return false;
-        }
-        if (scheduledTransaction == null && thatObj.scheduledTransaction != null) {
-            return false;
-        }
-        if (scheduledTransaction != null && !scheduledTransaction.equals(thatObj.scheduledTransaction)) {
-            return false;
-        }
-        if (originalCreateTransaction == null && thatObj.originalCreateTransaction != null) {
-            return false;
-        }
-        if (originalCreateTransaction != null && !originalCreateTransaction.equals(thatObj.originalCreateTransaction)) {
-            return false;
-        }
-
-        List<Key> thisSignatories = signatoriesSupplier.get();
-        List<Key> thatSignatories = thatObj.signatoriesSupplier.get();
-        return Objects.equals(thisSignatories, thatSignatories);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -441,7 +264,7 @@ public record Schedule(
      * @return true of the scheduleId has a value
      */
     public boolean hasScheduleId() {
-        return scheduleId != null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -452,7 +275,7 @@ public record Schedule(
      * @return the value for scheduleId if it has a value, or else returns the default value
      */
     public ScheduleID scheduleIdOrElse(@Nonnull final ScheduleID defaultValue) {
-        return hasScheduleId() ? scheduleId : defaultValue;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -462,8 +285,9 @@ public record Schedule(
      * @return the value for scheduleId if it has a value
      * @throws NullPointerException if scheduleId is null
      */
-    public @Nonnull ScheduleID scheduleIdOrThrow() {
-        return requireNonNull(scheduleId, "Field scheduleId is null");
+    @Nonnull
+    public ScheduleID scheduleIdOrThrow() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -472,9 +296,7 @@ public record Schedule(
      * @param ifPresent the {@link Consumer} to execute
      */
     public void ifScheduleId(@Nonnull final Consumer<ScheduleID> ifPresent) {
-        if (hasScheduleId()) {
-            ifPresent.accept(scheduleId);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -483,7 +305,7 @@ public record Schedule(
      * @return true of the schedulerAccountId has a value
      */
     public boolean hasSchedulerAccountId() {
-        return schedulerAccountId != null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -494,7 +316,7 @@ public record Schedule(
      * @return the value for schedulerAccountId if it has a value, or else returns the default value
      */
     public AccountID schedulerAccountIdOrElse(@Nonnull final AccountID defaultValue) {
-        return hasSchedulerAccountId() ? schedulerAccountId : defaultValue;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -504,8 +326,9 @@ public record Schedule(
      * @return the value for schedulerAccountId if it has a value
      * @throws NullPointerException if schedulerAccountId is null
      */
-    public @Nonnull AccountID schedulerAccountIdOrThrow() {
-        return requireNonNull(schedulerAccountId, "Field schedulerAccountId is null");
+    @Nonnull
+    public AccountID schedulerAccountIdOrThrow() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -514,9 +337,7 @@ public record Schedule(
      * @param ifPresent the {@link Consumer} to execute
      */
     public void ifSchedulerAccountId(@Nonnull final Consumer<AccountID> ifPresent) {
-        if (hasSchedulerAccountId()) {
-            ifPresent.accept(schedulerAccountId);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -525,7 +346,7 @@ public record Schedule(
      * @return true of the payerAccountId has a value
      */
     public boolean hasPayerAccountId() {
-        return payerAccountId != null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -536,7 +357,7 @@ public record Schedule(
      * @return the value for payerAccountId if it has a value, or else returns the default value
      */
     public AccountID payerAccountIdOrElse(@Nonnull final AccountID defaultValue) {
-        return hasPayerAccountId() ? payerAccountId : defaultValue;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -546,8 +367,9 @@ public record Schedule(
      * @return the value for payerAccountId if it has a value
      * @throws NullPointerException if payerAccountId is null
      */
-    public @Nonnull AccountID payerAccountIdOrThrow() {
-        return requireNonNull(payerAccountId, "Field payerAccountId is null");
+    @Nonnull
+    public AccountID payerAccountIdOrThrow() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -556,9 +378,7 @@ public record Schedule(
      * @param ifPresent the {@link Consumer} to execute
      */
     public void ifPayerAccountId(@Nonnull final Consumer<AccountID> ifPresent) {
-        if (hasPayerAccountId()) {
-            ifPresent.accept(payerAccountId);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -567,7 +387,7 @@ public record Schedule(
      * @return true of the adminKey has a value
      */
     public boolean hasAdminKey() {
-        return adminKey != null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -578,7 +398,7 @@ public record Schedule(
      * @return the value for adminKey if it has a value, or else returns the default value
      */
     public Key adminKeyOrElse(@Nonnull final Key defaultValue) {
-        return hasAdminKey() ? adminKey : defaultValue;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -588,8 +408,9 @@ public record Schedule(
      * @return the value for adminKey if it has a value
      * @throws NullPointerException if adminKey is null
      */
-    public @Nonnull Key adminKeyOrThrow() {
-        return requireNonNull(adminKey, "Field adminKey is null");
+    @Nonnull
+    public Key adminKeyOrThrow() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -598,9 +419,7 @@ public record Schedule(
      * @param ifPresent the {@link Consumer} to execute
      */
     public void ifAdminKey(@Nonnull final Consumer<Key> ifPresent) {
-        if (hasAdminKey()) {
-            ifPresent.accept(adminKey);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -609,7 +428,7 @@ public record Schedule(
      * @return true of the scheduleValidStart has a value
      */
     public boolean hasScheduleValidStart() {
-        return scheduleValidStart != null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -620,7 +439,7 @@ public record Schedule(
      * @return the value for scheduleValidStart if it has a value, or else returns the default value
      */
     public Timestamp scheduleValidStartOrElse(@Nonnull final Timestamp defaultValue) {
-        return hasScheduleValidStart() ? scheduleValidStart : defaultValue;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -630,8 +449,9 @@ public record Schedule(
      * @return the value for scheduleValidStart if it has a value
      * @throws NullPointerException if scheduleValidStart is null
      */
-    public @Nonnull Timestamp scheduleValidStartOrThrow() {
-        return requireNonNull(scheduleValidStart, "Field scheduleValidStart is null");
+    @Nonnull
+    public Timestamp scheduleValidStartOrThrow() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -640,9 +460,7 @@ public record Schedule(
      * @param ifPresent the {@link Consumer} to execute
      */
     public void ifScheduleValidStart(@Nonnull final Consumer<Timestamp> ifPresent) {
-        if (hasScheduleValidStart()) {
-            ifPresent.accept(scheduleValidStart);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -651,7 +469,7 @@ public record Schedule(
      * @return true of the resolutionTime has a value
      */
     public boolean hasResolutionTime() {
-        return resolutionTime != null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -662,7 +480,7 @@ public record Schedule(
      * @return the value for resolutionTime if it has a value, or else returns the default value
      */
     public Timestamp resolutionTimeOrElse(@Nonnull final Timestamp defaultValue) {
-        return hasResolutionTime() ? resolutionTime : defaultValue;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -672,8 +490,9 @@ public record Schedule(
      * @return the value for resolutionTime if it has a value
      * @throws NullPointerException if resolutionTime is null
      */
-    public @Nonnull Timestamp resolutionTimeOrThrow() {
-        return requireNonNull(resolutionTime, "Field resolutionTime is null");
+    @Nonnull
+    public Timestamp resolutionTimeOrThrow() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -682,9 +501,7 @@ public record Schedule(
      * @param ifPresent the {@link Consumer} to execute
      */
     public void ifResolutionTime(@Nonnull final Consumer<Timestamp> ifPresent) {
-        if (hasResolutionTime()) {
-            ifPresent.accept(resolutionTime);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -693,7 +510,7 @@ public record Schedule(
      * @return true of the scheduledTransaction has a value
      */
     public boolean hasScheduledTransaction() {
-        return scheduledTransaction != null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -703,9 +520,8 @@ public record Schedule(
      * @param defaultValue the default value to return if scheduledTransaction is null
      * @return the value for scheduledTransaction if it has a value, or else returns the default value
      */
-    public SchedulableTransactionBody scheduledTransactionOrElse(
-            @Nonnull final SchedulableTransactionBody defaultValue) {
-        return hasScheduledTransaction() ? scheduledTransaction : defaultValue;
+    public SchedulableTransactionBody scheduledTransactionOrElse(@Nonnull final SchedulableTransactionBody defaultValue) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -715,8 +531,9 @@ public record Schedule(
      * @return the value for scheduledTransaction if it has a value
      * @throws NullPointerException if scheduledTransaction is null
      */
-    public @Nonnull SchedulableTransactionBody scheduledTransactionOrThrow() {
-        return requireNonNull(scheduledTransaction, "Field scheduledTransaction is null");
+    @Nonnull
+    public SchedulableTransactionBody scheduledTransactionOrThrow() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -725,9 +542,7 @@ public record Schedule(
      * @param ifPresent the {@link Consumer} to execute
      */
     public void ifScheduledTransaction(@Nonnull final Consumer<SchedulableTransactionBody> ifPresent) {
-        if (hasScheduledTransaction()) {
-            ifPresent.accept(scheduledTransaction);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -736,7 +551,7 @@ public record Schedule(
      * @return true of the originalCreateTransaction has a value
      */
     public boolean hasOriginalCreateTransaction() {
-        return originalCreateTransaction != null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -747,7 +562,7 @@ public record Schedule(
      * @return the value for originalCreateTransaction if it has a value, or else returns the default value
      */
     public TransactionBody originalCreateTransactionOrElse(@Nonnull final TransactionBody defaultValue) {
-        return hasOriginalCreateTransaction() ? originalCreateTransaction : defaultValue;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -757,8 +572,9 @@ public record Schedule(
      * @return the value for originalCreateTransaction if it has a value
      * @throws NullPointerException if originalCreateTransaction is null
      */
-    public @Nonnull TransactionBody originalCreateTransactionOrThrow() {
-        return requireNonNull(originalCreateTransaction, "Field originalCreateTransaction is null");
+    @Nonnull
+    public TransactionBody originalCreateTransactionOrThrow() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -767,13 +583,11 @@ public record Schedule(
      * @param ifPresent the {@link Consumer} to execute
      */
     public void ifOriginalCreateTransaction(@Nonnull final Consumer<TransactionBody> ifPresent) {
-        if (hasOriginalCreateTransaction()) {
-            ifPresent.accept(originalCreateTransaction);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public List<Key> signatories() {
-        return signatoriesSupplier != null ? signatoriesSupplier.get() : Collections.emptyList();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -783,22 +597,7 @@ public record Schedule(
      * @return a pre-populated builder
      */
     public Builder copyBuilder() {
-        return new Builder(
-                scheduleId,
-                deleted,
-                executed,
-                waitForExpiry,
-                memo,
-                schedulerAccountId,
-                payerAccountId,
-                adminKey,
-                scheduleValidStart,
-                providedExpirationSecond,
-                calculatedExpirationSecond,
-                resolutionTime,
-                scheduledTransaction,
-                originalCreateTransaction,
-                signatoriesSupplier);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -806,11 +605,14 @@ public record Schedule(
      * paths use the constructor directly.
      */
     public static final class Builder {
+
         @Nullable
         private ScheduleID scheduleId = null;
 
         private boolean deleted = false;
+
         private boolean executed = false;
+
         private boolean waitForExpiry = false;
 
         @Nonnull
@@ -829,6 +631,7 @@ public record Schedule(
         private Timestamp scheduleValidStart = null;
 
         private long providedExpirationSecond = 0;
+
         private long calculatedExpirationSecond = 0;
 
         @Nullable
@@ -846,7 +649,8 @@ public record Schedule(
         /**
          * Create an empty builder
          */
-        public Builder() {}
+        public Builder() {
+        }
 
         /**
          * Create a pre-populated Builder.
@@ -942,22 +746,7 @@ public record Schedule(
          *                    execution, this list contains sufficient public keys to satisfy the
          *                    full requirements for signature on that transaction.
          */
-        public Builder(
-                ScheduleID scheduleId,
-                boolean deleted,
-                boolean executed,
-                boolean waitForExpiry,
-                String memo,
-                AccountID schedulerAccountId,
-                AccountID payerAccountId,
-                Key adminKey,
-                Timestamp scheduleValidStart,
-                long providedExpirationSecond,
-                long calculatedExpirationSecond,
-                Timestamp resolutionTime,
-                SchedulableTransactionBody scheduledTransaction,
-                TransactionBody originalCreateTransaction,
-                Supplier<List<Key>> signatoriesSupplier) {
+        public Builder(ScheduleID scheduleId, boolean deleted, boolean executed, boolean waitForExpiry, String memo, AccountID schedulerAccountId, AccountID payerAccountId, Key adminKey, Timestamp scheduleValidStart, long providedExpirationSecond, long calculatedExpirationSecond, Timestamp resolutionTime, SchedulableTransactionBody scheduledTransaction, TransactionBody originalCreateTransaction, Supplier<List<Key>> signatoriesSupplier) {
             this.scheduleId = scheduleId;
             this.deleted = deleted;
             this.executed = executed;
@@ -981,22 +770,7 @@ public record Schedule(
          * @return new model record with data set
          */
         public Schedule build() {
-            return new Schedule(
-                    scheduleId,
-                    deleted,
-                    executed,
-                    waitForExpiry,
-                    memo,
-                    schedulerAccountId,
-                    payerAccountId,
-                    adminKey,
-                    scheduleValidStart,
-                    providedExpirationSecond,
-                    calculatedExpirationSecond,
-                    resolutionTime,
-                    scheduledTransaction,
-                    originalCreateTransaction,
-                    signatoriesSupplier);
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1008,8 +782,7 @@ public record Schedule(
          * @return builder to continue building with
          */
         public Builder scheduleId(@Nullable ScheduleID scheduleId) {
-            this.scheduleId = scheduleId;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1021,8 +794,7 @@ public record Schedule(
          * @return builder to continue building with
          */
         public Builder scheduleId(ScheduleID.Builder builder) {
-            this.scheduleId = builder.build();
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1034,8 +806,7 @@ public record Schedule(
          * @return builder to continue building with
          */
         public Builder deleted(boolean deleted) {
-            this.deleted = deleted;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1047,8 +818,7 @@ public record Schedule(
          * @return builder to continue building with
          */
         public Builder executed(boolean executed) {
-            this.executed = executed;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1069,8 +839,7 @@ public record Schedule(
          * @return builder to continue building with
          */
         public Builder waitForExpiry(boolean waitForExpiry) {
-            this.waitForExpiry = waitForExpiry;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1083,8 +852,7 @@ public record Schedule(
          * @return builder to continue building with
          */
         public Builder memo(@Nonnull String memo) {
-            this.memo = memo != null ? memo : "";
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1097,8 +865,7 @@ public record Schedule(
          * @return builder to continue building with
          */
         public Builder schedulerAccountId(@Nullable AccountID schedulerAccountId) {
-            this.schedulerAccountId = schedulerAccountId;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1111,8 +878,7 @@ public record Schedule(
          * @return builder to continue building with
          */
         public Builder schedulerAccountId(AccountID.Builder builder) {
-            this.schedulerAccountId = builder.build();
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1125,8 +891,7 @@ public record Schedule(
          * @return builder to continue building with
          */
         public Builder payerAccountId(@Nullable AccountID payerAccountId) {
-            this.payerAccountId = payerAccountId;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1139,8 +904,7 @@ public record Schedule(
          * @return builder to continue building with
          */
         public Builder payerAccountId(AccountID.Builder builder) {
-            this.payerAccountId = builder.build();
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1154,8 +918,7 @@ public record Schedule(
          * @return builder to continue building with
          */
         public Builder adminKey(@Nullable Key adminKey) {
-            this.adminKey = adminKey;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1169,8 +932,7 @@ public record Schedule(
          * @return builder to continue building with
          */
         public Builder adminKey(Key.Builder builder) {
-            this.adminKey = builder.build();
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1183,8 +945,7 @@ public record Schedule(
          * @return builder to continue building with
          */
         public Builder scheduleValidStart(@Nullable Timestamp scheduleValidStart) {
-            this.scheduleValidStart = scheduleValidStart;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1197,8 +958,7 @@ public record Schedule(
          * @return builder to continue building with
          */
         public Builder scheduleValidStart(Timestamp.Builder builder) {
-            this.scheduleValidStart = builder.build();
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1215,8 +975,7 @@ public record Schedule(
          * @return builder to continue building with
          */
         public Builder providedExpirationSecond(long providedExpirationSecond) {
-            this.providedExpirationSecond = providedExpirationSecond;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1233,8 +992,7 @@ public record Schedule(
          * @return builder to continue building with
          */
         public Builder calculatedExpirationSecond(long calculatedExpirationSecond) {
-            this.calculatedExpirationSecond = calculatedExpirationSecond;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1251,8 +1009,7 @@ public record Schedule(
          * @return builder to continue building with
          */
         public Builder resolutionTime(@Nullable Timestamp resolutionTime) {
-            this.resolutionTime = resolutionTime;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1269,8 +1026,7 @@ public record Schedule(
          * @return builder to continue building with
          */
         public Builder resolutionTime(Timestamp.Builder builder) {
-            this.resolutionTime = builder.build();
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1283,8 +1039,7 @@ public record Schedule(
          * @return builder to continue building with
          */
         public Builder scheduledTransaction(@Nullable SchedulableTransactionBody scheduledTransaction) {
-            this.scheduledTransaction = scheduledTransaction;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1297,8 +1052,7 @@ public record Schedule(
          * @return builder to continue building with
          */
         public Builder scheduledTransaction(SchedulableTransactionBody.Builder builder) {
-            this.scheduledTransaction = builder.build();
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1312,8 +1066,7 @@ public record Schedule(
          * @return builder to continue building with
          */
         public Builder originalCreateTransaction(@Nullable TransactionBody originalCreateTransaction) {
-            this.originalCreateTransaction = originalCreateTransaction;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1327,8 +1080,7 @@ public record Schedule(
          * @return builder to continue building with
          */
         public Builder originalCreateTransaction(TransactionBody.Builder builder) {
-            this.originalCreateTransaction = builder.build();
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1352,8 +1104,7 @@ public record Schedule(
          * @return builder to continue building with
          */
         public Builder signatories(@Nonnull List<Key> signatories) {
-            this.signatoriesSupplier = () -> signatories != null ? signatories : Collections.emptyList();
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1377,8 +1128,7 @@ public record Schedule(
          * @return builder to continue building with
          */
         public Builder signatories(@Nonnull Supplier<List<Key>> signatoriesSupplier) {
-            this.signatoriesSupplier = signatoriesSupplier;
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -1402,8 +1152,7 @@ public record Schedule(
          * @return builder to continue building with
          */
         public Builder signatories(Key... values) {
-            this.signatoriesSupplier = () -> values == null ? Collections.emptyList() : List.of(values);
-            return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
     }
 }

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.grpc.listener;
 
 import lombok.RequiredArgsConstructor;
@@ -15,14 +14,12 @@ import reactor.core.scheduler.Schedulers;
 public abstract class SharedTopicListener implements TopicListener {
 
     protected final Logger log = LoggerFactory.getLogger(getClass());
+
     protected final ListenerProperties listenerProperties;
 
     @Override
     public Flux<TopicMessage> listen(TopicMessageFilter filter) {
-        return getSharedListener(filter)
-                .doOnSubscribe(s -> log.info("Subscribing: {}", filter))
-                .onBackpressureBuffer(listenerProperties.getMaxBufferSize(), BufferOverflowStrategy.ERROR)
-                .publishOn(Schedulers.boundedElastic(), false, listenerProperties.getPrefetch());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     protected abstract Flux<TopicMessage> getSharedListener(TopicMessageFilter filter);

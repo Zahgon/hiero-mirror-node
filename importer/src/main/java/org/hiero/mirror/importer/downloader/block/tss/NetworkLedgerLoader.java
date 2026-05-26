@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.downloader.block.tss;
 
 import com.hedera.hapi.node.tss.legacy.LedgerIdPublicationTransactionBody;
@@ -27,21 +26,22 @@ import org.springframework.core.io.ResourceLoader;
 final class NetworkLedgerLoader {
 
     private static final String CLASSPATH_LOCATION_PREFIX = "classpath:/networkledger/";
+
     private static final Set<String> BUNDLED_NETWORKS = Set.of(HederaNetwork.MAINNET, HederaNetwork.TESTNET);
 
     private final TssVerifier tssVerifier;
+
     private final BlockProperties blockProperties;
+
     private final ImporterProperties importerProperties;
+
     private final LedgerIdPublicationTransactionParser ledgerIdPublicationTransactionParser;
+
     private final ResourceLoader resourceLoader;
 
     @EventListener(ApplicationReadyEvent.class)
     void load() {
-        final var path = blockProperties.getInitialLedgerIdPublication();
-        final var loaded = path != null ? loadFromPath(path) : loadFromClasspath();
-        if (loaded != null) {
-            tssVerifier.setLedger(loaded, true);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private Ledger loadFromPath(final Path path) {
@@ -55,20 +55,19 @@ final class NetworkLedgerLoader {
         return ledgerIdPublicationTransactionParser.parse(0L, body);
     }
 
-    private @Nullable Ledger loadFromClasspath() {
+    @Nullable
+    private Ledger loadFromClasspath() {
         final var network = importerProperties.getNetwork();
         if (!BUNDLED_NETWORKS.contains(network)) {
             log.info("No bundled network ledger for network {}; skipping", network);
             return null;
         }
-
         final var location = CLASSPATH_LOCATION_PREFIX + network;
         final var resource = resourceLoader.getResource(location);
         if (!resource.exists()) {
             log.info("Bundled network ledger {} not found on classpath; skipping", location);
             return null;
         }
-
         final LedgerIdPublicationTransactionBody body;
         try (var in = resource.getInputStream()) {
             body = LedgerIdPublicationTransactionBody.parseFrom(in);

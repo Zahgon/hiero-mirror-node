@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.evm.properties;
 
 import static org.hiero.base.utility.CommonUtils.unhex;
@@ -13,7 +12,6 @@ import static org.hiero.mirror.web3.evm.config.EvmConfiguration.EVM_VERSION_0_51
 import static org.hiero.mirror.web3.evm.config.EvmConfiguration.EVM_VERSION_0_65;
 import static org.hiero.mirror.web3.evm.config.EvmConfiguration.EVM_VERSION_0_66;
 import static org.hiero.mirror.web3.evm.config.EvmConfiguration.EVM_VERSION_0_67;
-
 import com.google.common.collect.ImmutableSortedMap;
 import com.hedera.hapi.node.base.SemanticVersion;
 import com.hedera.node.app.config.ConfigProviderImpl;
@@ -46,8 +44,7 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public class EvmProperties {
 
-    private static final NavigableMap<Long, SemanticVersion> DEFAULT_EVM_VERSION_MAP =
-            ImmutableSortedMap.of(0L, EVM_VERSION);
+    private static final NavigableMap<Long, SemanticVersion> DEFAULT_EVM_VERSION_MAP = ImmutableSortedMap.of(0L, EVM_VERSION);
 
     @Positive
     private long entityNumBuffer = 1000L;
@@ -96,17 +93,12 @@ public class EvmProperties {
     @EqualsAndHashCode.Exclude
     @Getter(lazy = true)
     @ToString.Exclude
-    private final VersionedConfiguration versionedConfiguration =
-            new ConfigProviderImpl(false, null, getTransactionProperties()).getConfiguration();
+    private final VersionedConfiguration versionedConfiguration = new ConfigProviderImpl(false, null, getTransactionProperties()).getConfiguration();
 
     private boolean validatePayerBalance = false;
 
     public SemanticVersion getSemanticEvmVersion() {
-        var context = ContractCallContext.get();
-        if (context.useHistorical()) {
-            return getEvmVersionForBlock(context.getRecordFile().getIndex());
-        }
-        return evmVersion;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -119,15 +111,7 @@ public class EvmProperties {
      * the EVM version.
      */
     public NavigableMap<Long, SemanticVersion> getEvmVersions() {
-        if (!CollectionUtils.isEmpty(evmVersions)) {
-            return evmVersions;
-        }
-
-        if (!CollectionUtils.isEmpty(network.evmVersions)) {
-            return network.evmVersions;
-        }
-
-        return DEFAULT_EVM_VERSION_MAP;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -142,12 +126,7 @@ public class EvmProperties {
      * found.
      */
     SemanticVersion getEvmVersionForBlock(long blockNumber) {
-        Entry<Long, SemanticVersion> evmEntry = getEvmVersions().floorEntry(blockNumber);
-        if (evmEntry != null) {
-            return evmEntry.getValue();
-        } else {
-            return EVM_VERSION;
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private Map<String, String> buildTransactionProperties() {
@@ -172,20 +151,21 @@ public class EvmProperties {
         props.put("nodes.minNodeRewardBalance", String.valueOf(Long.MAX_VALUE));
         props.put("tss.hintsEnabled", "false");
         props.put("tss.historyEnabled", "false");
-        props.putAll(properties); // Allow user defined properties to override the defaults
+        // Allow user defined properties to override the defaults
+        props.putAll(properties);
         return Collections.unmodifiableMap(props);
     }
 
     @RequiredArgsConstructor
     @Getter
     public enum HederaNetwork {
-        MAINNET(unhex("00"), Bytes32.fromHexString("0x0127"), mainnetEvmVersionsMap()),
-        TESTNET(unhex("01"), Bytes32.fromHexString("0x0128"), Collections.emptyNavigableMap()),
-        PREVIEWNET(unhex("02"), Bytes32.fromHexString("0x0129"), Collections.emptyNavigableMap()),
-        OTHER(unhex("03"), Bytes32.fromHexString("0x012A"), Collections.emptyNavigableMap());
+
+        MAINNET(unhex("00"), Bytes32.fromHexString("0x0127"), mainnetEvmVersionsMap()), TESTNET(unhex("01"), Bytes32.fromHexString("0x0128"), Collections.emptyNavigableMap()), PREVIEWNET(unhex("02"), Bytes32.fromHexString("0x0129"), Collections.emptyNavigableMap()), OTHER(unhex("03"), Bytes32.fromHexString("0x012A"), Collections.emptyNavigableMap());
 
         private final byte[] ledgerId;
+
         private final Bytes32 chainId;
+
         private final NavigableMap<Long, SemanticVersion> evmVersions;
 
         private static NavigableMap<Long, SemanticVersion> mainnetEvmVersionsMap() {

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.service;
 
 import com.google.common.primitives.Bytes;
@@ -22,32 +21,6 @@ public final class ContractInitcodeServiceImpl implements ContractInitcodeServic
 
     @Override
     public byte @Nullable [] get(@Nullable ContractBytecode contractBytecode, RecordItem recordItem) {
-        if (!recordItem.getTransactionBody().hasContractCreateInstance()) {
-            return null;
-        }
-
-        var contractCreate = recordItem.getTransactionBody().getContractCreateInstance();
-        if (contractCreate.hasInitcode()) {
-            return DomainUtils.toBytes(contractCreate.getInitcode());
-        } else if (contractCreate.hasFileID() && recordItem.isBlockstream()) {
-            final var fileId = EntityId.of(contractCreate.getFileID());
-            final byte[] initcode = contractBytecodeService.get(fileId);
-            if (initcode == null) {
-                Utility.handleRecoverableError(
-                        "Failed to get initcode from file {} at {}", fileId, recordItem.getConsensusTimestamp());
-                return null;
-            }
-
-            final var constructorParameters = contractCreate.getConstructorParameters();
-            return constructorParameters.isEmpty()
-                    ? initcode
-                    : Bytes.concat(initcode, DomainUtils.toBytes(constructorParameters));
-        }
-
-        if (contractBytecode != null) {
-            return DomainUtils.toBytes(contractBytecode.getInitcode());
-        }
-
-        return null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

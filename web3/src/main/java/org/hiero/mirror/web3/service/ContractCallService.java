@@ -1,12 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.service;
 
 import static java.time.ZoneOffset.UTC;
 import static org.apache.logging.log4j.util.Strings.EMPTY;
 import static org.hiero.mirror.web3.convert.BytesDecoder.maybeDecodeSolidityErrorStringToReadableMessage;
 import static org.hiero.mirror.web3.validation.HexValidator.HEX_PREFIX;
-
 import com.google.common.annotations.VisibleForTesting;
 import com.hedera.hapi.node.base.ResponseCodeEnum;
 import io.micrometer.core.instrument.Counter;
@@ -34,40 +32,40 @@ import org.hiero.mirror.web3.viewmodel.BlockType;
 public abstract class ContractCallService {
 
     static final String EVM_INVOCATION_METRIC = "hiero.mirror.web3.evm.invocation";
+
     static final String GAS_LIMIT_METRIC = "hiero.mirror.web3.evm.gas.limit";
+
     static final String GAS_USED_METRIC = "hiero.mirror.web3.evm.gas.used";
+
     static final String TAG_BLOCK = "block";
+
     static final String TAG_ITERATION = "iteration";
+
     static final String TAG_STATUS = "status";
+
     static final String TAG_TYPE = "type";
 
     protected final EvmProperties evmProperties;
 
     private final MeterProvider<Counter> invocationCounter;
+
     private final MeterProvider<Counter> gasLimitCounter;
+
     private final MeterProvider<Counter> gasUsedCounter;
+
     private final RecordFileService recordFileService;
+
     private final ThrottleProperties throttleProperties;
+
     private final ThrottleManager throttleManager;
+
     private final TransactionExecutionService transactionExecutionService;
 
     @SuppressWarnings("java:S107")
-    protected ContractCallService(
-            ThrottleManager throttleManager,
-            ThrottleProperties throttleProperties,
-            MeterRegistry meterRegistry,
-            RecordFileService recordFileService,
-            EvmProperties evmProperties,
-            TransactionExecutionService transactionExecutionService) {
-        this.invocationCounter = Counter.builder(EVM_INVOCATION_METRIC)
-                .description("The number of EVM invocations")
-                .withRegistry(meterRegistry);
-        this.gasLimitCounter = Counter.builder(GAS_LIMIT_METRIC)
-                .description("The amount of gas limit sent in the request")
-                .withRegistry(meterRegistry);
-        this.gasUsedCounter = Counter.builder(GAS_USED_METRIC)
-                .description("The amount of gas consumed by the EVM")
-                .withRegistry(meterRegistry);
+    protected ContractCallService(ThrottleManager throttleManager, ThrottleProperties throttleProperties, MeterRegistry meterRegistry, RecordFileService recordFileService, EvmProperties evmProperties, TransactionExecutionService transactionExecutionService) {
+        this.invocationCounter = Counter.builder(EVM_INVOCATION_METRIC).description("The number of EVM invocations").withRegistry(meterRegistry);
+        this.gasLimitCounter = Counter.builder(GAS_LIMIT_METRIC).description("The amount of gas limit sent in the request").withRegistry(meterRegistry);
+        this.gasUsedCounter = Counter.builder(GAS_USED_METRIC).description("The amount of gas consumed by the EVM").withRegistry(meterRegistry);
         this.recordFileService = recordFileService;
         this.throttleProperties = throttleProperties;
         this.throttleManager = throttleManager;
@@ -77,7 +75,7 @@ public abstract class ContractCallService {
 
     @VisibleForTesting
     public EvmTransactionResult callContract(CallServiceParameters params) throws MirrorEvmTransactionException {
-        return ContractCallContext.run(context -> callContract(params, context));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -97,44 +95,12 @@ public abstract class ContractCallService {
      * @throws MirrorEvmTransactionException if any pre-checks fail with {@link IllegalStateException} or
      *                                       {@link IllegalArgumentException}
      */
-    protected final EvmTransactionResult callContract(CallServiceParameters params, ContractCallContext ctx)
-            throws MirrorEvmTransactionException {
-        ctx.setCallServiceParameters(params);
-        ctx.setBlockSupplier(Suppliers.memoize(() ->
-                recordFileService.findByBlockType(params.getBlock()).orElseThrow(BlockNumberNotFoundException::new)));
-
-        return doProcessCall(params, params.getGas(), false);
+    protected final EvmTransactionResult callContract(CallServiceParameters params, ContractCallContext ctx) throws MirrorEvmTransactionException {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    protected final EvmTransactionResult doProcessCall(
-            CallServiceParameters params, long estimatedGas, boolean estimate) throws MirrorEvmTransactionException {
-        EvmTransactionResult result = null;
-        var status = ResponseCodeEnum.SUCCESS.toString();
-
-        try {
-            result = transactionExecutionService.execute(params, estimatedGas);
-
-            if (!estimate) {
-                validateResult(result, params);
-            }
-        } catch (IllegalStateException | IllegalArgumentException e) {
-            throw new MirrorEvmTransactionException(e.getMessage(), EMPTY);
-        } catch (MirrorEvmTransactionException e) {
-            // This result is needed in case of exception to be still able to call restoreGasToBucket method
-            result = e.getResult();
-            status = e.getMessage();
-            throw e;
-        } finally {
-            if (!estimate) {
-                restoreGasToBucket(result, params.getGas());
-
-                // Only record metric if EVM is invoked and not inside estimate loop
-                if (result != null) {
-                    updateMetrics(params, result.gasUsed(), 1, status);
-                }
-            }
-        }
-        return result;
+    protected final EvmTransactionResult doProcessCall(CallServiceParameters params, long estimatedGas, boolean estimate) throws MirrorEvmTransactionException {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private void restoreGasToBucket(EvmTransactionResult result, long gasLimit) {
@@ -152,34 +118,19 @@ public abstract class ContractCallService {
     }
 
     protected void validateResult(final EvmTransactionResult txnResult, final CallServiceParameters params) {
-        if (!txnResult.isSuccessful()) {
-            var revertReasonHex = txnResult.getErrorMessage().orElse(HEX_PREFIX);
-            var detail = maybeDecodeSolidityErrorStringToReadableMessage(revertReasonHex);
-            throw new MirrorEvmTransactionException(
-                    txnResult.responseCodeEnum().protoName(), detail, revertReasonHex, txnResult);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     protected final void updateMetrics(CallServiceParameters parameters, long gasUsed, int iterations, String status) {
-        final var block = getBlock();
-        final var callType = parameters.getCallType().toString();
-        final var iterationTag = String.valueOf(iterations);
-        var tags = Tags.of(TAG_STATUS, status, TAG_TYPE, callType);
-        invocationCounter.withTags(tags.and(TAG_BLOCK, block)).increment();
-        gasUsedCounter.withTags(tags.and(TAG_ITERATION, iterationTag)).increment(gasUsed);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     protected final void updateGasLimitMetric(final CallServiceParameters parameters) {
-        final var callType = parameters.getCallType().toString();
-        gasLimitCounter.withTag(TAG_TYPE, callType).increment(parameters.getGas());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private String getBlock() {
-        return ContractCallContext.get()
-                .getTimestamp()
-                .filter(t -> t <= Utils.getCurrentTimestamp()) // Filter future timestamps to reduce cardinality
-                .map(t ->
-                        YearMonth.from(Instant.ofEpochSecond(0L, t).atZone(UTC)).toString())
-                .orElse(BlockType.LATEST.toString());
+        return ContractCallContext.get().getTimestamp().filter(// Filter future timestamps to reduce cardinality
+        t -> t <= Utils.getCurrentTimestamp()).map(t -> YearMonth.from(Instant.ofEpochSecond(0L, t).atZone(UTC)).toString()).orElse(BlockType.LATEST.toString());
     }
 }

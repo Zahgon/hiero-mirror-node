@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain;
 
 import java.util.List;
@@ -7,9 +6,7 @@ import java.util.List;
 public interface StreamFile<T extends StreamItem> {
 
     default StreamFile<T> clear() {
-        setBytes(null);
-        setItems(List.of());
-        return this;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     StreamFile<T> copy();
@@ -24,7 +21,9 @@ public interface StreamFile<T extends StreamItem> {
 
     Long getConsensusEnd();
 
-    default void setConsensusEnd(Long timestamp) {}
+    default void setConsensusEnd(Long timestamp) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
     Long getCount();
 
@@ -32,16 +31,20 @@ public interface StreamFile<T extends StreamItem> {
 
     // Get the chained hash of the stream file
     default String getHash() {
-        return null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    default void setHash(String hash) {}
+    default void setHash(String hash) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
     default Long getIndex() {
-        return null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    default void setIndex(Long index) {}
+    default void setIndex(Long index) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
     List<T> getItems();
 
@@ -52,7 +55,7 @@ public interface StreamFile<T extends StreamItem> {
     Long getLoadStart();
 
     default String getMetadataHash() {
-        return null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     String getName();
@@ -61,10 +64,12 @@ public interface StreamFile<T extends StreamItem> {
 
     // Get the chained hash of the previous stream file
     default String getPreviousHash() {
-        return null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    default void setPreviousHash(String previousHash) {}
+    default void setPreviousHash(String previousHash) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
     StreamType getType();
 }

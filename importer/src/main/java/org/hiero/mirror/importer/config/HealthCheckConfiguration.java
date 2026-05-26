@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.config;
 
 import io.micrometer.core.instrument.MeterRegistry;
@@ -20,26 +19,19 @@ import org.springframework.context.annotation.Configuration;
 @Configuration(proxyBeanMethods = false)
 @RequiredArgsConstructor
 class HealthCheckConfiguration {
+
     private final ImporterProperties importerProperties;
+
     private final Collection<ParserProperties> parserProperties;
 
     @Bean
     Function<String, Status> healthResolver(HealthEndpoint healthEndpoint) {
-        return group -> {
-            final var descriptor = healthEndpoint.healthForPath(group);
-            return descriptor != null ? descriptor.getStatus() : Status.DOWN;
-        };
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Bean
     CompositeHealthContributor streamFileActivity(MeterRegistry meterRegistry) {
-        final var registry = getRegistry(meterRegistry);
-        final var healthIndicators = parserProperties.stream()
-                .collect(Collectors.toMap(
-                        k -> k.getStreamType().toString(),
-                        v -> new StreamFileHealthIndicator(registry, importerProperties, v)));
-
-        return CompositeHealthContributor.fromMap(healthIndicators);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private MeterRegistry getRegistry(MeterRegistry meterRegistry) {

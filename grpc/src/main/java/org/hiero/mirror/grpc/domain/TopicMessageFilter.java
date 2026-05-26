@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.grpc.domain;
 
 import jakarta.validation.constraints.AssertTrue;
@@ -37,16 +36,16 @@ public class TopicMessageFilter {
     private EntityId topicId;
 
     public boolean hasLimit() {
-        return limit > 0;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @AssertTrue(message = "End time must be after start time")
     public boolean isValidEndTime() {
-        return endTime == null || endTime > startTime;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @AssertTrue(message = "Start time must be before the current time")
     public boolean isValidStartTime() {
-        return startTime <= DomainUtils.now();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

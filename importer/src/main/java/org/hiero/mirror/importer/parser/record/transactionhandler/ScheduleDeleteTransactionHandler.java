@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.transactionhandler;
 
 import jakarta.inject.Named;
@@ -20,12 +19,11 @@ class ScheduleDeleteTransactionHandler extends AbstractEntityCrudTransactionHand
 
     @Override
     public EntityId getEntity(RecordItem recordItem) {
-        return EntityId.of(recordItem.getTransactionBody().getScheduleDelete().getScheduleID());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     protected void doUpdateEntity(Entity entity, RecordItem recordItem) {
-        entity.setType(EntityType.SCHEDULE);
-        entityListener.onEntity(entity);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

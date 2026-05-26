@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.migration;
 
 import java.util.Map;
@@ -9,6 +8,7 @@ import org.flywaydb.core.api.configuration.Configuration;
 abstract class ConfigurableJavaMigration extends AbstractJavaMigration {
 
     private static final String ASYNC = "async";
+
     private static final MigrationProperties DEFAULT_MIGRATION_PROPERTIES = new MigrationProperties();
 
     protected final MigrationProperties migrationProperties;
@@ -24,11 +24,6 @@ abstract class ConfigurableJavaMigration extends AbstractJavaMigration {
 
     @Override
     protected boolean skipMigration(Configuration configuration) {
-        if (!migrationProperties.isEnabled()) {
-            log.info("Skip migration since it's disabled");
-            return true;
-        }
-
-        return super.skipMigration(configuration);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

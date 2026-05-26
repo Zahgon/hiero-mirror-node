@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.publish.transaction.token;
 
 import com.hedera.hashgraph.sdk.Hbar;
@@ -21,9 +20,6 @@ public class TokenDeleteTransactionSupplier implements TransactionSupplier<Token
 
     @Override
     public TokenDeleteTransaction get() {
-
-        return new TokenDeleteTransaction()
-                .setMaxTransactionFee(Hbar.fromTinybars(maxTransactionFee))
-                .setTokenId(TokenId.fromString(tokenId));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

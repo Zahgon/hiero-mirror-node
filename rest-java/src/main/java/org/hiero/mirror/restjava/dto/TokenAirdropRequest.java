@@ -1,11 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.restjava.dto;
 
 import static org.hiero.mirror.restjava.common.Constants.RECEIVER_ID;
 import static org.hiero.mirror.restjava.common.Constants.SENDER_ID;
 import static org.hiero.mirror.restjava.jooq.domain.Tables.TOKEN_AIRDROP;
-
 import java.util.List;
 import lombok.Builder;
 import lombok.Data;
@@ -45,8 +43,8 @@ public class TokenAirdropRequest {
     @Getter
     @RequiredArgsConstructor
     public enum AirdropRequestType {
-        OUTSTANDING(TOKEN_AIRDROP.SENDER_ACCOUNT_ID, TOKEN_AIRDROP.RECEIVER_ACCOUNT_ID, RECEIVER_ID),
-        PENDING(TOKEN_AIRDROP.RECEIVER_ACCOUNT_ID, TOKEN_AIRDROP.SENDER_ACCOUNT_ID, SENDER_ID);
+
+        OUTSTANDING(TOKEN_AIRDROP.SENDER_ACCOUNT_ID, TOKEN_AIRDROP.RECEIVER_ACCOUNT_ID, RECEIVER_ID), PENDING(TOKEN_AIRDROP.RECEIVER_ACCOUNT_ID, TOKEN_AIRDROP.SENDER_ACCOUNT_ID, SENDER_ID);
 
         // The base field is the conditional clause for the base DB query.
         // The base field is the path parameter accountId, which is Sender Id for Outstanding Airdrops and Receiver Id
@@ -63,16 +61,6 @@ public class TokenAirdropRequest {
     }
 
     public List<Bound> getBounds() {
-        var primaryBound = !entityIds.isEmpty() ? entityIds : tokenIds;
-        if (primaryBound.isEmpty()) {
-            return List.of(serialNumbers);
-        }
-
-        var secondaryBound = !tokenIds.isEmpty() ? tokenIds : serialNumbers;
-        if (secondaryBound.isEmpty()) {
-            return List.of(primaryBound);
-        }
-
-        return List.of(primaryBound, secondaryBound, serialNumbers);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

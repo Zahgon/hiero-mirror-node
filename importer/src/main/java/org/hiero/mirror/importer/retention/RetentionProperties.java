@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.retention;
 
 import jakarta.validation.constraints.NotNull;
@@ -35,6 +34,6 @@ public class RetentionProperties {
     private Duration period = Duration.ofDays(90L);
 
     public boolean shouldPrune(String table) {
-        return (include.isEmpty() || include.contains(table)) && (exclude.isEmpty() || !exclude.contains(table));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

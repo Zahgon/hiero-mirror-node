@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.restjava.service;
 
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -32,36 +31,27 @@ import org.springframework.util.function.ThrowingFunction;
 final class FileServiceImpl implements FileService {
 
     private final FileDataRepository fileDataRepository;
+
     private final QueryProperties queryProperties;
+
     private final SystemEntity systemEntity;
 
     @Getter(lazy = true, value = AccessLevel.PRIVATE)
-    private final RetryTemplate retryTemplate = new RetryTemplate(RetryPolicy.builder()
-            .delay(Duration.ofMillis(10L))
-            .maxDelay(Duration.ofMillis(50L))
-            .maxRetries(queryProperties.getMaxFileAttempts() - 1)
-            .predicate(e -> e instanceof InvalidProtocolBufferException
-                    || e instanceof ParseException
-                    || e.getCause() instanceof InvalidProtocolBufferException
-                    || e.getCause() instanceof ParseException)
-            .build());
+    private final RetryTemplate retryTemplate = new RetryTemplate(RetryPolicy.builder().delay(Duration.ofMillis(10L)).maxDelay(Duration.ofMillis(50L)).maxRetries(queryProperties.getMaxFileAttempts() - 1).predicate(e -> e instanceof InvalidProtocolBufferException || e instanceof ParseException || e.getCause() instanceof InvalidProtocolBufferException || e.getCause() instanceof ParseException).build());
 
     @Override
     public SystemFile<ExchangeRateSet> getExchangeRate(Bound timestamp) {
-        return getSystemFile(systemEntity.exchangeRateFile(), timestamp, ExchangeRateSet::parseFrom);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public SystemFile<CurrentAndNextFeeSchedule> getFeeSchedule(Bound timestamp) {
-        return getSystemFile(systemEntity.feeScheduleFile(), timestamp, CurrentAndNextFeeSchedule::parseFrom);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public SystemFile<FeeSchedule> getSimpleFeeSchedule(Bound timestamp) {
-        return getSystemFile(
-                systemEntity.simpleFeeScheduleFile(),
-                Bound.EMPTY,
-                data -> FeeSchedule.PROTOBUF.parseStrict(Bytes.wrap(data)));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /*
@@ -72,26 +62,16 @@ final class FileServiceImpl implements FileService {
         final var lowerBound = timestamp.getAdjustedLowerRangeValue();
         final var upperBound = new AtomicLong(timestamp.adjustUpperBound());
         final var attempt = new AtomicInteger(0);
-
         try {
-            return getRetryTemplate()
-                    .execute(() -> fileDataRepository
-                            .getFileAtTimestamp(entityId.getId(), lowerBound, upperBound.get())
-                            .map(fileData -> {
-                                try {
-                                    return new SystemFile<>(fileData, parser.apply(fileData.getFileData()));
-                                } catch (Exception e) {
-                                    log.warn(
-                                            "Attempt {} failed to load file {} at {}, falling back to previous file: {}",
-                                            attempt.incrementAndGet(),
-                                            entityId,
-                                            fileData.getConsensusTimestamp(),
-                                            e.getMessage());
-                                    upperBound.set(fileData.getConsensusTimestamp() - 1);
-                                    throw e;
-                                }
-                            }))
-                    .orElseThrow(() -> new EntityNotFoundException("File %s not found".formatted(entityId)));
+            return getRetryTemplate().execute(() -> fileDataRepository.getFileAtTimestamp(entityId.getId(), lowerBound, upperBound.get()).map(fileData -> {
+                try {
+                    return new SystemFile<>(fileData, parser.apply(fileData.getFileData()));
+                } catch (Exception e) {
+                    log.warn("Attempt {} failed to load file {} at {}, falling back to previous file: {}", attempt.incrementAndGet(), entityId, fileData.getConsensusTimestamp(), e.getMessage());
+                    upperBound.set(fileData.getConsensusTimestamp() - 1);
+                    throw e;
+                }
+            })).orElseThrow(() -> new EntityNotFoundException("File %s not found".formatted(entityId)));
         } catch (RetryException e) {
             throw new EntityNotFoundException("File %s not found".formatted(entityId), e);
         }

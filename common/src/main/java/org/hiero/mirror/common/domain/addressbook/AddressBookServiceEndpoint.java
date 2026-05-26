@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.addressbook;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -20,7 +19,8 @@ import org.springframework.data.domain.Persistable;
 @Entity
 @IdClass(AddressBookServiceEndpoint.Id.class)
 @NoArgsConstructor
-@AllArgsConstructor(access = AccessLevel.PRIVATE) // For builder
+// For builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class AddressBookServiceEndpoint implements Persistable<AddressBookServiceEndpoint.Id> {
 
     @jakarta.persistence.Id
@@ -42,19 +42,13 @@ public class AddressBookServiceEndpoint implements Persistable<AddressBookServic
     @JsonIgnore
     @Override
     public Id getId() {
-        Id id = new Id();
-        id.setConsensusTimestamp(consensusTimestamp);
-        id.setDomainName(domainName);
-        id.setIpAddressV4(ipAddressV4);
-        id.setNodeId(nodeId);
-        id.setPort(port);
-        return id;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @JsonIgnore
     @Override
     public boolean isNew() {
-        return true; // Since we never update and use a natural ID, avoid Hibernate querying before insert
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Data

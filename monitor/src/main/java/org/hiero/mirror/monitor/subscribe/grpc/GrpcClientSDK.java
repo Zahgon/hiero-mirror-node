@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.subscribe.grpc;
 
 import com.hedera.hashgraph.sdk.Client;
@@ -26,81 +25,54 @@ import reactor.core.scheduler.Schedulers;
 class GrpcClientSDK implements GrpcClient {
 
     private final Flux<Client> clients;
+
     private final MonitorProperties monitorProperties;
+
     private final SecureRandom secureRandom;
+
     private final SubscribeProperties subscribeProperties;
 
     GrpcClientSDK(MonitorProperties monitorProperties, SubscribeProperties subscribeProperties) {
         this.monitorProperties = monitorProperties;
         this.secureRandom = new SecureRandom();
         this.subscribeProperties = subscribeProperties;
-        clients = Flux.range(0, subscribeProperties.getClients())
-                .flatMap(i -> Flux.defer(this::client))
-                .cache();
-
+        clients = Flux.range(0, subscribeProperties.getClients()).flatMap(i -> Flux.defer(this::client)).cache();
         String endpoint = monitorProperties.getMirrorNode().getGrpc().getEndpoint();
         log.info("Connecting {} clients to {}", subscribeProperties.getClients(), endpoint);
     }
 
     @Override
     public Flux<SubscribeResponse> subscribe(GrpcSubscription subscription) {
-        int clientIndex = secureRandom.nextInt(subscribeProperties.getClients());
-        log.info("Starting '{}' scenario to client {}", subscription, clientIndex);
-        return clients.elementAt(clientIndex).flatMapMany(client -> subscribeToClient(client, subscription));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private Flux<SubscribeResponse> subscribeToClient(Client client, GrpcSubscription subscription) {
         Sinks.Many<TopicMessage> sink = Sinks.many().multicast().directBestEffort();
-
         TopicMessageQuery topicMessageQuery = subscription.getTopicMessageQuery();
         topicMessageQuery.setCompletionHandler(sink::tryEmitComplete);
         topicMessageQuery.setErrorHandler((throwable, topicMessage) -> sink.tryEmitError(throwable));
-        topicMessageQuery.setMaxAttempts(0); // Disable since we use our own retry logic to capture errors
+        // Disable since we use our own retry logic to capture errors
+        topicMessageQuery.setMaxAttempts(0);
         SubscriptionHandle subscriptionHandle = topicMessageQuery.subscribe(client, sink::tryEmitNext);
-
-        return sink.asFlux()
-                .publishOn(Schedulers.parallel())
-                .doFinally(s -> subscriptionHandle.unsubscribe())
-                .doOnComplete(subscription::onComplete)
-                .doOnError(subscription::onError)
-                .doOnNext(subscription::onNext)
-                .map(t -> toResponse(subscription, t));
+        return sink.asFlux().publishOn(Schedulers.parallel()).doFinally(s -> subscriptionHandle.unsubscribe()).doOnComplete(subscription::onComplete).doOnError(subscription::onError).doOnNext(subscription::onNext).map(t -> toResponse(subscription, t));
     }
 
     private SubscribeResponse toResponse(GrpcSubscription subscription, TopicMessage topicMessage) {
         Instant receivedTimestamp = Instant.now();
         Instant publishedTimestamp = Utility.getTimestamp(topicMessage.contents);
-
         if (publishedTimestamp == null) {
-            log.warn(
-                    "{} Invalid published timestamp for message with consensus timestamp {}",
-                    subscription,
-                    topicMessage.consensusTimestamp);
+            log.warn("{} Invalid published timestamp for message with consensus timestamp {}", subscription, topicMessage.consensusTimestamp);
         }
-
-        return SubscribeResponse.builder()
-                .consensusTimestamp(topicMessage.consensusTimestamp)
-                .publishedTimestamp(publishedTimestamp)
-                .receivedTimestamp(receivedTimestamp)
-                .scenario(subscription)
-                .build();
+        return SubscribeResponse.builder().consensusTimestamp(topicMessage.consensusTimestamp).publishedTimestamp(publishedTimestamp).receivedTimestamp(receivedTimestamp).scenario(subscription).build();
     }
 
     @Override
     public void close() {
-        log.warn("Closing {} clients", subscribeProperties.getClients());
-        clients.subscribe(client -> {
-            try {
-                client.close();
-            } catch (Exception e) {
-                // Ignore
-            }
-        });
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private Mono<Client> client() {
         String endpoint = monitorProperties.getMirrorNode().getGrpc().getEndpoint();
-
         try {
             Client client = Client.forNetwork(Map.of());
             client.setMirrorNetwork(List.of(endpoint));

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.balance;
 
 import jakarta.validation.constraints.Min;
@@ -33,6 +32,6 @@ public class BalanceParserProperties extends AbstractParserProperties {
 
     @Override
     public StreamType getStreamType() {
-        return StreamType.BALANCE;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

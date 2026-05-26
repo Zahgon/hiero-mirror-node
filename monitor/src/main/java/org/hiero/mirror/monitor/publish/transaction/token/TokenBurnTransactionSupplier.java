@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.publish.transaction.token;
 
 import com.hedera.hashgraph.sdk.Hbar;
@@ -22,7 +21,8 @@ public class TokenBurnTransactionSupplier implements TransactionSupplier<TokenBu
     @Min(1)
     private long maxTransactionFee = 1_000_000_000;
 
-    private AtomicLong serialNumber = new AtomicLong(1); // The serial number to transfer.  Increments over time.
+    // The serial number to transfer.  Increments over time.
+    private AtomicLong serialNumber = new AtomicLong(1);
 
     @NotBlank
     private String tokenId;
@@ -32,19 +32,6 @@ public class TokenBurnTransactionSupplier implements TransactionSupplier<TokenBu
 
     @Override
     public TokenBurnTransaction get() {
-
-        TokenBurnTransaction transaction = new TokenBurnTransaction()
-                .setMaxTransactionFee(Hbar.fromTinybars(maxTransactionFee))
-                .setTokenId(TokenId.fromString(tokenId));
-
-        if (type == TokenType.NON_FUNGIBLE_UNIQUE) {
-            for (int i = 0; i < amount; i++) {
-                transaction.addSerial(serialNumber.getAndIncrement());
-            }
-        } else {
-            transaction.setAmount(amount);
-        }
-
-        return transaction;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

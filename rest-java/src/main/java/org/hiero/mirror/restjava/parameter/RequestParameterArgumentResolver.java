@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.restjava.parameter;
 
 import jakarta.inject.Named;
@@ -39,82 +38,29 @@ public class RequestParameterArgumentResolver implements HandlerMethodArgumentRe
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(RequestParameter.class);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
-    public Object resolveArgument(
-            MethodParameter parameter,
-            @Nullable ModelAndViewContainer mavContainer,
-            NativeWebRequest webRequest,
-            @Nullable WebDataBinderFactory binderFactory)
-            throws Exception {
-
-        final var parameterType = parameter.getParameterType();
-
-        // Get cached metadata (computed once per DTO class)
-        final var metadata = getMetadata(parameterType);
-
-        // Get path variables from request attributes
-        @SuppressWarnings("unchecked")
-        final var pathVariables = (Map<String, String>) webRequest.getAttribute(
-                HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, NativeWebRequest.SCOPE_REQUEST);
-
-        // Create instance using default constructor - same as Spring's @ModelAttribute
-        Object attribute = parameterType.getDeclaredConstructor().newInstance();
-
-        // Collect property values from annotations - same as Spring's form binding
-        MutablePropertyValues propertyValues = new MutablePropertyValues();
-
-        // Process path parameters
-        for (final var entry : metadata.pathParams.entrySet()) {
-            processPathParam(entry.getKey(), entry.getValue(), propertyValues, pathVariables);
-        }
-
-        // Process query parameters
-        for (final var entry : metadata.queryParams.entrySet()) {
-            processQueryParam(entry.getKey(), entry.getValue(), propertyValues, webRequest);
-        }
-
-        // Create WebDataBinder and bind - exactly like Spring's @ModelAttribute
-        if (binderFactory == null) {
-            throw new IllegalStateException("WebDataBinderFactory is required");
-        }
-        String objectName = parameterType.getSimpleName();
-        WebDataBinder binder = binderFactory.createBinder(webRequest, attribute, objectName);
-        binder.initDirectFieldAccess();
-        binder.bind(propertyValues);
-
-        validate(binder, parameterType, attribute);
-
-        return attribute;
+    public Object resolveArgument(MethodParameter parameter, @Nullable ModelAndViewContainer mavContainer, NativeWebRequest webRequest, @Nullable WebDataBinderFactory binderFactory) throws Exception {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private void validate(WebDataBinder binder, Class<?> parameterType, Object attribute) throws BindException {
         // Validate - same as Spring's validation
         binder.validate();
-
         // Throw BindException if there are validation errors (same as Spring)
         if (binder.getBindingResult().hasErrors()) {
             // Replace field names with annotation parameter names in errors
             var bindingResult = binder.getBindingResult();
-            var modifiedErrors = bindingResult.getAllErrors().stream()
-                    .map(error -> {
-                        if (error instanceof FieldError fieldError) {
-                            var paramName = getParameterName(parameterType, fieldError.getField());
-                            return new FieldError(
-                                    fieldError.getObjectName(),
-                                    paramName, // Use annotation name instead of field name
-                                    fieldError.getRejectedValue(),
-                                    fieldError.isBindingFailure(),
-                                    fieldError.getCodes(),
-                                    fieldError.getArguments(),
-                                    fieldError.getDefaultMessage());
-                        }
-                        return error;
-                    })
-                    .toList();
-
+            var modifiedErrors = bindingResult.getAllErrors().stream().map(error -> {
+                if (error instanceof FieldError fieldError) {
+                    var paramName = getParameterName(parameterType, fieldError.getField());
+                    return new FieldError(fieldError.getObjectName(), // Use annotation name instead of field name
+                    paramName, fieldError.getRejectedValue(), fieldError.isBindingFailure(), fieldError.getCodes(), fieldError.getArguments(), fieldError.getDefaultMessage());
+                }
+                return error;
+            }).toList();
             var modifiedResult = new BeanPropertyBindingResult(attribute, bindingResult.getObjectName());
             modifiedErrors.forEach(modifiedResult::addError);
             throw new BindException(modifiedResult);
@@ -129,38 +75,28 @@ public class RequestParameterArgumentResolver implements HandlerMethodArgumentRe
         return metadataCache.computeIfAbsent(clazz, c -> {
             Map<Field, RestJavaQueryParam> queryParams = new LinkedHashMap<>();
             Map<Field, RestJavaPathParam> pathParams = new LinkedHashMap<>();
-
             for (final var field : c.getDeclaredFields()) {
                 // Cache @QueryParam annotations
                 final var queryParam = field.getAnnotation(RestJavaQueryParam.class);
                 if (queryParam != null) {
                     queryParams.put(field, queryParam);
                 }
-
                 // Cache @PathParam annotations
                 final var pathParam = field.getAnnotation(RestJavaPathParam.class);
                 if (pathParam != null) {
                     pathParams.put(field, pathParam);
                 }
             }
-            return new BindingMetadata(
-                    Collections.unmodifiableMap(queryParams), Collections.unmodifiableMap(pathParams));
+            return new BindingMetadata(Collections.unmodifiableMap(queryParams), Collections.unmodifiableMap(pathParams));
         });
     }
 
-    private void processPathParam(
-            Field field,
-            RestJavaPathParam annotation,
-            MutablePropertyValues propertyValues,
-            @Nullable Map<String, String> pathVariables) {
-
+    private void processPathParam(Field field, RestJavaPathParam annotation, MutablePropertyValues propertyValues, @Nullable Map<String, String> pathVariables) {
         String variableName = extractName(field, annotation.value(), annotation.name());
         String value = pathVariables != null ? pathVariables.get(variableName) : null;
-
         if (value == null && annotation.required()) {
             throw new IllegalArgumentException("Missing required path variable: " + variableName);
         }
-
         if (value != null) {
             propertyValues.add(field.getName(), value);
         }
@@ -180,31 +116,23 @@ public class RequestParameterArgumentResolver implements HandlerMethodArgumentRe
         return field.getName();
     }
 
-    private void processQueryParam(
-            Field field,
-            RestJavaQueryParam annotation,
-            MutablePropertyValues propertyValues,
-            NativeWebRequest webRequest) {
-
+    private void processQueryParam(Field field, RestJavaQueryParam annotation, MutablePropertyValues propertyValues, NativeWebRequest webRequest) {
         String paramName = extractName(field, annotation.value(), annotation.name());
         final var paramValues = webRequest.getParameterValues(paramName);
-
         // Handle missing or empty values
         final var resolvedValues = resolveParameterValues(paramValues, paramName, annotation);
         if (resolvedValues == null) {
-            return; // No value, not required - skip
+            // No value, not required - skip
+            return;
         }
-
         // Validate and add to property values
         validateAndAddParameter(field, paramName, resolvedValues, propertyValues);
     }
 
-    private String @Nullable [] resolveParameterValues(
-            String @Nullable [] paramValues, String paramName, RestJavaQueryParam annotation) {
+    private String @Nullable [] resolveParameterValues(String @Nullable [] paramValues, String paramName, RestJavaQueryParam annotation) {
         if (hasValue(paramValues)) {
             return paramValues;
         }
-
         return handleMissingValue(paramName, annotation);
     }
 
@@ -214,24 +142,20 @@ public class RequestParameterArgumentResolver implements HandlerMethodArgumentRe
 
     private String @Nullable [] handleMissingValue(String paramName, RestJavaQueryParam annotation) {
         if (!annotation.defaultValue().equals(ValueConstants.DEFAULT_NONE)) {
-            return new String[] {annotation.defaultValue()};
+            return new String[] { annotation.defaultValue() };
         }
-
         if (annotation.required()) {
             throw new IllegalArgumentException("Missing required request parameter: " + paramName);
         }
-
-        return null; // No value, not required
+        // No value, not required
+        return null;
     }
 
-    private void validateAndAddParameter(
-            Field field, String paramName, String[] paramValues, MutablePropertyValues propertyValues) {
+    private void validateAndAddParameter(Field field, String paramName, String[] paramValues, MutablePropertyValues propertyValues) {
         boolean isMultiValue = field.getType().isArray() || Collection.class.isAssignableFrom(field.getType());
-
         if (!isMultiValue && paramValues.length > 1) {
             throw new IllegalArgumentException("Only a single instance is supported for " + paramName);
         }
-
         // Add to property values - WebDataBinder will handle type conversion
         Object valueToSet = isMultiValue ? paramValues : paramValues[0];
         propertyValues.add(field.getName(), valueToSet);
@@ -243,27 +167,18 @@ public class RequestParameterArgumentResolver implements HandlerMethodArgumentRe
      */
     private String getParameterName(Class<?> dtoClass, String fieldName) {
         final var metadata = getMetadata(dtoClass);
-
         // Check query params
         for (final var entry : metadata.queryParams.entrySet()) {
             if (entry.getKey().getName().equals(fieldName)) {
-                return extractName(
-                        entry.getKey(),
-                        entry.getValue().value(),
-                        entry.getValue().name());
+                return extractName(entry.getKey(), entry.getValue().value(), entry.getValue().name());
             }
         }
-
         // Check path params
         for (final var entry : metadata.pathParams.entrySet()) {
             if (entry.getKey().getName().equals(fieldName)) {
-                return extractName(
-                        entry.getKey(),
-                        entry.getValue().value(),
-                        entry.getValue().name());
+                return extractName(entry.getKey(), entry.getValue().value(), entry.getValue().name());
             }
         }
-
         return fieldName;
     }
 
@@ -271,6 +186,6 @@ public class RequestParameterArgumentResolver implements HandlerMethodArgumentRe
      * Metadata about parameter bindings for a DTO class. Cached to avoid reflection on every request. Immutable record
      * for thread safety.
      */
-    private record BindingMetadata(
-            Map<Field, RestJavaQueryParam> queryParams, Map<Field, RestJavaPathParam> pathParams) {}
+    private record BindingMetadata(Map<Field, RestJavaQueryParam> queryParams, Map<Field, RestJavaPathParam> pathParams) {
+    }
 }

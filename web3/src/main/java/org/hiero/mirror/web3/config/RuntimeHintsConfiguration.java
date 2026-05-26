@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.config;
 
 import static org.hiero.mirror.common.util.RuntimeHintsHelper.NONE;
@@ -7,7 +6,6 @@ import static org.hiero.mirror.common.util.RuntimeHintsHelper.registerAnnotatedP
 import static org.hiero.mirror.common.util.RuntimeHintsHelper.registerPackage;
 import static org.hiero.mirror.common.util.RuntimeHintsHelper.registerReflectionTypes;
 import static org.hiero.mirror.common.util.RuntimeHintsHelper.registerResourcePatterns;
-
 import com.hedera.node.app.hapi.utils.sysfiles.domain.throttling.ThrottleGroup;
 import com.swirlds.config.api.ConfigData;
 import org.hiero.mirror.web3.common.ContractCallContext;
@@ -30,45 +28,7 @@ final class RuntimeHintsConfiguration {
 
         @Override
         public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
-            final var loader = classLoader != null ? classLoader : getClass().getClassLoader();
-
-            registerAnnotatedPackage(hints, loader, "com.hedera.node.config.data", ConfigData.class);
-
-            registerPackage(hints, loader, ThrottleGroup.class.getPackageName());
-
-            registerReflectionTypes(
-                    hints,
-                    NONE,
-                    "com.esaulpaugh.headlong.abi.Pair[]",
-                    "com.esaulpaugh.headlong.abi.Quadruple[]",
-                    "com.esaulpaugh.headlong.abi.Quintuple[]",
-                    "com.esaulpaugh.headlong.abi.Sextuple[]",
-                    "com.esaulpaugh.headlong.abi.Triple[]");
-
-            registerReflectionTypes(
-                    hints,
-                    ContractCallContext.class.getName(),
-                    ContractCallRequest.class.getName(),
-                    GenericErrorResponse.class.getName(),
-                    GenericErrorResponse.ErrorMessage.class.getName(),
-                    TransactionIdOrHashParameter.class.getName());
-
-            registerResourcePatterns(
-                    hints,
-                    "com/hedera/nativelib/hints/**",
-                    "com/hedera/nativelib/wraps/**",
-                    "com/hedera/nativelib/wraps/**",
-                    "darwin-aarch64/**", // besu
-                    "darwin-x86-64/**", // besu
-                    "linux-aarch64/**", // besu
-                    "linux-x86-64/**", // besu
-                    "kzg-trusted-setups/mainnet.txt", // besu
-                    "ethereum/ckzg4844/lib/aarch64/**", // pegasys
-                    "ethereum/ckzg4844/lib/amd64/**", // pegasys
-                    "ethereum/ckzg4844/lib/x86_64/**", // pegasys
-                    "genesis/**",
-                    "*.json",
-                    "*.properties");
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
     }
 }

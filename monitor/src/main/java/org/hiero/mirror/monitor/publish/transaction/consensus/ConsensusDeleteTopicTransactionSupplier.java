@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.publish.transaction.consensus;
 
 import com.hedera.hashgraph.sdk.Hbar;
@@ -21,9 +20,6 @@ public class ConsensusDeleteTopicTransactionSupplier implements TransactionSuppl
 
     @Override
     public TopicDeleteTransaction get() {
-
-        return new TopicDeleteTransaction()
-                .setMaxTransactionFee(Hbar.fromTinybars(maxTransactionFee))
-                .setTopicId(TopicId.fromString(topicId));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

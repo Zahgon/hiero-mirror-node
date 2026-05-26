@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.db;
 
 import com.google.common.base.Stopwatch;
@@ -29,13 +28,6 @@ public class PartitionMaintenance {
     @Retryable
     @Scheduled(cron = "${hiero.mirror.importer.db.partition.cron:0 0 0 * * ?}")
     public synchronized void runMaintenance() {
-        if (!partitionProperties.isEnabled()) {
-            return;
-        }
-
-        log.info("Running partition maintenance");
-        Stopwatch stopwatch = Stopwatch.createStarted();
-        jdbcTemplate.execute(RUN_MAINTENANCE_QUERY);
-        log.info("Partition maintenance completed successfully in {}", stopwatch);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

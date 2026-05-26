@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.throttle;
 
 import jakarta.validation.constraints.Max;
@@ -36,13 +35,10 @@ public class ThrottleProperties {
 
     // Necessary since bucket4j has a max capacity and fill rate of 1 token per nanosecond
     public long getGasPerSecond() {
-        return scaleGas(gasPerSecond);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public long scaleGas(long gas) {
-        if (gas <= GAS_SCALE_FACTOR) {
-            return 0L;
-        }
-        return Math.floorDiv(gas, GAS_SCALE_FACTOR);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

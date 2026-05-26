@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.migration;
 
 import com.google.common.base.Stopwatch;
@@ -28,6 +27,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 public class ContractResultMigration extends AbstractJavaMigration {
 
     static final BeanPropertyRowMapper<MigrationContractResult> resultRowMapper;
+
     private static final MigrationVersion VERSION = MigrationVersion.fromVersion("1.46.8");
 
     static {
@@ -46,61 +46,40 @@ public class ContractResultMigration extends AbstractJavaMigration {
 
     @Override
     public String getDescription() {
-        return "Parses the protobuf function_result field and normalize it into separate database fields";
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public MigrationVersion getVersion() {
-        return VERSION;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     protected void doMigrate() throws IOException {
-        AtomicLong count = new AtomicLong(0L);
-        Stopwatch stopwatch = Stopwatch.createStarted();
-        final var jdbcTemplate = (JdbcTemplate) jdbcOperationsProvider.getObject();
-
-        jdbcTemplate.setFetchSize(100);
-        jdbcTemplate.query(
-                "select consensus_timestamp, function_result from contract_result "
-                        + "order by consensus_timestamp asc",
-                rs -> {
-                    MigrationContractResult contractResult = resultRowMapper.mapRow(rs, rs.getRow());
-                    if (process(contractResult)) {
-                        count.incrementAndGet();
-                    }
-                });
-
-        log.info("Updated {} contract results in {}", count, stopwatch);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    @SuppressWarnings({"deprecation", "java:S1874"})
+    @SuppressWarnings({ "deprecation", "java:S1874" })
     private boolean process(MigrationContractResult contractResult) {
         long consensusTimestamp = contractResult.getConsensusTimestamp();
-
         try {
             byte[] functionResult = contractResult.getFunctionResult();
             if (functionResult == null || functionResult.length == 0) {
                 return false;
             }
-
             ContractFunctionResult contractFunctionResult = ContractFunctionResult.parseFrom(functionResult);
             Long[] createdContractIds = new Long[contractFunctionResult.getCreatedContractIDsCount()];
-
             for (int i = 0; i < createdContractIds.length; ++i) {
                 createdContractIds[i] = getContractId(contractFunctionResult.getCreatedContractIDs(i));
             }
-
             contractResult.setBloom(DomainUtils.toBytes(contractFunctionResult.getBloom()));
             contractResult.setCallResult(DomainUtils.toBytes(contractFunctionResult.getContractCallResult()));
             contractResult.setContractId(getContractId(contractFunctionResult.getContractID()));
             contractResult.setCreatedContractIds(createdContractIds);
             contractResult.setErrorMessage(contractFunctionResult.getErrorMessage());
             update(contractResult);
-
             for (int index = 0; index < contractFunctionResult.getLogInfoCount(); ++index) {
                 ContractLoginfo contractLoginfo = contractFunctionResult.getLogInfo(index);
-
                 MigrationContractLog migrationContractLog = new MigrationContractLog();
                 migrationContractLog.setBloom(DomainUtils.toBytes(contractLoginfo.getBloom()));
                 migrationContractLog.setConsensusTimestamp(consensusTimestamp);
@@ -111,15 +90,12 @@ public class ContractResultMigration extends AbstractJavaMigration {
                 migrationContractLog.setTopic1(DomainUtils.bytesToHex(Utility.getTopic(contractLoginfo, 1)));
                 migrationContractLog.setTopic2(DomainUtils.bytesToHex(Utility.getTopic(contractLoginfo, 2)));
                 migrationContractLog.setTopic3(DomainUtils.bytesToHex(Utility.getTopic(contractLoginfo, 3)));
-
                 insert(migrationContractLog);
             }
-
             return true;
         } catch (Exception e) {
             log.warn("Unable to parse {} as ContractFunctionResult", consensusTimestamp, e);
         }
-
         return false;
     }
 
@@ -130,58 +106,52 @@ public class ContractResultMigration extends AbstractJavaMigration {
     }
 
     private void update(MigrationContractResult contractResult) {
-        jdbcOperationsProvider
-                .getObject()
-                .update(
-                        "update contract_result set bloom = ?, call_result = ?, contract_id = ?, "
-                                + "created_contract_ids = ?, error_message = ? where consensus_timestamp = ?",
-                        contractResult.getBloom(),
-                        contractResult.getCallResult(),
-                        contractResult.getContractId(),
-                        contractResult.getCreatedContractIds(),
-                        contractResult.getErrorMessage(),
-                        contractResult.getConsensusTimestamp());
+        jdbcOperationsProvider.getObject().update("update contract_result set bloom = ?, call_result = ?, contract_id = ?, " + "created_contract_ids = ?, error_message = ? where consensus_timestamp = ?", contractResult.getBloom(), contractResult.getCallResult(), contractResult.getContractId(), contractResult.getCreatedContractIds(), contractResult.getErrorMessage(), contractResult.getConsensusTimestamp());
     }
 
     private void insert(MigrationContractLog contractLog) {
-        jdbcOperationsProvider
-                .getObject()
-                .update(
-                        "insert into contract_log (bloom, consensus_timestamp, contract_id, data, index, topic0, "
-                                + "topic1, topic2, topic3) values (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                        contractLog.getBloom(),
-                        contractLog.getConsensusTimestamp(),
-                        contractLog.getContractId(),
-                        contractLog.getData(),
-                        contractLog.getIndex(),
-                        contractLog.getTopic0(),
-                        contractLog.getTopic1(),
-                        contractLog.getTopic2(),
-                        contractLog.getTopic3());
+        jdbcOperationsProvider.getObject().update("insert into contract_log (bloom, consensus_timestamp, contract_id, data, index, topic0, " + "topic1, topic2, topic3) values (?, ?, ?, ?, ?, ?, ?, ?, ?)", contractLog.getBloom(), contractLog.getConsensusTimestamp(), contractLog.getContractId(), contractLog.getData(), contractLog.getIndex(), contractLog.getTopic0(), contractLog.getTopic1(), contractLog.getTopic2(), contractLog.getTopic3());
     }
 
     @Data
     static class MigrationContractResult {
+
         private byte[] bloom;
+
         private byte[] callResult;
+
         private long consensusTimestamp;
+
         private Long contractId;
+
         private Long[] createdContractIds;
+
         private String errorMessage;
+
         private byte[] functionParameters;
+
         private byte[] functionResult;
     }
 
     @Data
     static class MigrationContractLog {
+
         private byte[] bloom;
+
         private long consensusTimestamp;
+
         private long contractId;
+
         private byte[] data;
+
         private int index;
+
         private String topic0;
+
         private String topic1;
+
         private String topic2;
+
         private String topic3;
     }
 }

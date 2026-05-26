@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.restjava.service.fee;
 
 import static com.hedera.hapi.util.HapiUtils.functionOf;
-
 import com.hedera.hapi.node.base.AccountID;
 import com.hedera.hapi.node.base.ContractID;
 import com.hedera.hapi.node.base.FileID;
@@ -49,260 +47,240 @@ import org.jspecify.annotations.Nullable;
 @RequiredArgsConstructor
 final class FeeEstimationFeeContext implements FeeContext {
 
-    private static final ConfigProviderImpl CONFIG_PROVIDER = new ConfigProviderImpl(
-            false,
-            null,
-            Map.of(
-                    "hedera.shard",
-                            String.valueOf(CommonProperties.getInstance().getShard()),
-                    "hedera.realm",
-                            String.valueOf(CommonProperties.getInstance().getRealm())));
+    private static final ConfigProviderImpl CONFIG_PROVIDER = new ConfigProviderImpl(false, null, Map.of("hedera.shard", String.valueOf(CommonProperties.getInstance().getShard()), "hedera.realm", String.valueOf(CommonProperties.getInstance().getRealm())));
+
     static final Configuration CONFIGURATION = CONFIG_PROVIDER.getConfiguration();
-    private static final Authorizer FEE_AUTHORIZER =
-            new AuthorizerImpl(CONFIG_PROVIDER, new PrivilegesVerifier(CONFIG_PROVIDER));
+
+    private static final Authorizer FEE_AUTHORIZER = new AuthorizerImpl(CONFIG_PROVIDER, new PrivilegesVerifier(CONFIG_PROVIDER));
 
     // Congestion multiplier reads these in STATE mode; return 0 so multiplier stays at 1x.
     // TODO: remove once CN fixes standalone executor to use null congestionMultipliers.
     private static final ReadableAccountStore EMPTY_ACCOUNT_STORE = new ReadableAccountStore() {
+
         @Override
         public Account getAccountById(final AccountID id) {
-            return null;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         @Override
         public Account getAliasedAccountById(final AccountID id) {
-            return null;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         @Override
         public AccountID getAccountIDByAlias(final long shardNum, final long realmNum, final Bytes alias) {
-            return null;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         @Override
         public boolean containsAlias(final long shardNum, final long realmNum, final Bytes alias) {
-            return false;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         @Override
         public boolean contains(final AccountID id) {
-            return false;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         @Override
         public long getNumberOfAccounts() {
-            return 0;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         @Override
         public long sizeOfAccountState() {
-            return 0;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
     };
 
     private static final ContractStateStore EMPTY_CONTRACT_STATE_STORE = new ContractStateStore() {
+
         @Override
         public Bytecode getBytecode(final ContractID contractID) {
-            return null;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         @Override
-        public void putBytecode(final ContractID contractID, final Bytecode code) {}
+        public void putBytecode(final ContractID contractID, final Bytecode code) {
+            throw new UnsupportedOperationException("STUB: not implemented");
+        }
 
         @Override
-        public void removeSlot(final SlotKey key) {}
+        public void removeSlot(final SlotKey key) {
+            throw new UnsupportedOperationException("STUB: not implemented");
+        }
 
         @Override
-        public void adjustSlotCount(final long delta) {}
+        public void adjustSlotCount(final long delta) {
+            throw new UnsupportedOperationException("STUB: not implemented");
+        }
 
         @Override
-        public void putSlot(final SlotKey key, final SlotValue value) {}
+        public void putSlot(final SlotKey key, final SlotValue value) {
+            throw new UnsupportedOperationException("STUB: not implemented");
+        }
 
         @Override
         public Set<SlotKey> getModifiedSlotKeys() {
-            return Set.of();
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         @Override
         public SlotValue getSlotValue(final SlotKey key) {
-            return null;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         @Override
         public SlotValue getOriginalSlotValue(final SlotKey key) {
-            return null;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         @Override
         public long getNumSlots() {
-            return 0;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         @Override
         public long getNumBytecodes() {
-            return 0;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
     };
 
     private static final ReadableFileStore EMPTY_FILE_STORE = new ReadableFileStore() {
+
         @Override
         public FileMetadata getFileMetadata(final FileID id) {
-            return null;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         @Override
         public File getFileLeaf(final FileID id) {
-            return null;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         @Override
         public long sizeOfState() {
-            return 0;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
     };
 
     private static final ReadableNftStore EMPTY_NFT_STORE = new ReadableNftStore() {
+
         @Override
         public Nft get(final NftID id) {
-            return null;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         @Override
         public long sizeOfState() {
-            return 0;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
     };
 
     private static final ReadableTokenRelationStore EMPTY_TOKEN_RELATION_STORE = new ReadableTokenRelationStore() {
+
         @Override
         public TokenRelation get(final AccountID accountId, final TokenID tokenId) {
-            return null;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         @Override
         public long sizeOfState() {
-            return 0;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
     };
 
     private final TransactionBody body;
+
     private final FeeTopicStore topicStore;
+
     private final FeeTokenStore tokenStore;
+
     private final int throttleUtilization;
 
     @Override
     @SuppressWarnings("unchecked")
     public <T> T readableStore(@NonNull final Class<T> storeInterface) {
-        if (storeInterface == ReadableTopicStore.class) {
-            return (T) topicStore;
-        }
-        if (storeInterface == ReadableTokenStore.class) {
-            return (T) tokenStore;
-        }
-        if (storeInterface == ReadableAccountStore.class) {
-            return (T) EMPTY_ACCOUNT_STORE;
-        }
-        if (storeInterface == ContractStateStore.class) {
-            return (T) EMPTY_CONTRACT_STATE_STORE;
-        }
-        if (storeInterface == ReadableFileStore.class) {
-            return (T) EMPTY_FILE_STORE;
-        }
-        if (storeInterface == ReadableNftStore.class) {
-            return (T) EMPTY_NFT_STORE;
-        }
-        if (storeInterface == ReadableTokenRelationStore.class) {
-            return (T) EMPTY_TOKEN_RELATION_STORE;
-        }
-        throw new UnsupportedOperationException("Store not supported: " + storeInterface.getSimpleName());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     @NonNull
     public ReadableStoreFactory readableStoreFactory() {
-        return new ReadableStoreFactory() {
-            @Override
-            public <T> T readableStore(@NonNull final Class<T> storeInterface) {
-                return FeeEstimationFeeContext.this.readableStore(storeInterface);
-            }
-        };
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     @NonNull
     public Configuration configuration() {
-        return CONFIGURATION;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     @NonNull
     public AccountID payer() {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     @NonNull
     public TransactionBody body() {
-        return body;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     @NonNull
     public FeeCalculatorFactory feeCalculatorFactory() {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     @Nullable
     public SimpleFeeCalculator getSimpleFeeCalculator() {
-        return null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     @NonNull
     public Authorizer authorizer() {
-        return FEE_AUTHORIZER;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public int numTxnSignatures() {
-        return 0;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public int numTxnBytes() {
-        return 0;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     @NonNull
     public Fees dispatchComputeFees(@NonNull final TransactionBody txBody, @NonNull final AccountID syntheticPayerId) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     @Nullable
     public ExchangeRate activeRate() {
-        return null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public long getGasPriceInTinycents() {
-        return 0;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     @NonNull
     public HederaFunctionality functionality() {
-        try {
-            return functionOf(body);
-        } catch (UnknownHederaFunctionality e) {
-            throw new IllegalStateException(e);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public int getHighVolumeThrottleUtilization(@NonNull final HederaFunctionality functionality) {
-        return throttleUtilization;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

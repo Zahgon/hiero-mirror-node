@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.contract;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -18,6 +17,7 @@ import org.springframework.data.domain.Persistable;
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ContractTransactionHash implements Persistable<byte[]> {
+
     private long consensusTimestamp;
 
     private long entityId;
@@ -32,12 +32,12 @@ public class ContractTransactionHash implements Persistable<byte[]> {
     @JsonIgnore
     @Override
     public byte[] getId() {
-        return hash;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @JsonIgnore
     @Override
     public boolean isNew() {
-        return true; // Since we never update and use a natural ID, avoid Hibernate querying before insert
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

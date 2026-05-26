@@ -1,12 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.state;
 
 import static com.hedera.services.utils.EntityIdUtils.toEntityId;
 import static org.hiero.mirror.web3.evm.config.EvmConfiguration.CACHE_MANAGER_EXCHANGE_RATES_SYSTEM_FILE;
 import static org.hiero.mirror.web3.evm.config.EvmConfiguration.CACHE_MANAGER_SYSTEM_FILE;
 import static org.hiero.mirror.web3.evm.config.EvmConfiguration.CACHE_NAME;
-
 import com.google.protobuf.ByteString;
 import com.hedera.hapi.node.base.CurrentAndNextFeeSchedule;
 import com.hedera.hapi.node.base.FileID;
@@ -59,23 +57,27 @@ public final class SystemFileLoader {
     private static final long NANOS_PER_HOUR = 3600L * DomainUtils.NANOS_PER_SECOND;
 
     private final EvmProperties properties;
+
     private final FileDataRepository fileDataRepository;
+
     private final SystemEntity systemEntity;
+
     private final FileID exchangeRateFileId;
+
     private final FileID feeSchedulesFileId;
+
     private final FileID simpleFeeSchedulesFileId;
+
     private final CacheManager exchangeRatesCacheManager;
+
     private final CacheManager defaultSystemFileCacheManager;
+
     private final V0490FileSchema fileSchema = new V0490FileSchema();
+
     private final File genesisNetworkProperties;
 
     @Getter(lazy = true, value = AccessLevel.PRIVATE)
-    private final RetryTemplate retryTemplate = new RetryTemplate(RetryPolicy.builder()
-            .delay(Duration.ofMillis(10L))
-            .maxDelay(Duration.ofMillis(50L))
-            .maxRetries(properties.getMaxFileAttempts() - 1)
-            .predicate(e -> e instanceof InvalidFileException)
-            .build());
+    private final RetryTemplate retryTemplate = new RetryTemplate(RetryPolicy.builder().delay(Duration.ofMillis(10L)).maxDelay(Duration.ofMillis(50L)).maxRetries(properties.getMaxFileAttempts() - 1).predicate(e -> e instanceof InvalidFileException).build());
 
     @Getter(lazy = true, value = AccessLevel.PRIVATE)
     private final byte[] mockAddressBook = createMockAddressBook();
@@ -83,12 +85,7 @@ public final class SystemFileLoader {
     @Getter(lazy = true, value = AccessLevel.PRIVATE)
     private final Map<FileID, SystemFile> systemFiles = loadAll();
 
-    public SystemFileLoader(
-            final EvmProperties properties,
-            final FileDataRepository fileDataRepository,
-            final SystemEntity systemEntity,
-            @Qualifier(CACHE_MANAGER_EXCHANGE_RATES_SYSTEM_FILE) final CacheManager exchangeRatesCacheManager,
-            @Qualifier(CACHE_MANAGER_SYSTEM_FILE) final CacheManager defaultSystemFileCacheManager) {
+    public SystemFileLoader(final EvmProperties properties, final FileDataRepository fileDataRepository, final SystemEntity systemEntity, @Qualifier(CACHE_MANAGER_EXCHANGE_RATES_SYSTEM_FILE) final CacheManager exchangeRatesCacheManager, @Qualifier(CACHE_MANAGER_SYSTEM_FILE) final CacheManager defaultSystemFileCacheManager) {
         this.properties = properties;
         this.fileDataRepository = fileDataRepository;
         this.systemEntity = systemEntity;
@@ -97,64 +94,28 @@ public final class SystemFileLoader {
         this.simpleFeeSchedulesFileId = Utils.toFileID(systemEntity.simpleFeeScheduleFile());
         this.exchangeRatesCacheManager = exchangeRatesCacheManager;
         this.defaultSystemFileCacheManager = defaultSystemFileCacheManager;
-        this.genesisNetworkProperties = load(
-                systemEntity.networkPropertyFile(),
-                fileSchema.genesisNetworkProperties(properties.getVersionedConfiguration()));
+        this.genesisNetworkProperties = load(systemEntity.networkPropertyFile(), fileSchema.genesisNetworkProperties(properties.getVersionedConfiguration()));
     }
 
     /**
      * Load system file by id and consensus timestamp.
      */
-    public @Nullable File load(FileID fileId, long consensusTimestamp) {
-        // Skip database for network properties so that CN props can't override MN props and cause us to break.
-        if (genesisNetworkProperties.fileId().equals(fileId)) {
-            return genesisNetworkProperties;
-        }
-
-        var cacheManager = defaultSystemFileCacheManager;
-
-        if (fileId.equals(exchangeRateFileId)
-                || fileId.equals(feeSchedulesFileId)
-                || fileId.equals(simpleFeeSchedulesFileId)) {
-            cacheManager = exchangeRatesCacheManager;
-            consensusTimestamp = roundDownToHour(consensusTimestamp);
-        }
-
-        final var cacheKey = new CacheKey(fileId, consensusTimestamp);
-        log.debug("Looking up {}", cacheKey);
-        final var cache = cacheManager.getCache(CACHE_NAME);
-
-        if (cache == null) {
-            return loadFromDB(fileId, consensusTimestamp);
-        }
-
-        // Try to return the value from the cache
-        var file = cache.get(cacheKey, File.class);
-        if (file != null) {
-            return file;
-        }
-
-        // The value was not in cache -> try to load from DB
-        var result = loadFromDB(fileId, consensusTimestamp);
-        if (result != null) {
-            log.info("Updating cache for key {}", cacheKey);
-            cache.put(cacheKey, result);
-        }
-
-        return result;
+    @Nullable
+    public File load(FileID fileId, long consensusTimestamp) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    private @Nullable File loadFromDB(FileID fileId, long consensusTimestamp) {
+    @Nullable
+    private File loadFromDB(FileID fileId, long consensusTimestamp) {
         var systemFile = getSystemFiles().get(fileId);
         if (systemFile == null) {
             return null;
         }
-
         return loadWithRetry(fileId, consensusTimestamp, systemFile);
     }
 
     public boolean isSystemFile(final FileID fileId) {
-        return getSystemFiles().containsKey(fileId);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -170,31 +131,21 @@ public final class SystemFileLoader {
         final var nanoSeconds = new AtomicLong(currentTimestamp);
         final var fileId = toEntityId(key).getId();
         final var attempt = new AtomicInteger(0);
-
         try {
-            return getRetryTemplate().execute(() -> fileDataRepository
-                    .getFileAtTimestamp(fileId, nanoSeconds.get())
-                    .filter(fileData -> ArrayUtils.isNotEmpty(fileData.getFileData()))
-                    .map(fileData -> {
-                        try {
-                            var bytes = Bytes.wrap(fileData.getFileData());
-                            var codec = systemFile.codec;
-                            if (codec != null) {
-                                codec.parse(bytes.toReadableSequentialData());
-                            }
-                            return File.newBuilder().contents(bytes).fileId(key).build();
-                        } catch (ParseException e) {
-                            log.warn(
-                                    "Attempt {} failed to load file {} at {}, falling back to previous file: {}",
-                                    attempt.incrementAndGet(),
-                                    fileId,
-                                    nanoSeconds.get(),
-                                    e.getMessage());
-                            nanoSeconds.set(fileData.getConsensusTimestamp() - 1);
-                            throw new InvalidFileException(e);
-                        }
-                    })
-                    .orElse(systemFile.genesisFile()));
+            return getRetryTemplate().execute(() -> fileDataRepository.getFileAtTimestamp(fileId, nanoSeconds.get()).filter(fileData -> ArrayUtils.isNotEmpty(fileData.getFileData())).map(fileData -> {
+                try {
+                    var bytes = Bytes.wrap(fileData.getFileData());
+                    var codec = systemFile.codec;
+                    if (codec != null) {
+                        codec.parse(bytes.toReadableSequentialData());
+                    }
+                    return File.newBuilder().contents(bytes).fileId(key).build();
+                } catch (ParseException e) {
+                    log.warn("Attempt {} failed to load file {} at {}, falling back to previous file: {}", attempt.incrementAndGet(), fileId, nanoSeconds.get(), e.getMessage());
+                    nanoSeconds.set(fileData.getConsensusTimestamp() - 1);
+                    throw new InvalidFileException(e);
+                }
+            }).orElse(systemFile.genesisFile()));
         } catch (RetryException e) {
             return systemFile.genesisFile();
         }
@@ -203,44 +154,13 @@ public final class SystemFileLoader {
     private Map<FileID, SystemFile> loadAll() {
         var configuration = properties.getVersionedConfiguration();
         var addressBookMock = Bytes.wrap(getMockAddressBook());
-        var files = List.of(
-                new SystemFile(load(systemEntity.addressBookFile101(), addressBookMock), NodeAddressBook.PROTOBUF),
-                new SystemFile(load(systemEntity.addressBookFile102(), addressBookMock), NodeAddressBook.PROTOBUF),
-                new SystemFile(
-                        load(systemEntity.feeScheduleFile(), fileSchema.genesisFeeSchedules(configuration)),
-                        CurrentAndNextFeeSchedule.PROTOBUF),
-                new SystemFile(
-                        load(
-                                systemEntity.simpleFeeScheduleFile(),
-                                fileSchema.genesisSimpleFeesSchedules(configuration)),
-                        FeeSchedule.PROTOBUF),
-                new SystemFile(
-                        load(systemEntity.exchangeRateFile(), fileSchema.genesisExchangeRatesBytes(configuration)),
-                        ExchangeRateSet.PROTOBUF),
-                new SystemFile(genesisNetworkProperties, null),
-                new SystemFile(load(systemEntity.hapiPermissionFile(), Bytes.EMPTY), null),
-                new SystemFile(
-                        load(
-                                systemEntity.throttleDefinitionFile(),
-                                fileSchema.genesisThrottleDefinitions(configuration)),
-                        ThrottleDefinitions.PROTOBUF));
-
-        return files.stream()
-                .collect(Collectors.toMap(systemFile -> systemFile.genesisFile().fileId(), Function.identity()));
+        var files = List.of(new SystemFile(load(systemEntity.addressBookFile101(), addressBookMock), NodeAddressBook.PROTOBUF), new SystemFile(load(systemEntity.addressBookFile102(), addressBookMock), NodeAddressBook.PROTOBUF), new SystemFile(load(systemEntity.feeScheduleFile(), fileSchema.genesisFeeSchedules(configuration)), CurrentAndNextFeeSchedule.PROTOBUF), new SystemFile(load(systemEntity.simpleFeeScheduleFile(), fileSchema.genesisSimpleFeesSchedules(configuration)), FeeSchedule.PROTOBUF), new SystemFile(load(systemEntity.exchangeRateFile(), fileSchema.genesisExchangeRatesBytes(configuration)), ExchangeRateSet.PROTOBUF), new SystemFile(genesisNetworkProperties, null), new SystemFile(load(systemEntity.hapiPermissionFile(), Bytes.EMPTY), null), new SystemFile(load(systemEntity.throttleDefinitionFile(), fileSchema.genesisThrottleDefinitions(configuration)), ThrottleDefinitions.PROTOBUF));
+        return files.stream().collect(Collectors.toMap(systemFile -> systemFile.genesisFile().fileId(), Function.identity()));
     }
 
     private File load(EntityId entityId, Bytes contents) {
-        var fileId = FileID.newBuilder()
-                .shardNum(entityId.getShard())
-                .realmNum(entityId.getRealm())
-                .fileNum(entityId.getNum())
-                .build();
-        return File.newBuilder()
-                .contents(contents)
-                .deleted(false)
-                .expirationSecond(maxExpiry())
-                .fileId(fileId)
-                .build();
+        var fileId = FileID.newBuilder().shardNum(entityId.getShard()).realmNum(entityId.getRealm()).fileNum(entityId.getNum()).build();
+        return File.newBuilder().contents(contents).deleted(false).expirationSecond(maxExpiry()).fileId(fileId).build();
     }
 
     private long maxExpiry() {
@@ -252,17 +172,8 @@ public final class SystemFileLoader {
     private byte[] createMockAddressBook() {
         final var builder = com.hederahashgraph.api.proto.java.NodeAddressBook.newBuilder();
         long nodeId = 3;
-        final var nodeAddressBuilder = NodeAddress.newBuilder()
-                .addServiceEndpoint(ServiceEndpoint.newBuilder()
-                        .setIpAddressV4(ByteString.copyFromUtf8("127.0.0." + nodeId))
-                        .setPort((int) nodeId)
-                        .build())
-                .setNodeId(nodeId)
-                .setNodeAccountId(AccountID.newBuilder()
-                        // setting the shard and realm just to be safe
-                        .setShardNum(CommonProperties.getInstance().getShard())
-                        .setRealmNum(CommonProperties.getInstance().getRealm())
-                        .setAccountNum(nodeId));
+        final var nodeAddressBuilder = NodeAddress.newBuilder().addServiceEndpoint(ServiceEndpoint.newBuilder().setIpAddressV4(ByteString.copyFromUtf8("127.0.0." + nodeId)).setPort((int) nodeId).build()).setNodeId(nodeId).setNodeAccountId(AccountID.newBuilder().// setting the shard and realm just to be safe
+        setShardNum(CommonProperties.getInstance().getShard()).setRealmNum(CommonProperties.getInstance().getRealm()).setAccountNum(nodeId));
         builder.addNodeAddress(nodeAddressBuilder.build());
         return builder.build().toByteArray();
     }
@@ -274,14 +185,14 @@ public final class SystemFileLoader {
         return (consensusTimestampNanos / NANOS_PER_HOUR) * NANOS_PER_HOUR;
     }
 
-    private record SystemFile(File genesisFile, @Nullable Codec<?> codec) {}
+    private record SystemFile(File genesisFile, @Nullable Codec<?> codec) {
+    }
 
     private record CacheKey(FileID fileId, long timestamp) {
 
         @Override
         public String toString() {
-            final var entityId = EntityId.of(fileId.shardNum(), fileId.realmNum(), fileId.fileNum());
-            return "FileId=" + entityId + ", timestamp=" + Instant.ofEpochSecond(0L, timestamp);
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
     }
 }

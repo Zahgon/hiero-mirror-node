@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.restjava.service;
 
 import jakarta.inject.Named;
@@ -16,39 +15,26 @@ import org.hiero.mirror.restjava.repository.NftAllowanceRepository;
 final class NftAllowanceServiceImpl implements NftAllowanceService {
 
     private final NftAllowanceRepository repository;
+
     private final EntityService entityService;
 
     public Collection<NftAllowance> getNftAllowances(NftAllowanceRequest request) {
-
-        var ownerOrSpenderId = request.getOwnerOrSpenderIds();
-        var token = request.getTokenIds();
-
-        checkOwnerSpenderParamValidity(ownerOrSpenderId, token);
-
-        var id = entityService.lookup(request.getAccountId());
-
-        return repository.findAll(request, id);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private void checkOwnerSpenderParamValidity(Bound ownerOrSpenderParams, Bound tokenParams) {
         if (ownerOrSpenderParams.isEmpty() && !tokenParams.isEmpty()) {
             throw new IllegalArgumentException("token.id parameter must have account.id present");
         }
-
         verifyRangeId(ownerOrSpenderParams);
         verifyRangeId(tokenParams);
-
-        if (!ownerOrSpenderParams.hasLowerAndUpper()
-                && tokenParams.getAdjustedLowerRangeValue() > tokenParams.adjustUpperBound()) {
+        if (!ownerOrSpenderParams.hasLowerAndUpper() && tokenParams.getAdjustedLowerRangeValue() > tokenParams.adjustUpperBound()) {
             throw new IllegalArgumentException("Invalid range provided for %s".formatted(Constants.TOKEN_ID));
         }
-
-        if (tokenParams.getCardinality(RangeOperator.LT, RangeOperator.LTE) > 0
-                && ownerOrSpenderParams.getCardinality(RangeOperator.EQ, RangeOperator.LTE) == 0) {
+        if (tokenParams.getCardinality(RangeOperator.LT, RangeOperator.LTE) > 0 && ownerOrSpenderParams.getCardinality(RangeOperator.EQ, RangeOperator.LTE) == 0) {
             throw new IllegalArgumentException("Requires the presence of an lte or eq account.id parameter");
         }
-        if (tokenParams.getCardinality(RangeOperator.GT, RangeOperator.GTE) > 0
-                && ownerOrSpenderParams.getCardinality(RangeOperator.EQ, RangeOperator.GTE) == 0) {
+        if (tokenParams.getCardinality(RangeOperator.GT, RangeOperator.GTE) > 0 && ownerOrSpenderParams.getCardinality(RangeOperator.EQ, RangeOperator.GTE) == 0) {
             throw new IllegalArgumentException("Requires the presence of an gte or eq account.id parameter");
         }
     }

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.downloader;
 
 import jakarta.annotation.PostConstruct;
@@ -59,7 +58,8 @@ public class CommonDownloaderProperties {
     private String gcpProjectId;
 
     @Min(2L)
-    private long maxSize = 50L * 1024L * 1024L; // 50 MiB
+    private long // 50 MiB
+    maxSize = 50L * 1024L * 1024L;
 
     @DurationMin(seconds = 1)
     @NotNull
@@ -84,70 +84,39 @@ public class CommonDownloaderProperties {
 
     @PostConstruct
     public void init() {
-        if (StringUtils.isBlank(bucketName)
-                && StringUtils.isBlank(HederaNetwork.getBucketName(importerProperties.getNetwork()))) {
-            throw new IllegalArgumentException(
-                    "Must define bucketName for network named '%s'".formatted(importerProperties.getNetwork()));
-        }
-
-        StreamSourceProperties.SourceCredentials credentials = null;
-        if (StringUtils.isNotBlank(accessKey) && StringUtils.isNotBlank(secretKey)) {
-            credentials = new StreamSourceProperties.SourceCredentials();
-            credentials.setAccessKey(accessKey);
-            credentials.setSecretKey(secretKey);
-        }
-
-        if (credentials != null || sources.isEmpty()) {
-            var source = new StreamSourceProperties();
-            source.setCredentials(credentials);
-            source.setProjectId(gcpProjectId);
-            source.setRegion(region);
-            source.setType(cloudProvider);
-            if (StringUtils.isNotBlank(endpointOverride)) {
-                source.setUri(URI.create(endpointOverride));
-            }
-            sources.add(0, source);
-        }
-
-        validateRatios();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private void validateRatios() {
         if (downloadRatio == null) {
             // defaults to consensusRatio + 15%, but never higher than 100%
             downloadRatio = BigDecimal.ONE.min(consensusRatio.add(new BigDecimal("0.15"), MATH_CONTEXT));
-        } else { // enforce that downloadRatio >= consensusRatio
+        } else {
+            // enforce that downloadRatio >= consensusRatio
             if (downloadRatio.compareTo(consensusRatio) < 0) {
-                throw new IllegalArgumentException(
-                        "downloadRatio (%f) must be >= consensusRatio(%f)".formatted(downloadRatio, consensusRatio));
+                throw new IllegalArgumentException("downloadRatio (%f) must be >= consensusRatio(%f)".formatted(downloadRatio, consensusRatio));
             }
         }
     }
 
     public String getBucketName() {
-        return StringUtils.isNotBlank(bucketName)
-                ? bucketName
-                : HederaNetwork.getBucketName(importerProperties.getNetwork());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public boolean isAnonymousCredentials() {
-        return allowAnonymousAccess != null
-                ? allowAnonymousAccess
-                : HederaNetwork.isAllowAnonymousAccess(importerProperties.getNetwork());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public enum PathType {
-        ACCOUNT_ID,
-        AUTO,
-        NODE_ID
+
+        ACCOUNT_ID, AUTO, NODE_ID
     }
 
     @Getter
     @RequiredArgsConstructor
     public enum SourceType {
-        GCP("https://storage.googleapis.com"),
-        LOCAL(""),
-        S3("https://s3.amazonaws.com");
+
+        GCP("https://storage.googleapis.com"), LOCAL(""), S3("https://s3.amazonaws.com");
 
         private final String endpoint;
     }

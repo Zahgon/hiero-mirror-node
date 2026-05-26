@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.subscribe.grpc;
 
 import jakarta.validation.constraints.NotBlank;
@@ -21,11 +20,12 @@ public class GrpcSubscriberProperties extends AbstractSubscriberProperties {
     private String topicId;
 
     public GrpcSubscriberProperties() {
-        retry.setMaxAttempts(Long.MAX_VALUE); // gRPC subscription only occurs once so retry indefinitely
+        // gRPC subscription only occurs once so retry indefinitely
+        retry.setMaxAttempts(Long.MAX_VALUE);
         retry.setMaxBackoff(Duration.ofSeconds(8L));
     }
 
     public Instant getEndTime() {
-        return startTime.plus(duration);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

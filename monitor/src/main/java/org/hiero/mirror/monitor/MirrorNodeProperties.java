@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor;
 
 import jakarta.validation.constraints.Max;
@@ -37,10 +36,7 @@ public class MirrorNodeProperties {
         private int port = 443;
 
         public String getEndpoint() {
-            if (host.startsWith("in-process:")) {
-                return host;
-            }
-            return host + ":" + port;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
     }
 
@@ -56,8 +52,7 @@ public class MirrorNodeProperties {
         private int port = 443;
 
         public String getBaseUrl() {
-            String scheme = port == 443 ? "https://" : "http://";
-            return scheme + host + ":" + port + "/api/v1";
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
     }
 }

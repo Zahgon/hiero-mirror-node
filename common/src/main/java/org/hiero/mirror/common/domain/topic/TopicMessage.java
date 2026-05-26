@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.topic;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -19,7 +18,8 @@ import org.hiero.mirror.common.converter.EntityIdConverter;
 import org.hiero.mirror.common.domain.entity.EntityId;
 import org.springframework.data.domain.Persistable;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE) // For builder
+// For builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
 @Data
 @Entity
@@ -28,8 +28,7 @@ import org.springframework.data.domain.Persistable;
 @NoArgsConstructor
 public class TopicMessage implements Comparable<TopicMessage>, Persistable<Long>, StreamMessage {
 
-    private static final Comparator<TopicMessage> COMPARATOR = Comparator.nullsFirst(
-            Comparator.comparing(TopicMessage::getTopicId).thenComparing(TopicMessage::getSequenceNumber));
+    private static final Comparator<TopicMessage> COMPARATOR = Comparator.nullsFirst(Comparator.comparing(TopicMessage::getTopicId).thenComparing(TopicMessage::getSequenceNumber));
 
     private Integer chunkNum;
 
@@ -62,17 +61,17 @@ public class TopicMessage implements Comparable<TopicMessage>, Persistable<Long>
     @JsonIgnore
     @Override
     public Long getId() {
-        return consensusTimestamp;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @JsonIgnore
     @Override
     public boolean isNew() {
-        return true; // Since we never update and use a natural ID, avoid Hibernate querying before insert
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public int compareTo(TopicMessage other) {
-        return COMPARATOR.compare(this, other);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

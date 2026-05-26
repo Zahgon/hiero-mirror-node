@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.downloader;
 
 import jakarta.inject.Named;
@@ -34,14 +33,7 @@ public class NodeSignatureVerifier {
      * @throws SignatureVerificationException
      */
     public void verify(Collection<StreamFileSignature> signatures) throws SignatureVerificationException {
-
-        for (StreamFileSignature streamFileSignature : signatures) {
-            if (verifySignature(streamFileSignature)) {
-                streamFileSignature.setStatus(SignatureStatus.VERIFIED);
-            }
-        }
-
-        consensusValidator.validate(signatures);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -52,35 +44,26 @@ public class NodeSignatureVerifier {
      */
     private boolean verifySignature(StreamFileSignature streamFileSignature) {
         var publicKey = streamFileSignature.getNode().getPublicKey();
-
         if (publicKey == null) {
             log.warn("Missing PublicKey for node {}", streamFileSignature.getNode());
             return false;
         }
-
         if (streamFileSignature.getFileHashSignature() == null) {
             log.error("Missing signature data: {}", streamFileSignature);
             return false;
         }
-
         try {
             log.trace("Verifying signature: {}", streamFileSignature);
-
-            Signature sig = Signature.getInstance(
-                    streamFileSignature.getSignatureType().getAlgorithm(),
-                    streamFileSignature.getSignatureType().getProvider());
+            Signature sig = Signature.getInstance(streamFileSignature.getSignatureType().getAlgorithm(), streamFileSignature.getSignatureType().getProvider());
             sig.initVerify(publicKey);
             sig.update(streamFileSignature.getFileHash());
-
             if (!sig.verify(streamFileSignature.getFileHashSignature())) {
                 return false;
             }
-
             if (streamFileSignature.getMetadataHashSignature() != null) {
                 sig.update(streamFileSignature.getMetadataHash());
                 return sig.verify(streamFileSignature.getMetadataHashSignature());
             }
-
             return true;
         } catch (Exception e) {
             log.error("Failed to verify signature with public key {}: {}", publicKey, streamFileSignature, e);

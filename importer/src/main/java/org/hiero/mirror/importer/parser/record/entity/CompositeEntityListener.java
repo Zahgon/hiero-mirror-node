@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.entity;
 
 import jakarta.inject.Named;
@@ -69,186 +68,186 @@ public class CompositeEntityListener implements EntityListener {
 
     @Override
     public void onAssessedCustomFee(AssessedCustomFee assessedCustomFee) throws ImporterException {
-        onEach(EntityListener::onAssessedCustomFee, assessedCustomFee);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onContract(Contract contract) throws ImporterException {
-        onEach(EntityListener::onContract, contract);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onContractAction(ContractAction contractAction) throws ImporterException {
-        onEach(EntityListener::onContractAction, contractAction);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onContractLog(ContractLog contractLog) throws ImporterException {
-        onEach(EntityListener::onContractLog, contractLog);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onContractResult(ContractResult contractResult) throws ImporterException {
-        onEach(EntityListener::onContractResult, contractResult);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onContractStateChange(ContractStateChange contractStateChange) throws ImporterException {
-        onEach(EntityListener::onContractStateChange, contractStateChange);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onContractTransactions(Collection<ContractTransaction> contractTransactions) {
-        onEach(EntityListener::onContractTransactions, contractTransactions);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onCryptoAllowance(CryptoAllowance cryptoAllowance) throws ImporterException {
-        onEach(EntityListener::onCryptoAllowance, cryptoAllowance);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onCryptoTransfer(CryptoTransfer cryptoTransfer) throws ImporterException {
-        onEach(EntityListener::onCryptoTransfer, cryptoTransfer);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onCustomFee(CustomFee customFee) throws ImporterException {
-        onEach(EntityListener::onCustomFee, customFee);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onEntity(Entity entity) throws ImporterException {
-        onEach(EntityListener::onEntity, entity);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onEntityTransactions(Collection<EntityTransaction> entityTransactions) throws ImporterException {
-        onEach(EntityListener::onEntityTransactions, entityTransactions);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onEthereumTransaction(EthereumTransaction ethereumTransaction) {
-        onEach(EntityListener::onEthereumTransaction, ethereumTransaction);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onFileData(FileData fileData) throws ImporterException {
-        onEach(EntityListener::onFileData, fileData);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onHook(Hook hook) throws ImporterException {
-        onEach(EntityListener::onHook, hook);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onHookStorageChange(HookStorageChange storageChange) throws ImporterException {
-        onEach(EntityListener::onHookStorageChange, storageChange);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onLedger(final Ledger ledger) throws ImporterException {
-        onEach(EntityListener::onLedger, ledger);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onLiveHash(LiveHash liveHash) throws ImporterException {
-        onEach(EntityListener::onLiveHash, liveHash);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onNetworkFreeze(NetworkFreeze networkFreeze) {
-        onEach(EntityListener::onNetworkFreeze, networkFreeze);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onNetworkStake(NetworkStake networkStake) throws ImporterException {
-        onEach(EntityListener::onNetworkStake, networkStake);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onNft(Nft nft) throws ImporterException {
-        onEach(EntityListener::onNft, nft);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onNftAllowance(NftAllowance nftAllowance) throws ImporterException {
-        onEach(EntityListener::onNftAllowance, nftAllowance);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onNode(Node node) throws ImporterException {
-        onEach(EntityListener::onNode, node);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onNodeStake(NodeStake nodeStake) throws ImporterException {
-        onEach(EntityListener::onNodeStake, nodeStake);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onPrng(Prng prng) {
-        onEach(EntityListener::onPrng, prng);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onRegisteredNode(RegisteredNode registeredNode) throws ImporterException {
-        onEach(EntityListener::onRegisteredNode, registeredNode);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onSchedule(Schedule schedule) throws ImporterException {
-        onEach(EntityListener::onSchedule, schedule);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onStakingRewardTransfer(StakingRewardTransfer stakingRewardTransfer) {
-        onEach(EntityListener::onStakingRewardTransfer, stakingRewardTransfer);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onToken(Token token) throws ImporterException {
-        onEach(EntityListener::onToken, token);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onTokenAccount(TokenAccount tokenAccount) throws ImporterException {
-        onEach(EntityListener::onTokenAccount, tokenAccount);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onTokenAirdrop(TokenAirdrop tokenAirdrop) throws ImporterException {
-        onEach(EntityListener::onTokenAirdrop, tokenAirdrop);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onTokenAllowance(TokenAllowance tokenAllowance) throws ImporterException {
-        onEach(EntityListener::onTokenAllowance, tokenAllowance);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onTokenTransfer(TokenTransfer tokenTransfer) throws ImporterException {
-        onEach(EntityListener::onTokenTransfer, tokenTransfer);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onTopic(Topic topic) throws ImporterException {
-        onEach(EntityListener::onTopic, topic);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onTopicMessage(TopicMessage topicMessage) throws ImporterException {
-        onEach(EntityListener::onTopicMessage, topicMessage);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onTransaction(Transaction transaction) throws ImporterException {
-        onEach(EntityListener::onTransaction, transaction);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void onTransactionSignature(TransactionSignature transactionSignature) throws ImporterException {
-        onEach(EntityListener::onTransactionSignature, transactionSignature);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

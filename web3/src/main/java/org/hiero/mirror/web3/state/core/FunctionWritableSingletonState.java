@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.state.core;
 
 import com.swirlds.state.spi.WritableSingletonStateBase;
@@ -19,24 +18,23 @@ public class FunctionWritableSingletonState<S> extends WritableSingletonStateBas
      * @param backingStoreAccessor A {@link Supplier} that provides access to the value in the
      *     backing store.
      */
-    public FunctionWritableSingletonState(
-            @NonNull final String serviceName, final int stateId, @NonNull final Supplier<S> backingStoreAccessor) {
+    public FunctionWritableSingletonState(@NonNull final String serviceName, final int stateId, @NonNull final Supplier<S> backingStoreAccessor) {
         super(stateId, serviceName);
         this.backingStoreAccessor = Objects.requireNonNull(backingStoreAccessor);
     }
 
     @Override
     protected S readFromDataSource() {
-        return backingStoreAccessor.get();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     protected void putIntoDataSource(@NonNull S value) {
-        // No-op as we don't persist updates in web3.
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     protected void removeFromDataSource() {
-        // No-op as we don't persist updates in web3.
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

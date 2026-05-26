@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.grpc.listener;
 
 import io.micrometer.observation.ObservationRegistry;
@@ -26,38 +25,25 @@ import reactor.util.repeat.RepeatSpec;
 public class PollingTopicListener implements TopicListener {
 
     private final ListenerProperties listenerProperties;
+
     private final ObservationRegistry observationRegistry;
+
     private final TopicMessageRepository topicMessageRepository;
+
     private final Scheduler scheduler = Schedulers.boundedElastic();
 
     @Override
     public Flux<TopicMessage> listen(TopicMessageFilter filter) {
-        PollingContext context = new PollingContext(filter);
-        Duration interval = listenerProperties.getInterval();
-
-        return Flux.defer(() -> poll(context))
-                .delaySubscription(interval, scheduler)
-                .repeatWhen(RepeatSpec.times(Long.MAX_VALUE)
-                        .jitter(0.1)
-                        .withFixedDelay(interval)
-                        .withScheduler(scheduler))
-                .name(METRIC)
-                .tag(METRIC_TAG, "poll")
-                .tap(Micrometer.observation(observationRegistry))
-                .doOnNext(context::onNext)
-                .doOnSubscribe(s -> log.info("Starting to poll every {}ms: {}", interval.toMillis(), filter));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private Flux<TopicMessage> poll(PollingContext context) {
         TopicMessageFilter filter = context.getFilter();
         TopicMessage last = context.getLast();
-        int limit = filter.hasLimit()
-                ? (int) (filter.getLimit() - context.getCount().get())
-                : Integer.MAX_VALUE;
+        int limit = filter.hasLimit() ? (int) (filter.getLimit() - context.getCount().get()) : Integer.MAX_VALUE;
         int pageSize = Math.min(limit, listenerProperties.getMaxPageSize());
         long startTime = last != null ? last.getConsensusTimestamp() + 1 : filter.getStartTime();
         var newFilter = filter.toBuilder().limit(pageSize).startTime(startTime).build();
-
         return Flux.fromStream(topicMessageRepository.findByFilter(newFilter));
     }
 
@@ -65,15 +51,17 @@ public class PollingTopicListener implements TopicListener {
     private class PollingContext {
 
         private final TopicMessageFilter filter;
+
         private final AtomicLong count = new AtomicLong(0L);
+
         private final AtomicReference<@Nullable TopicMessage> last = new AtomicReference<>();
 
         void onNext(TopicMessage topicMessage) {
-            last.set(topicMessage);
-            count.incrementAndGet();
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
-        private @Nullable TopicMessage getLast() {
+        @Nullable
+        private TopicMessage getLast() {
             return last.get();
         }
     }

@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.reader.record;
 
 import static org.hiero.mirror.common.util.DomainUtils.createSha384Digest;
-
 import com.hederahashgraph.api.proto.java.Transaction;
 import com.hederahashgraph.api.proto.java.TransactionRecord;
 import java.io.IOException;
@@ -30,34 +28,16 @@ import org.jspecify.annotations.Nullable;
 public abstract class AbstractPreV5RecordFileReader implements RecordFileReader {
 
     protected static final DigestAlgorithm DIGEST_ALGORITHM = DigestAlgorithm.SHA_384;
+
     protected static final byte PREV_HASH_MARKER = 1;
+
     protected static final byte RECORD_MARKER = 2;
 
     private final int readerVersion;
 
     @Override
     public RecordFile read(StreamFileData streamFileData) {
-        String filename = streamFileData.getFilename();
-
-        try (RecordFileDigest digest = getRecordFileDigest(streamFileData.getInputStream());
-                ValidatedDataInputStream vdis = new ValidatedDataInputStream(digest.getDigestInputStream(), filename)) {
-            byte[] bytes = streamFileData.getBytes();
-            RecordFile recordFile = new RecordFile();
-            recordFile.setBytes(bytes);
-            recordFile.setDigestAlgorithm(DIGEST_ALGORITHM);
-            recordFile.setLoadStart(streamFileData.getStreamFilename().getTimestamp());
-            recordFile.setName(filename);
-            recordFile.setSize(bytes.length);
-
-            readHeader(vdis, recordFile);
-            readBody(vdis, digest, recordFile);
-
-            return recordFile;
-        } catch (ImporterException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new StreamFileReaderException("Error reading record file " + filename, e);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     protected abstract RecordFileDigest getRecordFileDigest(InputStream is);
@@ -73,10 +53,10 @@ public abstract class AbstractPreV5RecordFileReader implements RecordFileReader 
      */
     private void readHeader(ValidatedDataInputStream vdis, RecordFile recordFile) throws IOException {
         int version = vdis.readInt(readerVersion, "record file version");
-        vdis.readInt(); // HAPI version, not used
+        // HAPI version, not used
+        vdis.readInt();
         vdis.readByte(PREV_HASH_MARKER, "previous hash marker");
         byte[] prevHash = vdis.readNBytes(DIGEST_ALGORITHM.getSize(), "previous hash");
-
         recordFile.setVersion(version);
         recordFile.setPreviousHash(Hex.encodeHexString(prevHash));
     }
@@ -92,42 +72,29 @@ public abstract class AbstractPreV5RecordFileReader implements RecordFileReader 
      * @param recordFile the {@link RecordFile} object
      * @throws IOException
      */
-    private void readBody(ValidatedDataInputStream vdis, RecordFileDigest digest, RecordFile recordFile)
-            throws IOException {
+    private void readBody(ValidatedDataInputStream vdis, RecordFileDigest digest, RecordFile recordFile) throws IOException {
         int count = 0;
         long consensusStart = 0;
         long consensusEnd = 0;
         digest.startBody();
         List<RecordItem> items = new ArrayList<>();
         RecordItem lastRecordItem = null;
-
         while (vdis.available() != 0) {
             vdis.readByte(RECORD_MARKER, "record marker");
             byte[] transactionBytes = vdis.readLengthAndBytes(1, MAX_TRANSACTION_LENGTH, false, "transaction bytes");
             byte[] recordBytes = vdis.readLengthAndBytes(1, MAX_TRANSACTION_LENGTH, false, "record bytes");
-            RecordItem recordItem = RecordItem.builder()
-                    .hapiVersion(recordFile.getHapiVersion())
-                    .previous(lastRecordItem)
-                    .transactionRecord(TransactionRecord.parseFrom(recordBytes))
-                    .transactionIndex(count)
-                    .transaction(Transaction.parseFrom(transactionBytes))
-                    .build();
+            RecordItem recordItem = RecordItem.builder().hapiVersion(recordFile.getHapiVersion()).previous(lastRecordItem).transactionRecord(TransactionRecord.parseFrom(recordBytes)).transactionIndex(count).transaction(Transaction.parseFrom(transactionBytes)).build();
             items.add(recordItem);
-
             if (count == 0) {
                 consensusStart = recordItem.getConsensusTimestamp();
             }
-
             if (vdis.available() == 0) {
                 consensusEnd = recordItem.getConsensusTimestamp();
             }
-
             lastRecordItem = recordItem;
             count++;
         }
-
         String fileHash = Hex.encodeHexString(digest.digest());
-
         recordFile.setConsensusStart(consensusStart);
         recordFile.setConsensusEnd(consensusEnd);
         recordFile.setCount((long) count);
@@ -143,12 +110,12 @@ public abstract class AbstractPreV5RecordFileReader implements RecordFileReader 
 
         private final MessageDigest messageDigestFile;
 
-        private final @Nullable MessageDigest messageDigestBody;
+        @Nullable
+        private final MessageDigest messageDigestBody;
 
         public RecordFileDigest(InputStream is, boolean simple) {
             messageDigestFile = createSha384Digest();
             digestInputStream = new DigestInputStream(is, messageDigestFile);
-
             if (simple) {
                 messageDigestBody = null;
             } else {
@@ -159,22 +126,16 @@ public abstract class AbstractPreV5RecordFileReader implements RecordFileReader 
         }
 
         public byte[] digest() {
-            if (messageDigestBody != null) {
-                messageDigestFile.update(messageDigestBody.digest());
-            }
-
-            return messageDigestFile.digest();
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         public void startBody() {
-            if (messageDigestBody != null) {
-                digestInputStream.setMessageDigest(messageDigestBody);
-            }
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         @Override
         public void close() throws IOException {
-            digestInputStream.close();
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
     }
 }

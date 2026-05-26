@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.reader.record;
 
 import jakarta.inject.Named;
@@ -14,6 +13,6 @@ public class RecordFileReaderImplV2 extends AbstractPreV5RecordFileReader {
 
     @Override
     protected RecordFileDigest getRecordFileDigest(InputStream is) {
-        return new RecordFileDigest(is, false);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

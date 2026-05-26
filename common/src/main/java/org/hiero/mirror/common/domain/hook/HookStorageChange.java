@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.hook;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -45,8 +44,7 @@ public class HookStorageChange implements Persistable<HookStorageChange.Id> {
     private byte[] valueWritten;
 
     @Builder(toBuilder = true)
-    private HookStorageChange(
-            long consensusTimestamp, long hookId, byte[] key, long ownerId, byte[] valueRead, byte[] valueWritten) {
+    private HookStorageChange(long consensusTimestamp, long hookId, byte[] key, long ownerId, byte[] valueRead, byte[] valueWritten) {
         this.consensusTimestamp = consensusTimestamp;
         this.hookId = hookId;
         this.key = key;
@@ -59,39 +57,37 @@ public class HookStorageChange implements Persistable<HookStorageChange.Id> {
     @Override
     @JsonIgnore
     public Id getId() {
-        Id id = new Id();
-        id.setConsensusTimestamp(consensusTimestamp);
-        id.setHookId(hookId);
-        id.setKey(key);
-        id.setOwnerId(ownerId);
-        return id;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public void setValueRead(byte[] valueRead) {
-        this.valueRead = DomainUtils.trim(valueRead);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public void setValueWritten(byte[] valueWritten) {
-        this.valueWritten = DomainUtils.trim(valueWritten);
-        this.deleted = this.valueWritten != null && this.valueWritten.length == 0;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @JsonIgnore
     @Override
     public boolean isNew() {
-        return true;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @AllArgsConstructor
     @Data
     @NoArgsConstructor
     public static class Id implements Serializable {
+
         @Serial
         private static final long serialVersionUID = -2847639184756392847L;
 
         private long consensusTimestamp;
+
         private long hookId;
+
         private byte[] key;
+
         private long ownerId;
     }
 }

@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.restjava.mapper;
 
 import static org.hiero.mirror.restjava.mapper.CommonMapper.QUALIFIER_TIMESTAMP;
-
 import com.hederahashgraph.api.proto.java.CurrentAndNextFeeSchedule;
 import com.hederahashgraph.api.proto.java.ExchangeRate;
 import com.hederahashgraph.api.proto.java.ExchangeRateSet;
@@ -29,59 +27,32 @@ public interface FeeScheduleMapper {
 
     long FEE_DIVISOR_FACTOR = 1000L;
 
-    Comparator<NetworkFee> ASC_COMPARATOR =
-            Comparator.comparing(NetworkFee::getTransactionType, String.CASE_INSENSITIVE_ORDER);
+    Comparator<NetworkFee> ASC_COMPARATOR = Comparator.comparing(NetworkFee::getTransactionType, String.CASE_INSENSITIVE_ORDER);
+
     Comparator<NetworkFee> DESC_COMPARATOR = ASC_COMPARATOR.reversed();
 
-    Map<HederaFunctionality, String> ENABLED_TRANSACTION_TYPES = Map.of(
-            HederaFunctionality.ContractCall, "ContractCall",
-            HederaFunctionality.ContractCreate, "ContractCreate",
-            HederaFunctionality.EthereumTransaction, "EthereumTransaction");
+    Map<HederaFunctionality, String> ENABLED_TRANSACTION_TYPES = Map.of(HederaFunctionality.ContractCall, "ContractCall", HederaFunctionality.ContractCreate, "ContractCreate", HederaFunctionality.EthereumTransaction, "EthereumTransaction");
 
     @Mapping(target = "fees", expression = "java(mapFees(feeScheduleFile, exchangeRateFile, bound, order))")
-    @Mapping(
-            source = "feeScheduleFile.fileData.consensusTimestamp",
-            target = "timestamp",
-            qualifiedByName = QUALIFIER_TIMESTAMP)
-    NetworkFeesResponse map(
-            SystemFile<CurrentAndNextFeeSchedule> feeScheduleFile,
-            SystemFile<ExchangeRateSet> exchangeRateFile,
-            Bound bound,
-            Sort.Direction order);
+    @Mapping(source = "feeScheduleFile.fileData.consensusTimestamp", target = "timestamp", qualifiedByName = QUALIFIER_TIMESTAMP)
+    NetworkFeesResponse map(SystemFile<CurrentAndNextFeeSchedule> feeScheduleFile, SystemFile<ExchangeRateSet> exchangeRateFile, Bound bound, Sort.Direction order);
 
-    default List<NetworkFee> mapFees(
-            SystemFile<CurrentAndNextFeeSchedule> feeScheduleFile,
-            SystemFile<ExchangeRateSet> exchangeRateFile,
-            Bound bound,
-            Sort.Direction order) {
-
-        final var refTimestampNanos = getReferenceTimestampNanos(feeScheduleFile, bound);
-        final var feeSchedule = getEffectiveFeeSchedule(feeScheduleFile.data(), refTimestampNanos);
-        final var exchangeRate = getEffectiveExchangeRate(exchangeRateFile.data(), refTimestampNanos);
-
-        return feeSchedule.getTransactionFeeScheduleList().stream()
-                .filter(s -> ENABLED_TRANSACTION_TYPES.containsKey(s.getHederaFunctionality()) && s.getFeesCount() > 0)
-                .map(s -> mapToNetworkFee(s, exchangeRate))
-                .filter(Objects::nonNull)
-                .sorted(getComparator(order))
-                .toList();
+    default List<NetworkFee> mapFees(SystemFile<CurrentAndNextFeeSchedule> feeScheduleFile, SystemFile<ExchangeRateSet> exchangeRateFile, Bound bound, Sort.Direction order) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private long getReferenceTimestampNanos(SystemFile<CurrentAndNextFeeSchedule> feeScheduleFile, Bound bound) {
         final long upperBound = bound.adjustUpperBound();
-
         if (upperBound == Long.MAX_VALUE) {
             final var timestamp = feeScheduleFile.fileData().getConsensusTimestamp();
             return (timestamp != null) ? timestamp : 0L;
         }
-
         return upperBound;
     }
 
     private ExchangeRate getEffectiveExchangeRate(ExchangeRateSet exchangeRateSet, long refTimestampNanos) {
         final var currentRate = exchangeRateSet.getCurrentRate();
         final var currentRateExpirationTime = currentRate.getExpirationTime().getSeconds();
-
         if (refTimestampNanos > currentRateExpirationTime * DomainUtils.NANOS_PER_SECOND) {
             return exchangeRateSet.getNextRate();
         }
@@ -89,43 +60,32 @@ public interface FeeScheduleMapper {
     }
 
     private FeeSchedule getEffectiveFeeSchedule(CurrentAndNextFeeSchedule feeSchedules, long refTimestampNanos) {
-
         final var currentFeeSchedule = feeSchedules.getCurrentFeeSchedule();
         final var feeScheduleExpirationTime = currentFeeSchedule.getExpiryTime().getSeconds();
-
         if (refTimestampNanos > feeScheduleExpirationTime * DomainUtils.NANOS_PER_SECOND) {
             return feeSchedules.getNextFeeSchedule();
         }
-
         return currentFeeSchedule;
     }
 
     @Nullable
     private NetworkFee mapToNetworkFee(TransactionFeeSchedule schedule, ExchangeRate rate) {
-
         var feeData = schedule.getFees(0);
         if (!feeData.hasServicedata()) {
             return null;
         }
-
         var type = ENABLED_TRANSACTION_TYPES.get(schedule.getHederaFunctionality());
         var gas = feeData.getServicedata().getGas();
         var tinyBars = convertGasPriceToTinyBars(gas, rate.getHbarEquiv(), rate.getCentEquiv());
-
         return tinyBars == null ? null : new NetworkFee().gas(tinyBars).transactionType(type);
     }
 
     @Nullable
     default Long convertGasPriceToTinyBars(long gasPrice, int hbars, int cents) {
-        if (cents == 0) {
-            return null;
-        }
-        final long gasInTinyCents = gasPrice / FEE_DIVISOR_FACTOR;
-        final long gasInTinyBars = gasInTinyCents * hbars / cents;
-        return Math.max(gasInTinyBars, 1L);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     default Comparator<NetworkFee> getComparator(Sort.Direction order) {
-        return order == Sort.Direction.DESC ? DESC_COMPARATOR : ASC_COMPARATOR;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

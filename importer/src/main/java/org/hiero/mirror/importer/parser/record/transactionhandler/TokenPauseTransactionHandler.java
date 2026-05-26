@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.transactionhandler;
 
 import jakarta.inject.Named;
@@ -18,28 +17,21 @@ import org.hiero.mirror.importer.parser.record.entity.EntityProperties;
 class TokenPauseTransactionHandler extends AbstractTransactionHandler {
 
     private final EntityListener entityListener;
+
     private final EntityProperties entityProperties;
 
     @Override
     public EntityId getEntity(RecordItem recordItem) {
-        return EntityId.of(recordItem.getTransactionBody().getTokenPause().getToken());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public TransactionType getType() {
-        return TransactionType.TOKENPAUSE;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     protected void doUpdateTransaction(Transaction transaction, RecordItem recordItem) {
-        if (!entityProperties.getPersist().isTokens() || !recordItem.isSuccessful()) {
-            return;
-        }
-
-        Token token = new Token();
-        token.setPauseStatus(TokenPauseStatusEnum.PAUSED);
-        token.setTimestampLower(recordItem.getConsensusTimestamp());
-        token.setTokenId(transaction.getEntityId().getId());
-        entityListener.onToken(token);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

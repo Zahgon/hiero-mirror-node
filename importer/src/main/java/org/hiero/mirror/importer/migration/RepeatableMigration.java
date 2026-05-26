@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.migration;
 
 import java.util.Map;
@@ -13,11 +12,11 @@ abstract class RepeatableMigration extends ConfigurableJavaMigration {
 
     @Override
     public Integer getChecksum() {
-        return migrationProperties.getChecksum();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public final MigrationVersion getVersion() {
-        return null; // Repeatable migration
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

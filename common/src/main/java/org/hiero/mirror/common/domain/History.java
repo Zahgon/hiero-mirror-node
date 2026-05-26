@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -9,7 +8,7 @@ public interface History {
 
     @JsonIgnore
     default boolean hasHistory() {
-        return getTimestampRange() != null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     Range<Long> getTimestampRange();
@@ -18,24 +17,19 @@ public interface History {
 
     @JsonIgnore
     default Long getTimestampLower() {
-        var timestampRange = getTimestampRange();
-        return timestampRange != null && timestampRange.hasLowerBound() ? timestampRange.lowerEndpoint() : null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     default void setTimestampLower(long timestampLower) {
-        setTimestampRange(Range.atLeast(timestampLower));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @JsonIgnore
     default Long getTimestampUpper() {
-        var timestampRange = getTimestampRange();
-        return timestampRange != null && timestampRange.hasUpperBound() ? timestampRange.upperEndpoint() : null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     default void setTimestampUpper(long timestampUpper) {
-        var timestampLower = getTimestampLower();
-        if (timestampLower != null) {
-            setTimestampRange(Range.closedOpen(timestampLower, timestampUpper));
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

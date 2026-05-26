@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.config;
 
 import jakarta.inject.Named;
@@ -27,14 +26,12 @@ class LoggingFilter implements WebFilter {
     private static final String ACTUATOR_PATH = "/actuator/";
 
     private static final String LOCALHOST = "127.0.0.1";
+
     private static final String LOG_FORMAT = "{} {} {} in {} ms: {}";
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-        long start = System.currentTimeMillis();
-        return chain.filter(exchange)
-                .transformDeferred(call -> call.doOnEach(signal -> doFilter(exchange, signal.getThrowable(), start))
-                        .doOnCancel(() -> doFilter(exchange, new CancelledException(), start)));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private void doFilter(ServerWebExchange exchange, Throwable cause, long start) {
@@ -53,10 +50,8 @@ class LoggingFilter implements WebFilter {
         long elapsed = System.currentTimeMillis() - startTime;
         ServerHttpRequest request = exchange.getRequest();
         URI uri = request.getURI();
-        var message =
-                cause != null ? cause.getMessage() : exchange.getResponse().getStatusCode();
-        var params = new Object[] {getClient(request), request.getMethod(), uri, elapsed, message};
-
+        var message = cause != null ? cause.getMessage() : exchange.getResponse().getStatusCode();
+        var params = new Object[] { getClient(request), request.getMethod(), uri, elapsed, message };
         if (Strings.CS.startsWith(uri.getPath(), ACTUATOR_PATH)) {
             log.debug(LOG_FORMAT, params);
         } else if (cause != null) {
@@ -68,21 +63,18 @@ class LoggingFilter implements WebFilter {
 
     private String getClient(ServerHttpRequest request) {
         String xForwardedFor = CollectionUtils.firstElement(request.getHeaders().get(X_FORWARDED_FOR));
-
         if (StringUtils.isNotBlank(xForwardedFor)) {
             return xForwardedFor;
         }
-
         InetSocketAddress remoteAddress = request.getRemoteAddress();
-
         if (remoteAddress != null && remoteAddress.getAddress() != null) {
             return remoteAddress.getAddress().toString();
         }
-
         return LOCALHOST;
     }
 
     private static class CancelledException extends RuntimeException {
+
         private static final String MESSAGE = "cancelled";
 
         @Serial

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.grpc.config;
 
 import io.github.mweirauch.micrometer.jvm.extras.ProcessMemoryMetrics;
@@ -13,11 +12,11 @@ class MetricsConfiguration {
 
     @Bean
     MeterBinder processMemoryMetrics() {
-        return new ProcessMemoryMetrics();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Bean
     MeterBinder processThreadMetrics() {
-        return new ProcessThreadMetrics();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

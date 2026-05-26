@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.downloader.block.transformer;
 
 import jakarta.inject.Named;
@@ -10,24 +9,11 @@ final class ContractUpdateTransformer extends AbstractContractTransformer {
 
     @Override
     protected void doTransform(BlockTransactionTransformation blockTransactionTransformation) {
-        var blockTransaction = blockTransactionTransformation.blockTransaction();
-        if (!blockTransaction.isSuccessful()) {
-            return;
-        }
-
-        var receiptBuilder = blockTransactionTransformation
-                .recordItemBuilder()
-                .transactionRecordBuilder()
-                .getReceiptBuilder();
-        var contractId = blockTransactionTransformation
-                .getTransactionBody()
-                .getContractUpdateInstance()
-                .getContractID();
-        resolveEvmAddress(contractId, receiptBuilder, blockTransaction.getStateChangeContext());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public TransactionType getType() {
-        return TransactionType.CONTRACTUPDATEINSTANCE;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

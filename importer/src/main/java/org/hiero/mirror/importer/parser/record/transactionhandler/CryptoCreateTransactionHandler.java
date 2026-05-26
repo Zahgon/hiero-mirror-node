@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.transactionhandler;
 
 import static org.hiero.mirror.common.domain.transaction.RecordFile.HAPI_VERSION_0_27_0;
 import static org.hiero.mirror.common.util.DomainUtils.EVM_ADDRESS_LENGTH;
-
 import com.google.protobuf.ByteString;
 import jakarta.inject.Named;
 import java.util.List;
@@ -25,77 +23,25 @@ class CryptoCreateTransactionHandler extends AbstractEntityCrudTransactionHandle
 
     private final EVMHookHandler evmHookHandler;
 
-    CryptoCreateTransactionHandler(
-            EntityIdService entityIdService, EntityListener entityListener, EVMHookHandler evmHookHandler) {
+    CryptoCreateTransactionHandler(EntityIdService entityIdService, EntityListener entityListener, EVMHookHandler evmHookHandler) {
         super(entityIdService, entityListener, TransactionType.CRYPTOCREATEACCOUNT);
         this.evmHookHandler = evmHookHandler;
     }
 
     @Override
     public EntityId getEntity(RecordItem recordItem) {
-        return EntityId.of(recordItem.getTransactionRecord().getReceipt().getAccountID());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     protected void doUpdateTransaction(Transaction transaction, RecordItem recordItem) {
-        transaction.setInitialBalance(
-                recordItem.getTransactionBody().getCryptoCreateAccount().getInitialBalance());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
-    @SuppressWarnings({"deprecation", "java:S1874"})
+    @SuppressWarnings({ "deprecation", "java:S1874" })
     protected void doUpdateEntity(Entity entity, RecordItem recordItem) {
-        var transactionRecord = recordItem.getTransactionRecord();
-        var transactionBody = recordItem.getTransactionBody().getCryptoCreateAccount();
-        var alias = DomainUtils.toBytes(
-                transactionRecord.getAlias() != ByteString.EMPTY
-                        ? transactionRecord.getAlias()
-                        : transactionBody.getAlias());
-        boolean emptyAlias = ArrayUtils.isEmpty(alias);
-        var key = transactionBody.hasKey() ? transactionBody.getKey().toByteArray() : null;
-        boolean emptyKey = ArrayUtils.isEmpty(key);
-        entity.setType(EntityType.ACCOUNT);
-
-        if (!emptyAlias) {
-            entity.setAlias(alias);
-            if (emptyKey && alias.length > EVM_ADDRESS_LENGTH) {
-                entity.setKey(alias);
-            }
-        }
-
-        if (!emptyKey) {
-            entity.setKey(key);
-        }
-
-        var evmAddress = transactionRecord.getEvmAddress();
-        if (evmAddress != ByteString.EMPTY) {
-            entity.setEvmAddress(DomainUtils.toBytes(evmAddress));
-        } else if (!emptyAlias) {
-            entity.setEvmAddress(Utility.aliasToEvmAddress(alias));
-        }
-
-        if (transactionBody.hasAutoRenewPeriod()) {
-            entity.setAutoRenewPeriod(transactionBody.getAutoRenewPeriod().getSeconds());
-        }
-
-        if (transactionBody.hasProxyAccountID()) {
-            var proxyAccountId = EntityId.of(transactionBody.getProxyAccountID());
-            entity.setProxyAccountId(proxyAccountId);
-            recordItem.addEntityId(proxyAccountId);
-        }
-
-        entity.setBalance(0L);
-        entity.setBalanceTimestamp(recordItem.getConsensusTimestamp());
-        entity.setMaxAutomaticTokenAssociations(transactionBody.getMaxAutomaticTokenAssociations());
-        entity.setMemo(transactionBody.getMemo());
-        entity.setReceiverSigRequired(transactionBody.getReceiverSigRequired());
-        if (!transactionBody.getDelegationAddress().isEmpty()) {
-            entity.setDelegationAddress(DomainUtils.toBytes(transactionBody.getDelegationAddress()));
-        }
-
-        updateStakingInfo(recordItem, entity);
-        entityListener.onEntity(entity);
-        evmHookHandler.process(recordItem, entity.getId(), transactionBody.getHookCreationDetailsList(), List.of());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private void updateStakingInfo(RecordItem recordItem, Entity entity) {
@@ -104,19 +50,20 @@ class CryptoCreateTransactionHandler extends AbstractEntityCrudTransactionHandle
         }
         var transactionBody = recordItem.getTransactionBody().getCryptoCreateAccount();
         entity.setDeclineReward(transactionBody.getDeclineReward());
-
-        switch (transactionBody.getStakedIdCase()) {
-            case STAKEDID_NOT_SET -> {
-                return;
-            }
-            case STAKED_NODE_ID -> entity.setStakedNodeId(transactionBody.getStakedNodeId());
-            case STAKED_ACCOUNT_ID -> {
-                var accountId = EntityId.of(transactionBody.getStakedAccountId());
-                entity.setStakedAccountId(accountId.getId());
-                recordItem.addEntityId(accountId);
-            }
+        switch(transactionBody.getStakedIdCase()) {
+            case STAKEDID_NOT_SET ->
+                {
+                    return;
+                }
+            case STAKED_NODE_ID ->
+                entity.setStakedNodeId(transactionBody.getStakedNodeId());
+            case STAKED_ACCOUNT_ID ->
+                {
+                    var accountId = EntityId.of(transactionBody.getStakedAccountId());
+                    entity.setStakedAccountId(accountId.getId());
+                    recordItem.addEntityId(accountId);
+                }
         }
-
         entity.setStakePeriodStart(Utility.getEpochDay(recordItem.getConsensusTimestamp()));
     }
 }

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.downloader.block.scheduler;
 
 import java.util.Comparator;
@@ -16,29 +15,25 @@ public final class Latency implements Comparable<Latency> {
     private static final double SMOOTHING_FACTOR = 0.3;
 
     private volatile double average;
+
     private boolean initialized;
+
     private final AtomicBoolean stale = new AtomicBoolean(false);
 
     @Override
     public int compareTo(final Latency other) {
-        return COMPARATOR.compare(this, other);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     double getAverage() {
-        return stale.get() ? Double.MAX_VALUE : average;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     void markStale() {
-        stale.set(true);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     synchronized void record(final long latency) {
-        stale.set(false);
-        if (!initialized) {
-            average = latency;
-            initialized = true;
-        } else {
-            average = SMOOTHING_FACTOR * latency + (1.0 - SMOOTHING_FACTOR) * average;
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

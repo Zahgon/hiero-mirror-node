@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.restjava.jooq;
 
 import jakarta.inject.Named;
@@ -23,15 +22,9 @@ public class DomainRecordMapperProvider implements RecordMapperProvider {
     @Override
     @SuppressWarnings("unchecked")
     public <R extends Record, E> RecordMapper<R, E> provide(RecordType<R> recordType, Class<? extends E> type) {
-        var key = new MapperKey(recordType, type);
-        return (RecordMapper<R, E>) mappers.computeIfAbsent(key, k -> {
-            if (type.getName().startsWith(PACKAGE_PREFIX)) {
-                return new DomainRecordMapper<>(recordType, type);
-            }
-
-            return new DefaultRecordMapper<>(recordType, type);
-        });
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    private record MapperKey(RecordType<?> recordType, Class<?> type) {}
+    private record MapperKey(RecordType<?> recordType, Class<?> type) {
+    }
 }

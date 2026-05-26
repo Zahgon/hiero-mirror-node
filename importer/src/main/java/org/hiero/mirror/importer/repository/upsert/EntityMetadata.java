@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.repository.upsert;
 
 import java.util.Set;
@@ -15,32 +14,28 @@ import org.hiero.mirror.common.domain.Upsertable;
 class EntityMetadata {
 
     private final String tableName;
+
     private final Upsertable upsertable;
+
     private final Set<ColumnMetadata> columns;
 
     public String column(Predicate<ColumnMetadata> filter, String pattern) {
-        return columns.stream()
-                .filter(filter)
-                .findFirst()
-                .map(c -> c.format(pattern))
-                .orElse("");
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public String columns(String pattern) {
-        return columns(c -> true, pattern, ",");
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public String columns(Predicate<ColumnMetadata> filter, String pattern) {
-        return columns(filter, pattern, ",");
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public String columns(Predicate<ColumnMetadata> filter, String pattern, String separator) {
-        return columns.stream().filter(filter).map(c -> c.format(pattern)).collect(Collectors.joining(separator));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public String columns(String defaultPattern, Predicate<ColumnMetadata> predicate, String predicatePattern) {
-        return columns.stream()
-                .map(c -> predicate.test(c) ? c.format(predicatePattern) : c.format(defaultPattern))
-                .collect(Collectors.joining(","));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

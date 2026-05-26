@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.entity;
 
 import java.util.Collection;
@@ -48,80 +47,154 @@ import org.hiero.mirror.importer.exception.ImporterException;
 public interface EntityListener {
 
     default boolean isEnabled() {
-        return true;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    default void onAssessedCustomFee(AssessedCustomFee assessedCustomFee) throws ImporterException {}
+    default void onAssessedCustomFee(AssessedCustomFee assessedCustomFee) throws ImporterException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    default void onContract(Contract contract) {}
+    default void onContract(Contract contract) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    default void onContractAction(ContractAction contractAction) {}
+    default void onContractAction(ContractAction contractAction) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    default void onContractLog(ContractLog contractLog) {}
+    default void onContractLog(ContractLog contractLog) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    default void onContractResult(ContractResult contractResult) throws ImporterException {}
+    default void onContractResult(ContractResult contractResult) throws ImporterException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    default void onContractStateChange(ContractStateChange contractStateChange) {}
+    default void onContractStateChange(ContractStateChange contractStateChange) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    default void onContractTransactions(Collection<ContractTransaction> contractTransactions) {}
+    default void onContractTransactions(Collection<ContractTransaction> contractTransactions) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    default void onCryptoAllowance(CryptoAllowance cryptoAllowance) {}
+    default void onCryptoAllowance(CryptoAllowance cryptoAllowance) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    default void onCustomFee(CustomFee customFee) throws ImporterException {}
+    default void onCustomFee(CustomFee customFee) throws ImporterException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    default void onCryptoTransfer(CryptoTransfer cryptoTransfer) throws ImporterException {}
+    default void onCryptoTransfer(CryptoTransfer cryptoTransfer) throws ImporterException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    default void onEntity(Entity entity) throws ImporterException {}
+    default void onEntity(Entity entity) throws ImporterException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    default void onEntityTransactions(Collection<EntityTransaction> entityTransactions) throws ImporterException {}
+    default void onEntityTransactions(Collection<EntityTransaction> entityTransactions) throws ImporterException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    default void onEthereumTransaction(EthereumTransaction ethereumTransaction) {}
+    default void onEthereumTransaction(EthereumTransaction ethereumTransaction) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    default void onFileData(FileData fileData) throws ImporterException {}
+    default void onFileData(FileData fileData) throws ImporterException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    default void onHook(Hook hook) {}
+    default void onHook(Hook hook) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    default void onHookStorageChange(HookStorageChange storageChange) throws ImporterException {}
+    default void onHookStorageChange(HookStorageChange storageChange) throws ImporterException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    default void onLedger(Ledger ledger) throws ImporterException {}
+    default void onLedger(Ledger ledger) throws ImporterException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    default void onLiveHash(LiveHash liveHash) throws ImporterException {}
+    default void onLiveHash(LiveHash liveHash) throws ImporterException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    default void onNetworkFreeze(NetworkFreeze networkFreeze) {}
+    default void onNetworkFreeze(NetworkFreeze networkFreeze) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    default void onNetworkStake(NetworkStake networkStake) throws ImporterException {}
+    default void onNetworkStake(NetworkStake networkStake) throws ImporterException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    default void onNft(Nft nft) throws ImporterException {}
+    default void onNft(Nft nft) throws ImporterException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    default void onNftAllowance(NftAllowance nftAllowance) {}
+    default void onNftAllowance(NftAllowance nftAllowance) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    default void onNode(Node node) throws ImporterException {}
+    default void onNode(Node node) throws ImporterException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    default void onNodeStake(NodeStake nodeStake) throws ImporterException {}
+    default void onNodeStake(NodeStake nodeStake) throws ImporterException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    default void onPrng(Prng prng) {}
+    default void onPrng(Prng prng) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    default void onRegisteredNode(RegisteredNode registeredNode) throws ImporterException {}
+    default void onRegisteredNode(RegisteredNode registeredNode) throws ImporterException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    default void onSchedule(Schedule schedule) throws ImporterException {}
+    default void onSchedule(Schedule schedule) throws ImporterException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    default void onStakingRewardTransfer(StakingRewardTransfer stakingRewardTransfer) {}
+    default void onStakingRewardTransfer(StakingRewardTransfer stakingRewardTransfer) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    default void onToken(Token token) throws ImporterException {}
+    default void onToken(Token token) throws ImporterException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    default void onTokenAccount(TokenAccount tokenAccount) throws ImporterException {}
+    default void onTokenAccount(TokenAccount tokenAccount) throws ImporterException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    default void onTokenAirdrop(TokenAirdrop tokenAirdrop) {}
+    default void onTokenAirdrop(TokenAirdrop tokenAirdrop) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    default void onTokenAllowance(TokenAllowance tokenAllowance) {}
+    default void onTokenAllowance(TokenAllowance tokenAllowance) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    default void onTokenTransfer(TokenTransfer tokenTransfer) throws ImporterException {}
+    default void onTokenTransfer(TokenTransfer tokenTransfer) throws ImporterException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    default void onTopic(Topic topic) throws ImporterException {}
+    default void onTopic(Topic topic) throws ImporterException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    default void onTopicMessage(TopicMessage topicMessage) throws ImporterException {}
+    default void onTopicMessage(TopicMessage topicMessage) throws ImporterException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    default void onTransaction(Transaction transaction) throws ImporterException {}
+    default void onTransaction(Transaction transaction) throws ImporterException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    default void onTransactionSignature(TransactionSignature transactionSignature) throws ImporterException {}
+    default void onTransactionSignature(TransactionSignature transactionSignature) throws ImporterException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

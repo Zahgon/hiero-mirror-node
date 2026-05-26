@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.publish.transaction.consensus;
 
 import com.hedera.hashgraph.sdk.AccountId;
@@ -18,8 +17,7 @@ import org.hiero.mirror.monitor.publish.transaction.TransactionSupplier;
 import org.hiero.mirror.monitor.util.Utility;
 
 @Data
-public class ConsensusUpdateTopicTransactionSupplier
-        implements TransactionSupplier<TopicUpdateTransaction>, AdminKeyable {
+public class ConsensusUpdateTopicTransactionSupplier implements TransactionSupplier<TopicUpdateTransaction>, AdminKeyable {
 
     private String adminKey;
 
@@ -37,20 +35,6 @@ public class ConsensusUpdateTopicTransactionSupplier
 
     @Override
     public TopicUpdateTransaction get() {
-        TopicUpdateTransaction topicUpdateTransaction = new TopicUpdateTransaction()
-                .setMaxTransactionFee(Hbar.fromTinybars(maxTransactionFee))
-                .setTopicId(TopicId.fromString(topicId))
-                .setTopicMemo(Utility.getMemo("Mirror node updated test topic"));
-
-        if (adminKey != null) {
-            PublicKey key = PublicKey.fromString(adminKey);
-            topicUpdateTransaction.setAdminKey(key).setSubmitKey(key);
-        }
-        if (autoRenewAccountId != null) {
-            topicUpdateTransaction
-                    .setAutoRenewAccountId(AccountId.fromString(autoRenewAccountId))
-                    .setAutoRenewPeriod(autoRenewPeriod);
-        }
-        return topicUpdateTransaction;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

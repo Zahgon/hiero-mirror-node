@@ -1,11 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.downloader.block.cutover;
 
 import static java.util.function.Predicate.not;
 import static org.hiero.mirror.common.domain.StreamType.BLOCK;
 import static org.hiero.mirror.common.domain.StreamType.RECORD;
-
 import com.google.common.base.Stopwatch;
 import jakarta.inject.Named;
 import java.util.Objects;
@@ -36,73 +34,50 @@ import org.springframework.core.annotation.Order;
 public final class CutoverServiceImpl implements CutoverService {
 
     private final BlockProperties blockProperties;
+
     private final CutoverProperties cutoverProperties;
+
     private final AtomicReference<Optional<RecordFile>> lastRecordFile = new AtomicReference<>(Optional.empty());
+
     private final AtomicLong lastSwitchedOrVerified = new AtomicLong(System.currentTimeMillis());
+
     private final RecordDownloaderProperties recordDownloaderProperties;
+
     private final RecordFileRepository recordFileRepository;
+
     private final Stopwatch wrappedRecordBlockStopwatch = Stopwatch.createUnstarted();
 
     @Getter(lazy = true, value = AccessLevel.PRIVATE)
     private final Optional<RecordFile> firstRecordFile = findFirst();
 
     private boolean blockStreamAdvanced;
+
     private StreamType currentType = RECORD;
-    private @Nullable StreamType lastRunType;
-    private @Nullable Long startWrappedRecordBlockConsensusTimestamp;
+
+    @Nullable
+    private StreamType lastRunType;
+
+    @Nullable
+    private Long startWrappedRecordBlockConsensusTimestamp;
 
     @Override
     public synchronized void get(final StreamType streamType, final Runnable task) {
-        if (!isActive(streamType)) {
-            return;
-        }
-
-        lastRunType = streamType;
-        final long lastBlockNumber =
-                getLastRecordFile().map(RecordFile::getIndex).orElse(-1L);
-
-        try {
-            task.run();
-        } finally {
-            if (streamType == BLOCK) {
-                // Track if blocks have been advanced when last run is blockstream, used to fast fallback to
-                // recordstream in first-stage
-                final long currentBlockNumber =
-                        getLastRecordFile().map(RecordFile::getIndex).orElse(-1L);
-                blockStreamAdvanced = currentBlockNumber > lastBlockNumber;
-            }
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public long getNextBlockNumber() {
-        return getLastRecordFile()
-                .map(RecordFile::getIndex)
-                .map(v -> v + 1)
-                .or(() -> Optional.ofNullable(
-                        blockProperties.getImporterProperties().getStartBlockNumber()))
-                .orElse(GENESIS_BLOCK_NUMBER);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public Optional<RecordFile> getLastRecordFile() {
-        return Objects.requireNonNull(lastRecordFile.get())
-                .or(() -> {
-                    final var last = recordFileRepository.findLatest().or(() -> Optional.of(RecordFile.EMPTY));
-                    lastRecordFile.compareAndSet(Optional.empty(), last);
-                    return last;
-                })
-                .filter(not(RecordFile::isEmpty));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void verified(final StreamFile<?> streamFile) {
-        if (streamFile instanceof RecordFile recordFile) {
-            final var copy = (RecordFile) recordFile.copy();
-            copy.clear();
-            lastRecordFile.set(Optional.of(copy));
-            lastSwitchedOrVerified.set(System.currentTimeMillis());
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private static boolean isBlockStream(final Optional<RecordFile> recordFile) {
@@ -113,8 +88,7 @@ public final class CutoverServiceImpl implements CutoverService {
         return recordFileMatch(recordFile, v -> v < BlockStreamReader.VERSION);
     }
 
-    private static boolean recordFileMatch(
-            final Optional<RecordFile> recordFile, final Predicate<Integer> versionMatcher) {
+    private static boolean recordFileMatch(final Optional<RecordFile> recordFile, final Predicate<Integer> versionMatcher) {
         return recordFile.map(RecordFile::getVersion).map(versionMatcher::test).orElse(false);
     }
 
@@ -123,31 +97,24 @@ public final class CutoverServiceImpl implements CutoverService {
     }
 
     private boolean hasCutover() {
-        final var network =
-                recordDownloaderProperties.getCommon().getImporterProperties().getNetwork();
-        return cutoverProperties.getEnabled() != null
-                ? cutoverProperties.getEnabled()
-                : ImporterProperties.HederaNetwork.hasCutover(network);
+        final var network = recordDownloaderProperties.getCommon().getImporterProperties().getNetwork();
+        return cutoverProperties.getEnabled() != null ? cutoverProperties.getEnabled() : ImporterProperties.HederaNetwork.hasCutover(network);
     }
 
     private boolean isActive(final StreamType streamType) {
         if (streamType != BLOCK && streamType != RECORD) {
             throw new IllegalArgumentException("StreamType must be BLOCK or RECORD");
         }
-
         if (!blockProperties.isEnabled() && !recordDownloaderProperties.isEnabled()) {
             // Both are explicitly disabled, skip cutover
             return false;
         }
-
         if (!hasCutover() || isCutoverComplete()) {
             return streamType == BLOCK ? blockProperties.isEnabled() : recordDownloaderProperties.isEnabled();
         }
-
         if (!shouldTryFirstStage() && !isAtSingleStageCutoverHapiVersion()) {
             return streamType == BLOCK ? blockProperties.isEnabled() : recordDownloaderProperties.isEnabled();
         }
-
         updateActiveStreamType();
         return streamType == currentType;
     }
@@ -155,10 +122,7 @@ public final class CutoverServiceImpl implements CutoverService {
     private boolean isAtSingleStageCutoverHapiVersion() {
         // Note the fallback is true when there's no record files, so importer started after the cutover will try to
         // run the final cutover logic
-        return getLastRecordFile()
-                .map(RecordFile::getHapiVersion)
-                .map(version -> version.isGreaterThanOrEqualTo(cutoverProperties.getHapiVersion()))
-                .orElse(true);
+        return getLastRecordFile().map(RecordFile::getHapiVersion).map(version -> version.isGreaterThanOrEqualTo(cutoverProperties.getHapiVersion())).orElse(true);
     }
 
     private boolean isCutoverComplete() {
@@ -166,20 +130,12 @@ public final class CutoverServiceImpl implements CutoverService {
         if (isLastBlockStream) {
             final boolean complete = isRecordStream(getFirstRecordFile());
             if (!blockProperties.isEnabled() && complete) {
-                final var network = recordDownloaderProperties
-                        .getCommon()
-                        .getImporterProperties()
-                        .getNetwork();
-                log.warn(
-                        "Cutover has completed for network {}, please set hiero.mirror.importer.block.enabled=true "
-                                + "and restart",
-                        network);
-
+                final var network = recordDownloaderProperties.getCommon().getImporterProperties().getNetwork();
+                log.warn("Cutover has completed for network {}, please set hiero.mirror.importer.block.enabled=true " + "and restart", network);
                 blockProperties.setEnabled(true);
                 recordDownloaderProperties.setEnabled(false);
             }
         }
-
         return isLastBlockStream;
     }
 
@@ -190,7 +146,6 @@ public final class CutoverServiceImpl implements CutoverService {
             currentType = BLOCK;
             return;
         }
-
         // When blockstream is disabled, recordstream is enabled, and the network expects a cutover
         var nextType = currentType;
         if (shouldTryFirstStage()) {
@@ -203,7 +158,6 @@ public final class CutoverServiceImpl implements CutoverService {
                 lastSwitchedOrVerified.set(System.currentTimeMillis());
             }
         }
-
         if (nextType != currentType) {
             log.info("Switching from {} to {}", currentType, nextType);
             currentType = nextType;
@@ -215,9 +169,7 @@ public final class CutoverServiceImpl implements CutoverService {
             // In case of fallback, ensure recordstream is tried exactly once
             return RECORD;
         }
-
-        final long lastConsensusEnd =
-                getLastRecordFile().map(RecordFile::getConsensusEnd).orElse(-1L);
+        final long lastConsensusEnd = getLastRecordFile().map(RecordFile::getConsensusEnd).orElse(-1L);
         final StreamType nextType;
         if (lastRunType == BLOCK && !blockStreamAdvanced) {
             // Fast fallback to recordstream if the last run was blockstream and it didn't advance
@@ -237,7 +189,6 @@ public final class CutoverServiceImpl implements CutoverService {
                 nextType = elapsed.toNanos() > firstStage.getMaxLatency().toNanos() + processed ? RECORD : BLOCK;
             }
         }
-
         if (nextType == BLOCK) {
             if (startWrappedRecordBlockConsensusTimestamp == null) {
                 startWrappedRecordBlockConsensusTimestamp = lastConsensusEnd + 1L;
@@ -246,7 +197,6 @@ public final class CutoverServiceImpl implements CutoverService {
         } else {
             startWrappedRecordBlockConsensusTimestamp = null;
         }
-
         return nextType;
     }
 
@@ -255,10 +205,6 @@ public final class CutoverServiceImpl implements CutoverService {
         if (!firstStage.isEnabled()) {
             return false;
         }
-
-        return getLastRecordFile()
-                .map(RecordFile::getHapiVersion)
-                .map(version -> version.isGreaterThanOrEqualTo(firstStage.getHapiVersion()))
-                .orElse(false);
+        return getLastRecordFile().map(RecordFile::getHapiVersion).map(version -> version.isGreaterThanOrEqualTo(firstStage.getHapiVersion())).orElse(false);
     }
 }

@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.evm.properties;
 
 import static org.hiero.mirror.web3.viewmodel.ContractCallRequest.ADDRESS_LENGTH;
-
 import java.util.HashSet;
 import java.util.Set;
 import lombok.Data;
@@ -27,10 +25,10 @@ public class TraceProperties {
     private Set<State> status = new HashSet<>();
 
     public boolean stateFilterCheck(State state) {
-        return !getStatus().isEmpty() && !getStatus().contains(state);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public boolean contractFilterCheck(String contract) {
-        return !getContract().isEmpty() && !getContract().contains(contract);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

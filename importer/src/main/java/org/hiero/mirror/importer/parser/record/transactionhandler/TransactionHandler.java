@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.transactionhandler;
 
 import com.hederahashgraph.api.proto.java.ContractFunctionResult;
@@ -23,7 +22,7 @@ public interface TransactionHandler {
      * @return main entity associated with this transaction
      */
     default EntityId getEntity(RecordItem recordItem) {
-        return null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -36,23 +35,13 @@ public interface TransactionHandler {
      * in the ContractCallResult / ContractCreateResult in transaction record
      */
     default void updateContractResult(ContractResult contractResult, RecordItem recordItem) {
-        var record = recordItem.getTransactionRecord();
-        var contractFunctionResult =
-                record.hasContractCallResult() ? record.getContractCallResult() : record.getContractCreateResult();
-        if (ContractFunctionResult.getDefaultInstance().equals(contractFunctionResult)) {
-            return;
-        }
-
-        // amount, gasLimit and functionParameters were missing from record proto prior to HAPI v0.25
-        // for contract call, contract create, and ethereum transaction (only in blockstreams), the values are set from
-        // the transaction body in the related transaction handlers
-        contractResult.setAmount(contractFunctionResult.getAmount());
-        contractResult.setGasLimit(contractFunctionResult.getGas());
-        contractResult.setFunctionParameters(DomainUtils.toBytes(contractFunctionResult.getFunctionParameters()));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
      * Override to update fields of the Transaction's (domain) fields.
      */
-    default void updateTransaction(Transaction transaction, RecordItem recordItem) {}
+    default void updateTransaction(Transaction transaction, RecordItem recordItem) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

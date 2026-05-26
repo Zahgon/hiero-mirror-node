@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.transaction;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -17,7 +16,8 @@ import org.hiero.mirror.common.converter.EntityIdConverter;
 import org.hiero.mirror.common.domain.entity.EntityId;
 import org.springframework.data.domain.Persistable;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE) // For Builder
+// For Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 @Data
 @Entity
@@ -43,22 +43,22 @@ public class TransactionSignature implements Persistable<TransactionSignature.Id
     @Override
     @JsonIgnore
     public TransactionSignature.Id getId() {
-        TransactionSignature.Id transactionSignatureId = new TransactionSignature.Id();
-        transactionSignatureId.setConsensusTimestamp(consensusTimestamp);
-        transactionSignatureId.setPublicKeyPrefix(publicKeyPrefix);
-        return transactionSignatureId;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @JsonIgnore
     @Override
     public boolean isNew() {
-        return true;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Data
     public static class Id implements Serializable {
+
         private static final long serialVersionUID = -8758644338990079234L;
+
         private long consensusTimestamp;
+
         private byte[] publicKeyPrefix;
     }
 }

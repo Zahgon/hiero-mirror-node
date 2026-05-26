@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.restjava.config;
 
 import com.google.protobuf.ExtensionRegistry;
@@ -29,47 +28,21 @@ class RestJavaConfiguration {
 
     @PostConstruct
     void initialize() {
-        // Register application converters to use case-insensitive string to enum converter.
-        ApplicationConversionService.addApplicationConverters(mvcConversionService);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Bean
     DefaultConfigurationCustomizer configurationCustomizer(DomainRecordMapperProvider domainRecordMapperProvider) {
-        return c -> c.set(domainRecordMapperProvider).settings().withRenderSchema(false);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Bean
     FilterRegistrationBean<ShallowEtagHeaderFilter> etagFilter() {
-        final var filterRegistrationBean = new FilterRegistrationBean<>(new ShallowEtagHeaderFilter());
-        filterRegistrationBean.addUrlPatterns("/api/*");
-        return filterRegistrationBean;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Bean
     ProtobufHttpMessageConverter protobufHttpMessageConverter() {
-        final var protobufMediaType = new MediaType("application", "protobuf");
-        final var extensionRegistry = ExtensionRegistry.newInstance();
-
-        final var converter = new ProtobufHttpMessageConverter() {
-            @Override
-            protected Message readInternal(Class<? extends Message> clazz, HttpInputMessage inputMessage)
-                    throws IOException, HttpMessageNotReadableException {
-                final var message = super.readInternal(clazz, inputMessage);
-                final var contentType = inputMessage.getHeaders().getContentType();
-
-                if (protobufMediaType.isCompatibleWith(contentType)) {
-                    return message.toBuilder()
-                            .mergeFrom(inputMessage.getBody(), extensionRegistry)
-                            .build();
-                }
-
-                return message;
-            }
-        };
-
-        final var mediaTypes = new ArrayList<>(converter.getSupportedMediaTypes());
-        mediaTypes.add(protobufMediaType);
-        converter.setSupportedMediaTypes(mediaTypes);
-        return converter;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

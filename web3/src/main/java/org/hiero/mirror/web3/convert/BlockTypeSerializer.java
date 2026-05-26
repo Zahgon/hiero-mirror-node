@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.convert;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -12,10 +11,6 @@ public class BlockTypeSerializer extends JsonSerializer<BlockType> {
 
     @Override
     public void serialize(BlockType value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-        if (value != null) {
-            gen.writeString(value.name());
-        } else {
-            gen.writeNull();
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

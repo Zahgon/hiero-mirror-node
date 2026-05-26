@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.evm.contracts.operations;
 
 import jakarta.inject.Named;
@@ -40,34 +39,7 @@ class MirrorBlockHashOperation extends BlockHashOperation {
 
     @Override
     public OperationResult execute(final MessageFrame frame, final EVM evm) {
-        final long cost = gasCalculator().getBlockHashOperationGasCost();
-        if (frame.getRemainingGas() < cost) {
-            return new OperationResult(cost, ExceptionalHaltReason.INSUFFICIENT_GAS);
-        }
-
-        final Bytes blockArg = frame.popStackItem().trimLeadingZeros();
-        // Short-circuit if value is unreasonably large
-        if (blockArg.size() > 8) {
-            frame.pushStackItem(UInt256.ZERO);
-            return new OperationResult(cost, null);
-        }
-
-        final long soughtBlock = blockArg.toLong();
-        final BlockValues blockValues = frame.getBlockValues();
-        final long currentBlockNumber = blockValues.getNumber();
-
-        if (currentBlockNumber <= 0 || soughtBlock > currentBlockNumber) {
-            frame.pushStackItem(Bytes32.ZERO);
-        } else if (currentBlockNumber == soughtBlock) {
-            final var latestBlock = ContractCallContext.get().getRecordFile();
-            final var blockHash = getBlockHash(latestBlock);
-            frame.pushStackItem(blockHash);
-        } else {
-            final Hash blockHash = getBlockHash(soughtBlock);
-            frame.pushStackItem(blockHash);
-        }
-
-        return new OperationResult(cost, null);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private Hash getBlockHash(long blockNumber) {

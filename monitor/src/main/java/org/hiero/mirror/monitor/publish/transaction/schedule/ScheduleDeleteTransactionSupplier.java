@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.publish.transaction.schedule;
 
 import com.hedera.hashgraph.sdk.Hbar;
@@ -12,6 +11,7 @@ import org.hiero.mirror.monitor.publish.transaction.TransactionSupplier;
 
 @Data
 public class ScheduleDeleteTransactionSupplier implements TransactionSupplier<ScheduleDeleteTransaction> {
+
     @NotBlank
     private String scheduleId;
 
@@ -20,8 +20,6 @@ public class ScheduleDeleteTransactionSupplier implements TransactionSupplier<Sc
 
     @Override
     public ScheduleDeleteTransaction get() {
-        return new ScheduleDeleteTransaction()
-                .setMaxTransactionFee(Hbar.fromTinybars(maxTransactionFee))
-                .setScheduleId(ScheduleId.fromString(scheduleId));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

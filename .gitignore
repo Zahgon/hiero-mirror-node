@@ -174,3 +174,8 @@ web3/src/testHistorical/solidity/openzeppelin
 # AI
 .claude/settings.local.json
 .claude/worktrees
+
+.aider*
+logs/
+.commit0_scripts/
+.github/workflows/

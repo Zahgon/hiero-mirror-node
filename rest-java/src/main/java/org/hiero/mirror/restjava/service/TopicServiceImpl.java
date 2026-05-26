@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.restjava.service;
 
 import jakarta.inject.Named;
@@ -17,6 +16,6 @@ final class TopicServiceImpl implements TopicService {
 
     @Override
     public Topic findById(EntityId id) {
-        return topicRepository.findById(id.getId()).orElseThrow(() -> new EntityNotFoundException("Topic not found"));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

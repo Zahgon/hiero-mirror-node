@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package com.swirlds.state.spi;
 
 import java.util.Map;
@@ -45,7 +44,7 @@ public abstract class WritableKVStateBase<K, V> extends ReadableKVStateBase<K, V
      * cast and commit unless you own the instance!
      */
     public void commit() {
-        // Do nothing since we do not want to propagate any changes to the underlying datasource.
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -56,51 +55,50 @@ public abstract class WritableKVStateBase<K, V> extends ReadableKVStateBase<K, V
      */
     @Override
     public final void reset() {
-        super.reset();
-        getWriteCacheState().clear();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Nullable
     public final V get(@NonNull K key) {
-        // If there is a modification, then we've already done a "put" or "remove"
-        // and should return based on the modification
-        final var writeCache = getWriteCacheState();
-        if (writeCache.containsKey(key)) {
-            return (V) writeCache.get(key);
-        } else {
-            return super.get(key);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Nullable
     @Override
     public V getOriginalValue(@NonNull K key) {
-        return super.get(key);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final void put(@NonNull final K key, @NonNull final V value) {
-        Objects.requireNonNull(key);
-        Objects.requireNonNull(value);
-        getWriteCacheState().put(key, value);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final void remove(@NonNull final K key) {
-        Objects.requireNonNull(key);
-        getWriteCacheState().put(key, null);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @NonNull
     @Override
     public final Set<K> modifiedKeys() {
-        return (Set<K>) getWriteCacheState().keySet();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -122,11 +120,9 @@ public abstract class WritableKVStateBase<K, V> extends ReadableKVStateBase<K, V
         final var sizeOfBackingMap = sizeOfDataSource();
         int numAdditions = 0;
         int numRemovals = 0;
-
         for (final var mod : getWriteCacheState().entrySet()) {
             boolean isPresentInBackingMap = readFromDataSource((K) mod.getKey()) != null;
             boolean isRemovedInMod = mod.getValue() == null;
-
             if (isPresentInBackingMap && isRemovedInMod) {
                 numRemovals++;
             } else if (!isPresentInBackingMap && !isRemovedInMod) {

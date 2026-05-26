@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.state;
 
 import static com.hedera.node.app.service.contract.impl.schemas.V065ContractSchema.EVM_HOOK_STATES_STATE_ID;
@@ -11,7 +10,6 @@ import static com.hedera.node.app.service.schedule.impl.schemas.V0570ScheduleSch
 import static com.hedera.node.app.service.token.impl.schemas.V0490TokenSchema.STAKING_NETWORK_REWARDS_STATE_ID;
 import static com.hedera.node.app.service.token.impl.schemas.V0610TokenSchema.NODE_REWARDS_STATE_ID;
 import static com.hedera.node.app.state.recordcache.schemas.V0490RecordCacheSchema.TRANSACTION_RECEIPTS_STATE_ID;
-
 import com.google.common.annotations.VisibleForTesting;
 import com.hedera.node.app.service.contract.ContractService;
 import com.hedera.node.app.service.entityid.EntityIdService;
@@ -50,13 +48,13 @@ import org.jspecify.annotations.NonNull;
 public class MirrorNodeState implements State {
 
     private final Map<String, ReadableStates> readableStates = new ConcurrentHashMap<>();
+
     private final Map<String, WritableStates> writableStates = new ConcurrentHashMap<>();
 
     // Key is Service, value is Map of state name to state datasource
     private final Map<String, Map<Integer, Object>> states = new HashMap<>();
 
-    public MirrorNodeState(
-            final List<SingletonState<?>> singletonStates, final List<AbstractReadableKVState<?, ?>> readableKVStates) {
+    public MirrorNodeState(final List<SingletonState<?>> singletonStates, final List<AbstractReadableKVState<?, ?>> readableKVStates) {
         initSingletonStates(singletonStates);
         initKVStates(readableKVStates);
         initQueueStates();
@@ -65,106 +63,46 @@ public class MirrorNodeState implements State {
     @NonNull
     @Override
     public ReadableStates getReadableStates(@NonNull String serviceName) {
-        return readableStates.computeIfAbsent(serviceName, s -> {
-            final var serviceStates = this.states.get(s);
-            if (serviceStates == null) {
-                return new MapReadableStates(new HashMap<>());
-            }
-            final Map<Integer, Object> data = new ConcurrentHashMap<>();
-            for (final var entry : serviceStates.entrySet()) {
-                final var stateId = entry.getKey();
-                final var state = entry.getValue();
-                if (state instanceof Queue<?> queue) {
-                    data.put(stateId, new ListReadableQueueState<>(serviceName, stateId, queue));
-                } else if (state instanceof ReadableKVState<?, ?> kvState) {
-                    data.put(stateId, kvState);
-                } else if (state instanceof SingletonState<?> singleton) {
-                    data.put(stateId, new FunctionReadableSingletonState<>(serviceName, stateId, singleton));
-                }
-            }
-            return new MapReadableStates(data);
-        });
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @NonNull
     @Override
     public WritableStates getWritableStates(@NonNull String serviceName) {
-        return writableStates.computeIfAbsent(serviceName, s -> {
-            final var serviceStates = states.get(s);
-            if (serviceStates == null) {
-                return new EmptyWritableStates();
-            }
-            final Map<Integer, Object> data = new ConcurrentHashMap<>();
-            for (final var entry : serviceStates.entrySet()) {
-                final var stateId = entry.getKey();
-                final var state = entry.getValue();
-                if (state instanceof Queue<?> queue) {
-                    data.put(stateId, new ListWritableQueueState<>(serviceName, stateId, queue));
-                } else if (state instanceof ReadableKVState<?, ?>) {
-                    data.put(
-                            stateId,
-                            new MapWritableKVState<>(
-                                    serviceName,
-                                    stateId,
-                                    getReadableStates(serviceName).get(stateId)));
-                } else if (state instanceof SingletonState<?> ref) {
-                    data.put(stateId, new FunctionWritableSingletonState<>(serviceName, stateId, ref));
-                }
-            }
-            return new MapWritableStates(data, () -> readableStates.remove(serviceName));
-        });
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void setHash(Hash hash) {
-        // No-op
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        MirrorNodeState that = (MirrorNodeState) o;
-        return Objects.equals(readableStates, that.readableStates)
-                && Objects.equals(writableStates, that.writableStates)
-                && Objects.equals(states, that.states);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(readableStates, writableStates, states);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @VisibleForTesting
     Map<String, Map<Integer, Object>> getStates() {
-        return Collections.unmodifiableMap(states);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private void initSingletonStates(final List<SingletonState<?>> singletonStates) {
         singletonStates.add(new DefaultSingleton(EntityIdService.NAME, HIGHEST_NODE_ID_STATE_ID));
         singletonStates.add(new DefaultSingleton(TokenService.NAME, STAKING_NETWORK_REWARDS_STATE_ID));
         singletonStates.add(new DefaultSingleton(TokenService.NAME, NODE_REWARDS_STATE_ID));
-        singletonStates.forEach(
-                singletonState -> states.computeIfAbsent(singletonState.getServiceName(), k -> new HashMap<>())
-                        .put(singletonState.getStateId(), singletonState));
+        singletonStates.forEach(singletonState -> states.computeIfAbsent(singletonState.getServiceName(), k -> new HashMap<>()).put(singletonState.getStateId(), singletonState));
     }
 
     private void initKVStates(final List<AbstractReadableKVState<?, ?>> readableKVStates) {
-        readableKVStates.forEach(kvState -> states.computeIfAbsent(kvState.getServiceName(), k -> new HashMap<>())
-                .put(kvState.getStateId(), kvState));
-        final var defaultKvImplementations = Map.of(
-                EVM_HOOK_STORAGE_STATE_ID, ContractService.NAME,
-                EVM_HOOK_STATES_STATE_ID, ContractService.NAME,
-                SCHEDULE_ID_BY_EQUALITY_STATE_ID, ScheduleService.NAME,
-                SCHEDULED_COUNTS_STATE_ID, ScheduleService.NAME,
-                SCHEDULED_USAGES_STATE_ID, ScheduleService.NAME);
-        defaultKvImplementations.forEach(
-                (stateId, serviceName) -> states.computeIfAbsent(serviceName, k -> new HashMap<>())
-                        .put(stateId, createMapReadableStateForId(serviceName, stateId)));
+        readableKVStates.forEach(kvState -> states.computeIfAbsent(kvState.getServiceName(), k -> new HashMap<>()).put(kvState.getStateId(), kvState));
+        final var defaultKvImplementations = Map.of(EVM_HOOK_STORAGE_STATE_ID, ContractService.NAME, EVM_HOOK_STATES_STATE_ID, ContractService.NAME, SCHEDULE_ID_BY_EQUALITY_STATE_ID, ScheduleService.NAME, SCHEDULED_COUNTS_STATE_ID, ScheduleService.NAME, SCHEDULED_USAGES_STATE_ID, ScheduleService.NAME);
+        defaultKvImplementations.forEach((stateId, serviceName) -> states.computeIfAbsent(serviceName, k -> new HashMap<>()).put(stateId, createMapReadableStateForId(serviceName, stateId)));
     }
 
     private void initQueueStates() {

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.restjava.dto;
 
 import java.util.List;
@@ -31,7 +30,6 @@ public class NftAllowanceRequest {
     private Bound tokenIds = Bound.EMPTY;
 
     public List<Bound> getBounds() {
-        var primaryBound = !ownerOrSpenderIds.isEmpty() ? ownerOrSpenderIds : tokenIds;
-        return tokenIds.isEmpty() ? List.of(primaryBound) : List.of(primaryBound, tokenIds);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

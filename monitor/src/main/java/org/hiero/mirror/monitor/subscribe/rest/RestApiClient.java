@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.subscribe.rest;
 
 import jakarta.inject.Named;
@@ -22,9 +21,11 @@ import reactor.core.publisher.Mono;
 public class RestApiClient {
 
     private static final String NETWORK = "/network/";
+
     private static final String PREFIX = "/api/v1";
 
     private final WebClient webClientRest;
+
     private final WebClient webClientRestJava;
 
     public RestApiClient(MonitorProperties monitorProperties, WebClient.Builder webClientBuilder) {
@@ -32,39 +33,21 @@ public class RestApiClient {
         final var restJava = monitorProperties.getMirrorNode().getRestJava();
         final var restUrl = rest.getBaseUrl();
         final var restJavaUrl = restJava != null ? restJava.getBaseUrl() : rest.getBaseUrl();
-        webClientRest = webClientBuilder
-                .baseUrl(restUrl)
-                .defaultHeaders(h -> h.setAccept(List.of(MediaType.APPLICATION_JSON)))
-                .build();
-        webClientRestJava = Objects.equals(restUrl, restJavaUrl)
-                ? webClientRest
-                : webClientRest.mutate().baseUrl(restJavaUrl).build();
+        webClientRest = webClientBuilder.baseUrl(restUrl).defaultHeaders(h -> h.setAccept(List.of(MediaType.APPLICATION_JSON))).build();
+        webClientRestJava = Objects.equals(restUrl, restJavaUrl) ? webClientRest : webClientRest.mutate().baseUrl(restJavaUrl).build();
         log.info("Connecting to mirror node REST API {}", restUrl);
         log.info("Connecting to mirror node REST Java API {}", restJavaUrl);
     }
 
     public <T> Mono<T> retrieve(Class<T> responseClass, String uri, Object... parameters) {
-        final var webClient = uri.contains(NETWORK) ? webClientRestJava : webClientRest;
-        return webClient
-                .get()
-                .uri(uri.replace(PREFIX, StringUtils.EMPTY), parameters)
-                .retrieve()
-                .bodyToMono(responseClass)
-                .onErrorResume(Mono::error) // Needed for some reason to avoid onErrorDropped
-                .name("rest");
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public Flux<NetworkNode> getNodes() {
-        var next = new AtomicReference<>("/network/nodes?limit=25");
-
-        return Flux.defer(() -> retrieve(NetworkNodesResponse.class, next.get())
-                        .doOnNext(r ->
-                                next.set(r.getLinks() != null ? r.getLinks().getNext() : null))
-                        .flatMapIterable(NetworkNodesResponse::getNodes))
-                .repeat(() -> StringUtils.isNotBlank(next.get()));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public Mono<HttpStatusCode> getNetworkStakeStatusCode() {
-        return webClientRestJava.get().uri("/network/stake").exchangeToMono(r -> Mono.just(r.statusCode()));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

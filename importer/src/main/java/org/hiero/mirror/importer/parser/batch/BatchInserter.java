@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.batch;
 
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -39,29 +38,26 @@ import org.springframework.jdbc.datasource.DataSourceUtils;
 public class BatchInserter implements BatchPersister {
 
     protected final DataSource dataSource;
+
     protected final Timer latencyMetric;
+
     protected final MeterRegistry meterRegistry;
+
     protected final String tableName;
 
     private final Counter rowsMetric;
+
     private final String sql;
+
     private final ObjectWriter writer;
+
     private final CommonParserProperties properties;
 
-    public BatchInserter(
-            Class<?> entityClass,
-            DataSource dataSource,
-            MeterRegistry meterRegistry,
-            CommonParserProperties properties) {
+    public BatchInserter(Class<?> entityClass, DataSource dataSource, MeterRegistry meterRegistry, CommonParserProperties properties) {
         this(entityClass, dataSource, meterRegistry, properties, entityClass.getSimpleName());
     }
 
-    public BatchInserter(
-            Class<?> entityClass,
-            DataSource dataSource,
-            MeterRegistry meterRegistry,
-            CommonParserProperties properties,
-            String tableName) {
+    public BatchInserter(Class<?> entityClass, DataSource dataSource, MeterRegistry meterRegistry, CommonParserProperties properties, String tableName) {
         this.dataSource = dataSource;
         this.properties = properties;
         this.meterRegistry = meterRegistry;
@@ -77,61 +73,20 @@ public class BatchInserter implements BatchPersister {
         mapper.configure(CsvGenerator.Feature.ALWAYS_QUOTE_EMPTY_STRINGS, true);
         var schema = mapper.schemaFor(entityClass);
         writer = mapper.writer(schema);
-        String columnsCsv = Lists.newArrayList(schema.iterator()).stream()
-                .map(CsvSchema.Column::getName)
-                .distinct()
-                .map(name -> CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name))
-                .collect(Collectors.joining(", "));
+        String columnsCsv = Lists.newArrayList(schema.iterator()).stream().map(CsvSchema.Column::getName).distinct().map(name -> CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name)).collect(Collectors.joining(", "));
         sql = String.format("COPY %s(%s) FROM STDIN WITH CSV", this.tableName, columnsCsv);
-        var parentTableName = this.tableName.replaceAll("_\\d+$", ""); // Strip _01 shard suffix
-        latencyMetric = Timer.builder(LATENCY_METRIC)
-                .description("The time it took to batch insert rows")
-                .tag("table", parentTableName)
-                .tag("upsert", "false")
-                .register(meterRegistry);
-        rowsMetric = Counter.builder("hiero.mirror.importer.batch.rows")
-                .description("The number of rows inserted into the table")
-                .tag("table", parentTableName)
-                .register(meterRegistry);
+        // Strip _01 shard suffix
+        var parentTableName = this.tableName.replaceAll("_\\d+$", "");
+        latencyMetric = Timer.builder(LATENCY_METRIC).description("The time it took to batch insert rows").tag("table", parentTableName).tag("upsert", "false").register(meterRegistry);
+        rowsMetric = Counter.builder("hiero.mirror.importer.batch.rows").description("The number of rows inserted into the table").tag("table", parentTableName).register(meterRegistry);
     }
 
     @Override
     public void persist(Collection<? extends Object> items) {
-        if (items == null || items.isEmpty()) {
-            return;
-        }
-
-        Connection connection = DataSourceUtils.getConnection(dataSource);
-
-        try {
-            Stopwatch stopwatch = Stopwatch.createStarted();
-            persistItems(items, connection);
-            log.info("Copied {} rows to {} table in {}", items.size(), tableName, stopwatch);
-        } catch (Exception e) {
-            throw new ParserException(String.format("Error copying %d items to table %s", items.size(), tableName), e);
-        } finally {
-            DataSourceUtils.releaseConnection(connection, dataSource);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     protected void persistItems(Collection<?> items, Connection connection) throws SQLException, IOException {
-        var stopwatch = Stopwatch.createStarted();
-        PGConnection pgConnection = connection.unwrap(PGConnection.class);
-        CopyIn copyIn = pgConnection.getCopyAPI().copyIn(sql);
-
-        if (log.isTraceEnabled()) {
-            String csv = writer.writeValueAsString(items);
-            log.trace("Generated SQL: {}\n{}", sql, csv);
-        }
-
-        try (var pgCopyOutputStream = new PGCopyOutputStream(copyIn, properties.getBufferSize())) {
-            writer.writeValue(pgCopyOutputStream, items);
-            rowsMetric.increment(items.size());
-            latencyMetric.record(stopwatch.elapsed());
-        } finally {
-            if (copyIn.isActive()) {
-                copyIn.cancelCopy();
-            }
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

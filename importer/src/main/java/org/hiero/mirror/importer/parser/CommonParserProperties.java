@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser;
 
 import jakarta.validation.Valid;
@@ -41,7 +40,8 @@ import org.springframework.validation.annotation.Validated;
 public class CommonParserProperties {
 
     @Min(8192)
-    private int bufferSize = 32768; // tested max byte size of buffer used by PGCopyOutputStream
+    private int // tested max byte size of buffer used by PGCopyOutputStream
+    bufferSize = 32768;
 
     @NotNull
     @Valid
@@ -55,7 +55,7 @@ public class CommonParserProperties {
     private final Predicate<TransactionFilterFields> filter = includeFilter().and(excludeFilter());
 
     public boolean hasFilter() {
-        return (!exclude.isEmpty()) || (!include.isEmpty());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private Predicate<TransactionFilterFields> excludeFilter() {
@@ -101,19 +101,17 @@ public class CommonParserProperties {
                     throw new InvalidConfigurationException("Transaction filter expression failed to parse", ex);
                 }
             }
-
             return null;
         }
 
         Predicate<TransactionFilterFields> getFilter() {
-            return t -> matches(t) && matches(t.getEntities()) && matchesExpression(t.getRecordItem());
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         private boolean matches(TransactionFilterFields t) {
             if (transaction.isEmpty()) {
                 return true;
             }
-
             return transaction.contains(TransactionType.of(t.getRecordItem().getTransactionType()));
         }
 
@@ -121,7 +119,6 @@ public class CommonParserProperties {
             if (entity.isEmpty()) {
                 return true;
             }
-
             return entities != null && CollectionUtils.containsAny(entity, entities);
         }
 
@@ -130,13 +127,11 @@ public class CommonParserProperties {
             if (expressionParsed == null) {
                 return true;
             }
-
             try {
                 Boolean result = expressionParsed.getValue(evaluationContext, recordItem, Boolean.class);
                 return Objects.requireNonNullElse(result, false);
             } catch (EvaluationException ex) {
-                throw new InvalidConfigurationException(
-                        "Transaction filter expression failed to evaluate: " + expression, ex);
+                throw new InvalidConfigurationException("Transaction filter expression failed to evaluate: " + expression, ex);
             }
         }
     }
@@ -154,10 +149,7 @@ public class CommonParserProperties {
 
         @Override
         public boolean canRead(EvaluationContext context, Object target, String name) throws AccessException {
-            if (target instanceof RecordItem && !ACCESSIBLE_PROPERTIES.contains(name)) {
-                return false;
-            }
-            return super.canRead(context, target, name);
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
     }
 
@@ -168,7 +160,7 @@ public class CommonParserProperties {
 
         @Override
         public Class<?> findType(String typeName) throws EvaluationException {
-            throw new SpelEvaluationException(SpelMessage.TYPE_NOT_FOUND, typeName);
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
     }
 }

@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.entity;
 
 import static java.util.stream.Collectors.toMap;
-
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -26,34 +24,14 @@ import org.hiero.mirror.common.domain.transaction.Transaction;
 class DomainClassComparator implements Comparator<Class<?>> {
 
     // Potentially we could add a dependsOn parameter to @Upsertable and inject the EntityMetadataRegistry for this
-    static final List<Class<?>> ORDER = List.of(
-            Token.class, // Token should persist before TokenAccount
-            TokenAccount.class,
-            Nft.class, // The next 3 should persist before DissociateTokenTransfer
-            Transaction.class,
-            TokenTransfer.class,
-            DissociateTokenTransfer.class);
+    static final List<Class<?>> ORDER = List.of(// Token should persist before TokenAccount
+    Token.class, TokenAccount.class, // The next 3 should persist before DissociateTokenTransfer
+    Nft.class, Transaction.class, TokenTransfer.class, DissociateTokenTransfer.class);
 
-    private static final Map<Class<?>, Integer> ORDER_MAP =
-            IntStream.range(0, ORDER.size()).boxed().collect(toMap(ORDER::get, Function.identity()));
+    private static final Map<Class<?>, Integer> ORDER_MAP = IntStream.range(0, ORDER.size()).boxed().collect(toMap(ORDER::get, Function.identity()));
 
     @Override
     public int compare(Class<?> left, Class<?> right) {
-        if (Objects.equals(left, right)) {
-            return 0;
-        }
-
-        var leftOrder = ORDER_MAP.get(left);
-        var rightOrder = ORDER_MAP.get(right);
-
-        if (leftOrder != null && rightOrder != null) {
-            return leftOrder - rightOrder;
-        } else if (leftOrder != null) {
-            return 1;
-        } else if (rightOrder != null) {
-            return -1;
-        }
-
-        return left.getSimpleName().compareTo(right.getSimpleName());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

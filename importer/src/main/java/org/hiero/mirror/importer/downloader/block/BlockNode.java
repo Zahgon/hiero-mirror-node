@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.downloader.block;
 
 import static com.hedera.hapi.block.stream.protoc.BlockItem.ItemCase.BLOCK_HEADER;
-
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Range;
 import com.hedera.hapi.block.stream.protoc.BlockItem;
@@ -45,20 +43,22 @@ import org.jspecify.annotations.Nullable;
 @NullMarked
 public final class BlockNode implements AutoCloseable, Comparable<BlockNode> {
 
-    public static final Comparator<BlockNode> LATENCY_COMPARATOR = Comparator.comparing(BlockNode::getLatency)
-            .thenComparing(b -> b.getProperties().getHost())
-            .thenComparing(b -> b.getProperties().getPort())
-            .thenComparing(b -> b.getProperties().isRequiresTls());
+    public static final Comparator<BlockNode> LATENCY_COMPARATOR = Comparator.comparing(BlockNode::getLatency).thenComparing(b -> b.getProperties().getHost()).thenComparing(b -> b.getProperties().getPort()).thenComparing(b -> b.getProperties().isRequiresTls());
 
     static final String ERROR_METRIC_NAME = "hiero.mirror.importer.stream.error";
 
     private static final Comparator<BlockNode> COMPARATOR = Comparator.comparing(BlockNode::getProperties);
+
     private static final Range<Long> EMPTY_BLOCK_RANGE = Range.closedOpen(0L, 0L);
+
     private static final ServerStatusRequest SERVER_STATUS_REQUEST = ServerStatusRequest.getDefaultInstance();
 
     private final ManagedChannel channel;
+
     private final AtomicInteger errors = new AtomicInteger();
+
     private final Consumer<BlockingClientCall<?, ?>> grpcBufferDisposer;
+
     private final String name;
 
     @Getter
@@ -68,6 +68,7 @@ public final class BlockNode implements AutoCloseable, Comparable<BlockNode> {
     private final BlockNodeProperties properties;
 
     private final AtomicReference<Instant> readmitTime = new AtomicReference<>(Instant.now());
+
     private final StreamProperties streamProperties;
 
     private final Counter errorsMetric;
@@ -75,132 +76,41 @@ public final class BlockNode implements AutoCloseable, Comparable<BlockNode> {
     @Getter
     private boolean active = true;
 
-    public BlockNode(
-            final ManagedChannelBuilderProvider channelBuilderProvider,
-            final Consumer<BlockingClientCall<?, ?>> grpcBufferDisposer,
-            final MeterRegistry meterRegistry,
-            final BlockNodeProperties properties,
-            final StreamProperties streamProperties) {
-        final int maxInboundMessageSize =
-                (int) streamProperties.getMaxStreamResponseSize().toBytes();
-        this.channel = channelBuilderProvider
-                .get(properties.getHost(), properties.getPort(), properties.isRequiresTls())
-                .maxInboundMessageSize(maxInboundMessageSize)
-                .build();
-
+    public BlockNode(final ManagedChannelBuilderProvider channelBuilderProvider, final Consumer<BlockingClientCall<?, ?>> grpcBufferDisposer, final MeterRegistry meterRegistry, final BlockNodeProperties properties, final StreamProperties streamProperties) {
+        final int maxInboundMessageSize = (int) streamProperties.getMaxStreamResponseSize().toBytes();
+        this.channel = channelBuilderProvider.get(properties.getHost(), properties.getPort(), properties.isRequiresTls()).maxInboundMessageSize(maxInboundMessageSize).build();
         this.grpcBufferDisposer = grpcBufferDisposer;
         this.name = String.format("BlockNode(%s)", properties.getEndpoint());
         this.properties = properties;
         this.streamProperties = streamProperties;
-        this.errorsMetric = Counter.builder(ERROR_METRIC_NAME)
-                .description("The number of errors that occurred while streaming from a particular block node.")
-                .tag("type", StreamType.BLOCK.toString())
-                .tag("block_node", properties.getEndpoint())
-                .register(meterRegistry);
+        this.errorsMetric = Counter.builder(ERROR_METRIC_NAME).description("The number of errors that occurred while streaming from a particular block node.").tag("type", StreamType.BLOCK.toString()).tag("block_node", properties.getEndpoint()).register(meterRegistry);
     }
 
     @Override
     public void close() {
-        if (!channel.isShutdown()) {
-            channel.shutdown();
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public Range<Long> getBlockRange() {
-        try {
-            final var blockNodeService = BlockNodeServiceGrpc.newBlockingStub(channel)
-                    .withDeadlineAfter(streamProperties.getResponseTimeout());
-            final var response = blockNodeService.serverStatus(SERVER_STATUS_REQUEST);
-            final long firstBlockNumber = response.getFirstAvailableBlock();
-            return firstBlockNumber != -1
-                    ? Range.closed(firstBlockNumber, response.getLastAvailableBlock())
-                    : EMPTY_BLOCK_RANGE;
-        } catch (Exception ex) {
-            log.error("Failed to get server status for {}", this, ex);
-            return EMPTY_BLOCK_RANGE;
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    public void streamBlocks(
-            final long blockNumber,
-            @Nullable final Long endBlockNumber,
-            final BiFunction<BlockStream, String, Boolean> onBlockStream,
-            final Duration timeout) {
-        BlockingClientCall<SubscribeStreamRequest, SubscribeStreamResponse> grpcCall = null;
-
-        try {
-            final long effectiveEndBlockNumber = endBlockNumber == null ? -1L : endBlockNumber;
-            final var assembler = new BlockAssembler(onBlockStream, effectiveEndBlockNumber, timeout);
-            final var request = SubscribeStreamRequest.newBuilder()
-                    .setEndBlockNumber(effectiveEndBlockNumber)
-                    .setStartBlockNumber(blockNumber)
-                    .build();
-            grpcCall = ClientCalls.blockingV2ServerStreamingCall(
-                    channel,
-                    BlockStreamSubscribeServiceGrpc.getSubscribeBlockStreamMethod(),
-                    CallOptions.DEFAULT,
-                    request);
-            SubscribeStreamResponse response;
-
-            boolean running = true;
-            while (running && (response = grpcCall.read(assembler.timeout(), TimeUnit.MILLISECONDS)) != null) {
-                switch (response.getResponseCase()) {
-                    case BLOCK_ITEMS -> assembler.onBlockItemSet(response.getBlockItems());
-                    case END_OF_BLOCK -> {
-                        running = !assembler.onEndOfBlock(response.getEndOfBlock());
-                        if (!running) {
-                            log.debug("Cancelling the subscription");
-                        }
-                    }
-                    case STATUS -> {
-                        final var status = response.getStatus();
-                        if (status == SubscribeStreamResponse.Code.SUCCESS) {
-                            // The server may end the stream gracefully for various reasons, and this shouldn't be
-                            // treated as an error.
-                            log.info("{} ended the subscription with {}", name, status);
-                            running = false;
-                            break;
-                        }
-
-                        throw new BlockStreamException("Received status " + response.getStatus() + " from " + name);
-                    }
-                    default ->
-                        throw new BlockStreamException(
-                                "Unknown response case " + response.getResponseCase() + " from " + name);
-                }
-
-                errors.set(0);
-            }
-        } catch (BlockStreamException ex) {
-            onError();
-            throw ex;
-        } catch (Exception ex) {
-            onError();
-            throw new BlockStreamException(ex);
-        } finally {
-            if (grpcCall != null) {
-                grpcCall.cancel("unsubscribe", null);
-                grpcBufferDisposer.accept(grpcCall);
-            }
-        }
+    public void streamBlocks(final long blockNumber, @Nullable final Long endBlockNumber, final BiFunction<BlockStream, String, Boolean> onBlockStream, final Duration timeout) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public int compareTo(final BlockNode other) {
-        return COMPARATOR.compare(this, other);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public String toString() {
-        return name;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public BlockNode tryReadmit(final boolean force) {
-        if (!active && (force || Instant.now().isAfter(readmitTime.get()))) {
-            active = true;
-        }
-
-        return this;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -213,27 +123,27 @@ public final class BlockNode implements AutoCloseable, Comparable<BlockNode> {
             active = false;
             errors.set(0);
             readmitTime.set(Instant.now().plus(streamProperties.getReadmitDelay()));
-            log.warn(
-                    "Marking connection to {} as inactive after {} attempts",
-                    this,
-                    streamProperties.getMaxSubscribeAttempts());
+            log.warn("Marking connection to {} as inactive after {} attempts", this, streamProperties.getMaxSubscribeAttempts());
         }
     }
 
     private final class BlockAssembler {
 
         private final BiFunction<BlockStream, String, Boolean> blockStreamConsumer;
+
         private final long endBlockNumber;
+
         private final List<List<BlockItem>> pending = new ArrayList<>();
+
         private final Stopwatch stopwatch;
+
         private final Duration timeout;
+
         private long loadStart;
+
         private int pendingCount = 0;
 
-        BlockAssembler(
-                final BiFunction<BlockStream, String, Boolean> blockStreamConsumer,
-                final long endBlockNumber,
-                final Duration timeout) {
+        BlockAssembler(final BiFunction<BlockStream, String, Boolean> blockStreamConsumer, final long endBlockNumber, final Duration timeout) {
             this.blockStreamConsumer = blockStreamConsumer;
             this.endBlockNumber = endBlockNumber;
             this.stopwatch = Stopwatch.createUnstarted();
@@ -241,82 +151,27 @@ public final class BlockNode implements AutoCloseable, Comparable<BlockNode> {
         }
 
         void onBlockItemSet(final BlockItemSet blockItemSet) {
-            var blockItems = blockItemSet.getBlockItemsList();
-            if (blockItems.isEmpty()) {
-                log.warn("Received empty BlockItemSet from block node");
-                return;
-            }
-
-            final var firstItemCase = blockItems.getFirst().getItemCase();
-            append(blockItems, firstItemCase);
-
-            if (firstItemCase == BLOCK_HEADER) {
-                loadStart = System.currentTimeMillis();
-            }
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         Boolean onEndOfBlock(final BlockEnd blockEnd) {
-            final long blockNumber = blockEnd.getBlockNumber();
-            if (pending.isEmpty()) {
-                Utility.handleRecoverableError(
-                        "Received end-of-block message for block {} while there's no pending block items", blockNumber);
-                return false;
-            }
-
-            final var blockHeader = pending.getFirst().getFirst().getBlockHeader();
-            if (blockHeader.getNumber() != blockNumber) {
-                Utility.handleRecoverableError(
-                        "Block number mismatch in BlockHeader({}) and EndOfBlock({})",
-                        blockHeader.getNumber(),
-                        blockNumber);
-            }
-
-            final long blockCompleteTime = System.currentTimeMillis();
-            final List<BlockItem> block;
-            if (pending.size() == 1) {
-                block = pending.getFirst();
-            } else {
-                // assemble when there are more than one BlockItemSet
-                block = new ArrayList<>();
-                for (final var items : pending) {
-                    block.addAll(items);
-                }
-            }
-
-            pending.clear();
-            pendingCount = 0;
-            stopwatch.reset();
-
-            final var filename = BlockFile.getFilename(blockNumber, false);
-            final var blockStream = new BlockStream(block, blockCompleteTime, null, filename, loadStart);
-
-            // when either condition becomes true, inform the caller to stop sending items for assembling
-            return blockStreamConsumer.apply(blockStream, name) || blockHeader.getNumber() == endBlockNumber;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         long timeout() {
-            if (!stopwatch.isRunning()) {
-                stopwatch.start();
-                return timeout.toMillis();
-            }
-
-            return timeout.toMillis() - stopwatch.elapsed(TimeUnit.MILLISECONDS);
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         private void append(final List<BlockItem> blockItems, final BlockItem.ItemCase firstItemCase) {
             if (firstItemCase == BLOCK_HEADER && !pending.isEmpty()) {
-                throw new BlockStreamException(
-                        "Received block items of a new block while the previous block is still pending");
+                throw new BlockStreamException("Received block items of a new block while the previous block is still pending");
             } else if (firstItemCase != BLOCK_HEADER && pending.isEmpty()) {
                 throw new BlockStreamException("Incorrect first block item case " + firstItemCase);
             }
-
             pending.add(blockItems);
             pendingCount += blockItems.size();
             if (pendingCount > streamProperties.getMaxBlockItems()) {
-                throw new BlockStreamException(String.format(
-                        "Too many block items in a pending block: received %d, limit %d",
-                        pendingCount, streamProperties.getMaxBlockItems()));
+                throw new BlockStreamException(String.format("Too many block items in a pending block: received %d, limit %d", pendingCount, streamProperties.getMaxBlockItems()));
             }
         }
     }

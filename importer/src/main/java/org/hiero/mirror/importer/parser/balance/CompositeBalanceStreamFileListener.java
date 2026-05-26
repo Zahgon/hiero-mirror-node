@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.balance;
 
 import jakarta.inject.Named;
@@ -16,13 +15,11 @@ import org.springframework.context.annotation.Primary;
 public class CompositeBalanceStreamFileListener implements BalanceStreamFileListener {
 
     private final List<BalanceStreamFileListener> listeners;
+
     private final AccountBalanceFileRepository accountBalanceFileRepository;
 
     @Override
     public void onEnd(AccountBalanceFile streamFile) throws ImporterException {
-        accountBalanceFileRepository.save(streamFile);
-        for (int i = 0; i < listeners.size(); i++) {
-            listeners.get(i).onEnd(streamFile);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.balance;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -39,9 +38,7 @@ public class AccountBalance implements Persistable<AccountBalance.Id>, StreamIte
     @Builder.Default
     @EqualsAndHashCode.Exclude
     @JsonIgnore
-    @OneToMany(
-            cascade = {CascadeType.ALL},
-            orphanRemoval = true)
+    @OneToMany(cascade = { CascadeType.ALL }, orphanRemoval = true)
     // set updatable = false to prevent additional hibernate query
     @JoinColumn(name = "accountId", updatable = false)
     @JoinColumn(name = "consensusTimestamp", updatable = false)
@@ -54,7 +51,7 @@ public class AccountBalance implements Persistable<AccountBalance.Id>, StreamIte
     @JsonIgnore
     @Override
     public boolean isNew() {
-        return true; // Since we never update balances and use a natural ID, avoid Hibernate querying before insert
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Data

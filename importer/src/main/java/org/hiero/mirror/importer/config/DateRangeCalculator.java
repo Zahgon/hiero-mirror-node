@@ -1,11 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.config;
 
 import static org.apache.commons.lang3.ObjectUtils.max;
 import static org.hiero.mirror.importer.ImporterProperties.HederaNetwork.DEMO;
 import static org.hiero.mirror.importer.domain.StreamFilename.FileType.DATA;
-
 import jakarta.inject.Named;
 import java.time.Instant;
 import java.util.Map;
@@ -34,15 +32,18 @@ public final class DateRangeCalculator {
     static final Instant STARTUP_TIME = Instant.now();
 
     private final AccountBalanceFileRepository accountBalanceFileRepository;
+
     private final BlockProperties blockProperties;
+
     private final ImporterProperties importerProperties;
+
     private final RecordFileRepository recordFileRepository;
 
     private final Map<StreamType, DateRangeFilter> filters = new ConcurrentHashMap<>();
 
     // Clear cache between test runs
     public void clear() {
-        filters.clear();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -52,33 +53,23 @@ public final class DateRangeCalculator {
      * @return the DateRangeFilter
      */
     public DateRangeFilter getFilter(StreamType type) {
-        return filters.computeIfAbsent(type, this::newDateRangeFilter);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private DateRangeFilter newDateRangeFilter(StreamType streamType) {
         Instant startDate = importerProperties.getStartDate();
         Instant endDate = importerProperties.getEndDate();
-        Instant lastFileInstant = findLatest(streamType)
-                .map(StreamFile::getConsensusStart)
-                .map(nanos -> Instant.ofEpochSecond(0, nanos))
-                .orElse(null);
+        Instant lastFileInstant = findLatest(streamType).map(StreamFile::getConsensusStart).map(nanos -> Instant.ofEpochSecond(0, nanos)).orElse(null);
         Instant filterStartDate = lastFileInstant;
-
         if (startDate != null && startDate.compareTo(endDate) > 0) {
-            throw new InvalidConfigurationException(String.format(
-                    "Date range constraint violation: " + "startDate (%s) > endDate (%s)", startDate, endDate));
+            throw new InvalidConfigurationException(String.format("Date range constraint violation: " + "startDate (%s) > endDate (%s)", startDate, endDate));
         }
-
         if (startDate != null) {
             filterStartDate = max(startDate, lastFileInstant);
-        } else if (!blockProperties.isEnabled()
-                && !DEMO.equalsIgnoreCase(importerProperties.getNetwork())
-                && lastFileInstant == null) {
+        } else if (!blockProperties.isEnabled() && !DEMO.equalsIgnoreCase(importerProperties.getNetwork()) && lastFileInstant == null) {
             filterStartDate = STARTUP_TIME;
         }
-
         DateRangeFilter filter = new DateRangeFilter(filterStartDate, endDate);
-
         log.info("{}: parser will parse items in {}", streamType, filter);
         return filter;
     }
@@ -92,54 +83,7 @@ public final class DateRangeCalculator {
      * start date
      */
     public <T extends StreamFile<?>> Optional<T> getLastStreamFile(StreamType streamType) {
-        Instant startDate = importerProperties.getStartDate();
-        Optional<T> streamFile = findLatest(streamType);
-        Instant lastFileInstant = streamFile
-                .map(StreamFile::getConsensusStart)
-                .map(nanos -> Instant.ofEpochSecond(0, nanos))
-                .orElse(null);
-
-        Instant effectiveStartDate = STARTUP_TIME;
-        boolean hasStreamFile = lastFileInstant != null;
-
-        if (startDate != null) {
-            effectiveStartDate = max(startDate, hasStreamFile ? lastFileInstant : Instant.EPOCH);
-        } else if (hasStreamFile) {
-            effectiveStartDate = lastFileInstant;
-        } else if (blockProperties.isEnabled() || DEMO.equalsIgnoreCase(importerProperties.getNetwork())) {
-            // set effective start date to epoch for blockstream or demo network
-            // - blockstream file name doesn't include timestamp
-            // - demo network only contains data in the past
-            effectiveStartDate = Instant.EPOCH;
-        }
-
-        Instant endDate = importerProperties.getEndDate();
-        if (startDate != null && startDate.compareTo(endDate) > 0) {
-            throw new InvalidConfigurationException(String.format(
-                    "Date range constraint violation: " + "startDate (%s) > endDate (%s)", startDate, endDate));
-        }
-
-        if (effectiveStartDate.compareTo(endDate) > 0) {
-            throw new InvalidConfigurationException(String.format(
-                    "Date range constraint violation for %s downloader: effective startDate (%s) > endDate (%s)",
-                    streamType, effectiveStartDate, endDate));
-        }
-
-        if (!effectiveStartDate.equals(lastFileInstant)) {
-            String filename = StreamFilename.getFilename(streamType, DATA, effectiveStartDate);
-            T effectiveStreamFile = streamType.newStreamFile();
-            effectiveStreamFile.setConsensusStart(DomainUtils.convertToNanosMax(effectiveStartDate));
-            effectiveStreamFile.setName(filename);
-            effectiveStreamFile.setIndex(streamFile.map(StreamFile::getIndex).orElse(null));
-            streamFile = Optional.of(effectiveStreamFile);
-        }
-
-        log.info(
-                "{}: downloader will download files in time range ({}, {}]",
-                streamType,
-                effectiveStartDate,
-                importerProperties.getEndDate());
-        return streamFile;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @SuppressWarnings("unchecked")
@@ -148,15 +92,19 @@ public final class DateRangeCalculator {
     }
 
     private StreamFileRepository<?, ?> getStreamFileRepository(StreamType streamType) {
-        return switch (streamType) {
-            case BALANCE -> accountBalanceFileRepository;
-            case RECORD, BLOCK -> recordFileRepository;
+        return switch(streamType) {
+            case BALANCE ->
+                accountBalanceFileRepository;
+            case RECORD, BLOCK ->
+                recordFileRepository;
         };
     }
 
     @Value
     public static class DateRangeFilter {
+
         long start;
+
         long end;
 
         public DateRangeFilter(Instant startDate, Instant endDate) {
@@ -164,7 +112,6 @@ public final class DateRangeCalculator {
                 startDate = Instant.EPOCH;
             }
             start = DomainUtils.convertToNanosMax(startDate);
-
             if (endDate == null) {
                 end = Long.MAX_VALUE;
             } else {
@@ -173,22 +120,20 @@ public final class DateRangeCalculator {
         }
 
         public static DateRangeFilter all() {
-            return new DateRangeFilter(Instant.EPOCH, Utility.MAX_INSTANT_LONG);
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         public static DateRangeFilter empty() {
-            return new DateRangeFilter(Instant.EPOCH.plusNanos(1), Instant.EPOCH);
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         public boolean filter(long timestamp) {
-            return timestamp >= start && timestamp <= end;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         @Override
         public String toString() {
-            var startInstant = Instant.ofEpochSecond(0, start);
-            var endInstant = Instant.ofEpochSecond(0, end);
-            return String.format("DateRangeFilter([%s, %s])", startInstant, endInstant);
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
     }
 }

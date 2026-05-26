@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.token;
 
 import lombok.Data;
@@ -33,6 +32,6 @@ public class RoyaltyFee extends AbstractFee {
 
     @Override
     public boolean isChargedInToken(EntityId tokenId) {
-        return false;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

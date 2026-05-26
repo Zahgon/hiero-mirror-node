@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.restjava.mapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -28,49 +27,19 @@ public interface NetworkNodeMapper extends CollectionMapper<NetworkNodeDto, Netw
     NetworkNode map(NetworkNodeDto row);
 
     default TimestampRange mapTimestampRange(NetworkNodeDto row) {
-        if (row == null) {
-            return null;
-        }
-        final var start = row.startConsensusTimestamp();
-        final var end = row.endConsensusTimestamp();
-        if (start == null && end == null) {
-            return null;
-        }
-        return new TimestampRange()
-                .from(start != null ? DomainUtils.toTimestamp(start) : null)
-                .to(end != null ? DomainUtils.toTimestamp(end) : null);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Named("mapStakingPeriod")
     default TimestampRangeNullable mapStakingPeriod(Long stakingPeriod) {
-        if (stakingPeriod == null) {
-            return null;
-        }
-        final var from = stakingPeriod + 1L;
-        return new TimestampRangeNullable()
-                .from(DomainUtils.toTimestamp(from))
-                .to(DomainUtils.toTimestamp(from + (86400L * DomainUtils.NANOS_PER_SECOND)));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     default ServiceEndpoint parseServiceEndpoint(String json) {
-        if (json == null || json.isEmpty()) {
-            return null;
-        }
-        try {
-            return ObjectToStringSerializer.OBJECT_MAPPER.readValue(json, ServiceEndpoint.class);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Failed to parse service endpoint", e);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     default List<ServiceEndpoint> parseServiceEndpointList(String json) {
-        if (json == null || json.isEmpty()) {
-            return Collections.emptyList();
-        }
-        try {
-            return ObjectToStringSerializer.OBJECT_MAPPER.readValue(json, new TypeReference<>() {});
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Failed to parse service endpoints", e);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

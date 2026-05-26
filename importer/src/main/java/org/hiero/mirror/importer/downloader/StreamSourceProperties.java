@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.downloader;
 
 import jakarta.validation.constraints.Min;
@@ -24,7 +23,8 @@ public class StreamSourceProperties {
     private SourceCredentials credentials;
 
     @Min(0)
-    private int maxConcurrency = 1000; // aws sdk default = 50
+    private int // aws sdk default = 50
+    maxConcurrency = 1000;
 
     private String projectId;
 
@@ -41,7 +41,7 @@ public class StreamSourceProperties {
      * force the mirror node to use the static provider.
      */
     public boolean isStaticCredentials() {
-        return type == CommonDownloaderProperties.SourceType.GCP || credentials != null;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Data

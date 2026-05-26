@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.transactionhandler;
 
 import com.hederahashgraph.api.proto.java.ContractID;
@@ -30,30 +29,11 @@ class ContractDeleteTransactionHandler extends AbstractEntityCrudTransactionHand
      */
     @Override
     public EntityId getEntity(RecordItem recordItem) {
-        ContractID contractIdBody =
-                recordItem.getTransactionBody().getContractDeleteInstance().getContractID();
-        ContractID contractIdReceipt =
-                recordItem.getTransactionRecord().getReceipt().getContractID();
-        return entityIdService.lookup(contractIdReceipt, contractIdBody).orElse(EntityId.EMPTY);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     protected void doUpdateEntity(Entity entity, RecordItem recordItem) {
-        var transactionBody = recordItem.getTransactionBody().getContractDeleteInstance();
-        EntityId obtainerId = null;
-
-        if (transactionBody.hasTransferAccountID()) {
-            obtainerId = EntityId.of(transactionBody.getTransferAccountID());
-        } else if (transactionBody.hasTransferContractID()) {
-            obtainerId = entityIdService
-                    .lookup(transactionBody.getTransferContractID())
-                    .orElse(EntityId.EMPTY);
-        }
-
-        entity.setObtainerId(obtainerId);
-        entity.setPermanentRemoval(transactionBody.getPermanentRemoval());
-        entity.setType(EntityType.CONTRACT);
-        entityListener.onEntity(entity);
-        recordItem.addEntityId(obtainerId);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.state.core;
 
 import com.swirlds.state.spi.ReadableKVState;
@@ -18,7 +17,10 @@ import org.jspecify.annotations.NonNull;
  * @param <V> The value type
  */
 public class MapReadableKVState<K, V> extends ReadableKVStateBase<K, V> {
-    /** Represents the backing storage for this state */
+
+    /**
+     * Represents the backing storage for this state
+     */
     private final Map<K, V> backingStore;
 
     /**
@@ -30,37 +32,29 @@ public class MapReadableKVState<K, V> extends ReadableKVStateBase<K, V> {
      * @param stateId      The state key for this state
      * @param backingStore The backing store to use
      */
-    public MapReadableKVState(
-            @NonNull final String serviceName, final int stateId, @NonNull final Map<K, V> backingStore) {
+    public MapReadableKVState(@NonNull final String serviceName, final int stateId, @NonNull final Map<K, V> backingStore) {
         super(stateId, serviceName);
         this.backingStore = Objects.requireNonNull(backingStore);
     }
 
     @Override
     protected V readFromDataSource(@NonNull K key) {
-        return backingStore.get(key);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     @SuppressWarnings("deprecation")
     public long size() {
-        return backingStore.size();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        MapReadableKVState<?, ?> that = (MapReadableKVState<?, ?>) o;
-        return Objects.equals(getStateId(), that.getStateId()) && Objects.equals(backingStore, that.backingStore);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getStateId(), backingStore);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

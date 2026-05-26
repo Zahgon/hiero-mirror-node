@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.config;
 
 import static org.hiero.mirror.common.util.RuntimeHintsHelper.registerReflectionType;
-
 import com.google.protobuf.GeneratedMessageLite;
 import com.hedera.hashgraph.sdk.Transaction;
 import lombok.CustomLog;
@@ -24,20 +22,14 @@ import org.springframework.core.type.filter.AssignableTypeFilter;
 
 @Configuration(proxyBeanMethods = false)
 @CustomLog
-@ImportRuntimeHints({CommonRuntimeHints.class, CustomRuntimeHints.class})
+@ImportRuntimeHints({ CommonRuntimeHints.class, CustomRuntimeHints.class })
 final class RuntimeHintsConfiguration {
 
     static final class CustomRuntimeHints implements RuntimeHintsRegistrar {
+
         @Override
         public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
-            hints.resources().registerPattern("addressbook/*.pb"); // Hiero SDK internal address book
-            registerOpenApi(hints);
-            registerProtobufs(hints);
-            registerTransactionSuppliers(hints);
-            registerReflectionType(
-                    hints,
-                    "io.fabric8.kubernetes.client.impl.KubernetesClientImpl",
-                    RuntimeHintsHelper.CONSTRUCTORS_ONLY);
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         /**
@@ -48,13 +40,7 @@ final class RuntimeHintsConfiguration {
         private void registerOpenApi(RuntimeHints hints) {
             final var scanner = new ClassPathScanningCandidateComponentProvider(false);
             scanner.addIncludeFilter(new AssignableTypeFilter(Object.class));
-            scanner.findCandidateComponents(NetworkNodesResponse.class.getPackageName())
-                    .forEach(b -> hints.reflection()
-                            .registerType(
-                                    TypeReference.of(b.getBeanClassName()),
-                                    MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS,
-                                    MemberCategory.ACCESS_DECLARED_FIELDS,
-                                    MemberCategory.INVOKE_PUBLIC_METHODS));
+            scanner.findCandidateComponents(NetworkNodesResponse.class.getPackageName()).forEach(b -> hints.reflection().registerType(TypeReference.of(b.getBeanClassName()), MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS, MemberCategory.ACCESS_DECLARED_FIELDS, MemberCategory.INVOKE_PUBLIC_METHODS));
         }
 
         /**
@@ -65,8 +51,7 @@ final class RuntimeHintsConfiguration {
         private void registerProtobufs(RuntimeHints hints) {
             final var scanner = new ClassPathScanningCandidateComponentProvider(false);
             scanner.addIncludeFilter(new AssignableTypeFilter(GeneratedMessageLite.class));
-            scanner.findCandidateComponents(Transaction.class.getPackageName()).forEach(b -> hints.reflection()
-                    .registerType(TypeReference.of(b.getBeanClassName()), MemberCategory.ACCESS_DECLARED_FIELDS));
+            scanner.findCandidateComponents(Transaction.class.getPackageName()).forEach(b -> hints.reflection().registerType(TypeReference.of(b.getBeanClassName()), MemberCategory.ACCESS_DECLARED_FIELDS));
         }
 
         /**
@@ -77,13 +62,7 @@ final class RuntimeHintsConfiguration {
         private void registerTransactionSuppliers(RuntimeHints hints) {
             final var scanner = new ClassPathScanningCandidateComponentProvider(false);
             scanner.addIncludeFilter(new AssignableTypeFilter(TransactionSupplier.class));
-            scanner.findCandidateComponents(TransactionSupplier.class.getPackageName())
-                    .forEach(b -> hints.reflection()
-                            .registerType(
-                                    TypeReference.of(b.getBeanClassName()),
-                                    MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS,
-                                    MemberCategory.ACCESS_DECLARED_FIELDS,
-                                    MemberCategory.INVOKE_PUBLIC_METHODS));
+            scanner.findCandidateComponents(TransactionSupplier.class.getPackageName()).forEach(b -> hints.reflection().registerType(TypeReference.of(b.getBeanClassName()), MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS, MemberCategory.ACCESS_DECLARED_FIELDS, MemberCategory.INVOKE_PUBLIC_METHODS));
         }
     }
 }

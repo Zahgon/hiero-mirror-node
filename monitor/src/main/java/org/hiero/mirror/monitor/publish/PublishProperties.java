@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.publish;
 
 import jakarta.annotation.PostConstruct;
@@ -50,14 +49,6 @@ public class PublishProperties {
 
     @PostConstruct
     void validate() {
-        if (enabled && scenarios.isEmpty()) {
-            throw new IllegalArgumentException("There must be at least one publish scenario");
-        }
-
-        if (scenarios.keySet().stream().anyMatch(StringUtils::isBlank)) {
-            throw new IllegalArgumentException("Publish scenario name cannot be empty");
-        }
-
-        scenarios.forEach((name, property) -> property.setName(name));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

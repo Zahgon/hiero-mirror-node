@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.hook;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -23,12 +22,13 @@ import org.hiero.mirror.common.util.DomainUtils;
 @NoArgsConstructor
 @Upsertable
 public class HookStorage {
+
     private static final String CREATED_TS_COALESCE = """
-                    case when coalesce(e_deleted, true) then abs(created_timestamp)
-                         when created_timestamp < 0 then abs(created_timestamp)
-                         else e_created_timestamp
-                    end
-                    """;
+        case when coalesce(e_deleted, true) then abs(created_timestamp)
+             when created_timestamp < 0 then abs(created_timestamp)
+             else e_created_timestamp
+        end
+        """;
 
     private static final int KEY_BYTE_LENGTH = 32;
 
@@ -53,8 +53,7 @@ public class HookStorage {
     private byte[] value;
 
     @Builder(toBuilder = true)
-    private HookStorage(
-            long createdTimestamp, long hookId, byte[] key, Long modifiedTimestamp, long ownerId, byte[] value) {
+    private HookStorage(long createdTimestamp, long hookId, byte[] key, Long modifiedTimestamp, long ownerId, byte[] value) {
         this.createdTimestamp = createdTimestamp;
         this.hookId = hookId;
         this.key = DomainUtils.leftPadBytes(key, KEY_BYTE_LENGTH);
@@ -66,31 +65,29 @@ public class HookStorage {
 
     @JsonIgnore
     public HookStorage.Id getId() {
-        HookStorage.Id id = new HookStorage.Id();
-        id.setHookId(hookId);
-        id.setKey(key);
-        id.setOwnerId(ownerId);
-        return id;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public void setKey(byte[] key) {
-        this.key = DomainUtils.leftPadBytes(key, KEY_BYTE_LENGTH);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public void setValue(byte[] value) {
-        this.value = DomainUtils.trim(value);
-        this.deleted = ArrayUtils.isEmpty(this.value);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
     public static class Id implements Serializable {
+
         @Serial
         private static final long serialVersionUID = 4567832945612847391L;
 
         private long hookId;
+
         private byte[] key;
+
         private long ownerId;
     }
 }

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.state.core;
 
 import com.swirlds.state.spi.ReadableKVState;
@@ -12,54 +11,43 @@ public class MapWritableKVState<K, V> extends WritableKVStateBase<K, V> {
 
     private final ReadableKVState<K, V> readableBackingStore;
 
-    public MapWritableKVState(
-            @NonNull final String serviceName,
-            final int stateId,
-            @NonNull final ReadableKVState<K, V> readableBackingStore) {
+    public MapWritableKVState(@NonNull final String serviceName, final int stateId, @NonNull final ReadableKVState<K, V> readableBackingStore) {
         super(serviceName, stateId);
         this.readableBackingStore = Objects.requireNonNull(readableBackingStore);
     }
 
     @Override
     protected V readFromDataSource(@NonNull K key) {
-        return readableBackingStore.get(key);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     protected void putIntoDataSource(@NonNull K key, @NonNull V value) {
-        put(key, value);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     protected void removeFromDataSource(@NonNull K key) {
-        remove(key);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public long sizeOfDataSource() {
-        return readableBackingStore.size();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public String toString() {
-        return "MapWritableKVState{" + "readableBackingStore=" + readableBackingStore + '}';
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        MapWritableKVState<?, ?> that = (MapWritableKVState<?, ?>) o;
-        return Objects.equals(getStateId(), that.getStateId())
-                && Objects.equals(readableBackingStore, that.readableBackingStore);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getStateId(), readableBackingStore);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

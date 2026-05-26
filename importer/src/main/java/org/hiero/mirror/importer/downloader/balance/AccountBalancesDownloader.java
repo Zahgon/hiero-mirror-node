@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.downloader.balance;
 
 import io.micrometer.core.instrument.MeterRegistry;
@@ -24,62 +23,28 @@ import org.springframework.scheduling.annotation.Scheduled;
 public class AccountBalancesDownloader extends Downloader<AccountBalanceFile, AccountBalance> {
 
     private final AccountBalanceFileRepository accountBalanceFileRepository;
+
     private final AtomicBoolean accountBalanceFileExists = new AtomicBoolean(false);
 
     @SuppressWarnings("java:S107")
-    public AccountBalancesDownloader(
-            AccountBalanceFileRepository accountBalanceFileRepository,
-            ConsensusNodeService consensusNodeService,
-            BalanceDownloaderProperties downloaderProperties,
-            ImporterProperties importerProperties,
-            MeterRegistry meterRegistry,
-            DateRangeCalculator dateRangeCalculator,
-            NodeSignatureVerifier nodeSignatureVerifier,
-            SignatureFileReader signatureFileReader,
-            StreamFileNotifier streamFileNotifier,
-            StreamFileProvider streamFileProvider,
-            BalanceFileReader streamFileReader) {
-        super(
-                consensusNodeService,
-                downloaderProperties,
-                importerProperties,
-                meterRegistry,
-                dateRangeCalculator,
-                nodeSignatureVerifier,
-                signatureFileReader,
-                streamFileNotifier,
-                streamFileProvider,
-                streamFileReader);
+    public AccountBalancesDownloader(AccountBalanceFileRepository accountBalanceFileRepository, ConsensusNodeService consensusNodeService, BalanceDownloaderProperties downloaderProperties, ImporterProperties importerProperties, MeterRegistry meterRegistry, DateRangeCalculator dateRangeCalculator, NodeSignatureVerifier nodeSignatureVerifier, SignatureFileReader signatureFileReader, StreamFileNotifier streamFileNotifier, StreamFileProvider streamFileProvider, BalanceFileReader streamFileReader) {
+        super(consensusNodeService, downloaderProperties, importerProperties, meterRegistry, dateRangeCalculator, nodeSignatureVerifier, signatureFileReader, streamFileNotifier, streamFileProvider, streamFileReader);
         this.accountBalanceFileRepository = accountBalanceFileRepository;
     }
 
     @Override
     @Scheduled(fixedDelayString = "#{@balanceDownloaderProperties.getFrequency().toMillis()}")
     public void download() {
-        downloadNextBatch();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     protected void onVerified(StreamFileData streamFileData, AccountBalanceFile streamFile) {
-        super.onVerified(streamFileData, streamFile);
-        accountBalanceFileExists.set(true);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     protected boolean shouldDownload() {
-        if (downloaderProperties.isEnabled()) {
-            return true;
-        }
-
-        if (accountBalanceFileExists.get()) {
-            return false;
-        }
-
-        if (accountBalanceFileRepository.findLatest().isPresent()) {
-            accountBalanceFileExists.set(true);
-            return false;
-        }
-
-        return true;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

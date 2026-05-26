@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.subscribe;
 
 import com.google.common.collect.Sets;
@@ -45,20 +44,6 @@ public class SubscribeProperties {
 
     @PostConstruct
     void validate() {
-        if (enabled && grpc.isEmpty() && rest.isEmpty()) {
-            throw new IllegalArgumentException("There must be at least one subscribe scenario");
-        }
-
-        if (Sets.union(grpc.keySet(), rest.keySet()).stream().anyMatch(StringUtils::isBlank)) {
-            throw new IllegalArgumentException("Subscribe scenario name cannot be empty");
-        }
-
-        Set<String> names = Sets.intersection(grpc.keySet(), rest.keySet());
-        if (!names.isEmpty()) {
-            throw new IllegalArgumentException("More than one subscribe scenario with the same name: " + names);
-        }
-
-        grpc.forEach((name, property) -> property.setName(name));
-        rest.forEach((name, property) -> property.setName(name));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

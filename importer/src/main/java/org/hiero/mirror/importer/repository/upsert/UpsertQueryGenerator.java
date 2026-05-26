@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.repository.upsert;
 
 public interface UpsertQueryGenerator {
@@ -9,7 +8,7 @@ public interface UpsertQueryGenerator {
     String getFinalTableName();
 
     default String getTemporaryTableName() {
-        return getFinalTableName() + TEMP_SUFFIX;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     String getUpsertQuery();

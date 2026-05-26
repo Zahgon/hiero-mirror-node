@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.convert;
 
 import com.fasterxml.jackson.core.JsonParser;
@@ -12,7 +11,6 @@ public class BlockTypeDeserializer extends JsonDeserializer<BlockType> {
 
     @Override
     public BlockType deserialize(JsonParser jsonParser, DeserializationContext context) throws IOException {
-        var value = jsonParser.readValueAs(String.class);
-        return BlockType.of(value);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

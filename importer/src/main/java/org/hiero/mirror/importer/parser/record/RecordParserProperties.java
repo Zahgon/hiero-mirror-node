@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record;
 
 import lombok.Data;
@@ -17,6 +16,6 @@ public class RecordParserProperties extends AbstractParserProperties {
 
     @Override
     public StreamType getStreamType() {
-        return StreamType.RECORD;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

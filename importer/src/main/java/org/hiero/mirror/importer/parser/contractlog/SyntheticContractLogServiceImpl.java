@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.contractlog;
 
 import jakarta.inject.Named;
@@ -21,90 +20,22 @@ public class SyntheticContractLogServiceImpl implements SyntheticContractLogServ
     protected static final Version HAPI_SYNTHETIC_LOG_VERSION = new Version(0, 71, 0);
 
     private final ParserContext parserContext;
+
     private final EntityListener entityListener;
+
     private final EntityProperties entityProperties;
+
     private final byte[] empty = Bytes.of(0).toArray();
+
     protected static final byte[] CONTRACT_LOG_MARKER = Bytes.of(1).toArray();
 
     @Override
     public void create(SyntheticContractLog log) {
-        if (!entityProperties.getPersist().isSyntheticContractLogs()) {
-            return;
-        }
-
-        var recordItem = log.getRecordItem();
-        var contractRelatedParentRecordItem = recordItem.getContractRelatedParent();
-
-        // We will either backfill any EVM-related fungible token transfers that don't have synthetic events produced by
-        // CN
-        // or create synthetic logs for HAPI-related transfer events
-        if (shouldSkipLogCreation(log)) {
-            return;
-        }
-
-        long consensusTimestamp;
-        int logIndex;
-        int transactionIndex;
-        EntityId contractId;
-        EntityId rootContractId;
-        byte[] transactionHash;
-        if (contractRelatedParentRecordItem != null) {
-            consensusTimestamp = contractRelatedParentRecordItem.getConsensusTimestamp();
-            logIndex = contractRelatedParentRecordItem.getAndIncrementLogIndex();
-            transactionIndex = contractRelatedParentRecordItem.getTransactionIndex();
-            transactionHash = contractRelatedParentRecordItem.getTransactionHash();
-
-            final var parentTransactionRecord = contractRelatedParentRecordItem.getTransactionRecord();
-            if (parentTransactionRecord.hasContractCallResult()) {
-                contractId = EntityId.of(
-                        parentTransactionRecord.getContractCallResult().getContractID());
-            } else {
-                contractId = EntityId.of(
-                        parentTransactionRecord.getContractCreateResult().getContractID());
-            }
-
-            rootContractId = EntityId.of(parentTransactionRecord.getReceipt().getContractID());
-        } else {
-            consensusTimestamp = recordItem.getConsensusTimestamp();
-            logIndex = recordItem.getAndIncrementLogIndex();
-            transactionIndex = recordItem.getTransactionIndex();
-            transactionHash = recordItem.getTransactionHash();
-            contractId = log.getEntityId();
-            rootContractId = log.getEntityId();
-        }
-
-        ContractLog contractLog = new ContractLog();
-
-        contractLog.setBloom(isContract(recordItem) ? CONTRACT_LOG_MARKER : empty);
-        contractLog.setConsensusTimestamp(consensusTimestamp);
-        contractLog.setContractId(contractId);
-        contractLog.setData(log.getData() != null ? log.getData() : empty);
-        contractLog.setIndex(logIndex);
-        contractLog.setRootContractId(rootContractId);
-        contractLog.setPayerAccountId(recordItem.getPayerAccountId());
-        contractLog.setTopic0(log.getTopic0());
-        contractLog.setTopic1(log.getTopic1());
-        contractLog.setTopic2(log.getTopic2());
-        contractLog.setTopic3(log.getTopic3());
-        contractLog.setTransactionIndex(transactionIndex);
-        contractLog.setTransactionHash(transactionHash);
-        contractLog.setSynthetic(log instanceof TransferContractLog);
-
-        // The current recordItem should always be set, so that we know which RecordItem/ContractResult bloom to update.
-        // This field is set to be only used to calculate bloom aggregation for the RecordItem/ContractResult.
-
-        if (contractRelatedParentRecordItem != null) {
-            final var contractResult =
-                    parserContext.get(ContractResult.class, contractRelatedParentRecordItem.getConsensusTimestamp());
-            contractLog.setContractResult(contractResult);
-        }
-
-        entityListener.onContractLog(contractLog);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private boolean isContract(RecordItem recordItem) {
-        return recordItem.getTransactionRecord().hasContractCallResult()
-                || recordItem.getTransactionRecord().hasContractCreateResult();
+        return recordItem.getTransactionRecord().hasContractCallResult() || recordItem.getTransactionRecord().hasContractCreateResult();
     }
 
     private boolean shouldSkipLogCreation(SyntheticContractLog syntheticLog) {
@@ -113,9 +44,7 @@ public class SyntheticContractLogServiceImpl implements SyntheticContractLogServ
             // Only TransferContractLog synthetic log creation is supported for an operation with contract origin
             return true;
         }
-
         final var recordItem = syntheticLog.getRecordItem();
-
         final var tokenTransfersCount = recordItem.getTransactionRecord().getTokenTransferListsCount();
         if (tokenTransfersCount > 2 && !entityProperties.getPersist().isSyntheticContractLogsMulti()) {
             // We have a multi-party fungible transfer scenario and synthetic event creation for
@@ -123,7 +52,6 @@ public class SyntheticContractLogServiceImpl implements SyntheticContractLogServ
             // origin.
             return true;
         }
-
         // Skip synthetic log creation for events with contract origin with HAPI versions >= 0.71.0 as the logs are
         // already imported by consensus nodes. We should create logs for events with HAPI origin for any HAPI version.
         return contractOrigin && recordItem.getHapiVersion().isGreaterThanOrEqualTo(HAPI_SYNTHETIC_LOG_VERSION);

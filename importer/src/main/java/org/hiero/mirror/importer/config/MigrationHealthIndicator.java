@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.config;
 
 import jakarta.inject.Named;
@@ -16,22 +15,23 @@ import org.springframework.boot.health.contributor.HealthIndicator;
 public class MigrationHealthIndicator extends BaseCallback implements HealthIndicator {
 
     private static final Health DOWN = Health.down().build();
+
     private static final Health UP = Health.up().build();
 
     private final AtomicBoolean complete = new AtomicBoolean(false);
 
     @Override
     public Health health() {
-        return complete.get() ? UP : DOWN;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void handle(Event event, Context context) {
-        complete.set(true);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public boolean supports(Event event, Context context) {
-        return event == Event.AFTER_MIGRATE;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

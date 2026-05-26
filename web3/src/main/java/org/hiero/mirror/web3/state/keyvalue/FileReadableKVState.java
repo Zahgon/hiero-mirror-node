@@ -1,11 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.state.keyvalue;
 
 import static com.hedera.node.app.service.file.impl.schemas.V0490FileSchema.FILES_STATE_ID;
 import static com.hedera.services.utils.EntityIdUtils.toEntityId;
 import static org.hiero.mirror.web3.state.Utils.getCurrentTimestamp;
-
 import com.hedera.hapi.node.base.FileID;
 import com.hedera.hapi.node.state.file.File;
 import com.hedera.node.app.service.file.FileService;
@@ -32,14 +30,14 @@ import org.jspecify.annotations.NonNull;
 final class FileReadableKVState extends AbstractReadableKVState<FileID, File> {
 
     public static final int STATE_ID = FILES_STATE_ID;
+
     private final FileDataRepository fileDataRepository;
+
     private final EntityRepository entityRepository;
+
     private final SystemFileLoader systemFileLoader;
 
-    public FileReadableKVState(
-            final FileDataRepository fileDataRepository,
-            final EntityRepository entityRepository,
-            final SystemFileLoader systemFileLoader) {
+    public FileReadableKVState(final FileDataRepository fileDataRepository, final EntityRepository entityRepository, final SystemFileLoader systemFileLoader) {
         super(FileService.NAME, FILES_STATE_ID);
         this.fileDataRepository = fileDataRepository;
         this.entityRepository = entityRepository;
@@ -48,40 +46,19 @@ final class FileReadableKVState extends AbstractReadableKVState<FileID, File> {
 
     @Override
     protected File readFromDataSource(@NonNull FileID key) {
-        final var timestamp = ContractCallContext.get().getTimestamp();
-        final var fileEntityId = toEntityId(key);
-        final var fileId = fileEntityId.getId();
-        final var currentTimestamp = getCurrentTimestamp();
-
-        if (systemFileLoader.isSystemFile(key)) {
-            return systemFileLoader.load(key, currentTimestamp);
-        }
-
-        return timestamp
-                .map(t -> fileDataRepository.getFileAtTimestamp(fileId, t))
-                .orElseGet(() -> fileDataRepository.getFileAtTimestamp(fileId, currentTimestamp))
-                .map(fileData -> mapToFile(fileData, key, timestamp))
-                .orElse(null);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private File mapToFile(final FileData fileData, final FileID key, final Optional<Long> timestamp) {
-        return File.newBuilder()
-                .contents(Bytes.wrap(fileData.getFileData()))
-                .expirationSecond(getExpirationSeconds(toEntityId(key), timestamp))
-                .fileId(key)
-                .build();
+        return File.newBuilder().contents(Bytes.wrap(fileData.getFileData())).expirationSecond(getExpirationSeconds(toEntityId(key), timestamp)).fileId(key).build();
     }
 
     private Supplier<Long> getExpirationSeconds(final EntityId entityId, final Optional<Long> timestamp) {
-        return Suppliers.memoize(() -> timestamp
-                .map(t -> entityRepository.findActiveByIdAndTimestamp(entityId.getId(), t))
-                .orElseGet(() -> entityRepository.findByIdAndDeletedIsFalse(entityId.getId()))
-                .map(AbstractEntity::getExpirationTimestamp)
-                .orElse(null));
+        return Suppliers.memoize(() -> timestamp.map(t -> entityRepository.findActiveByIdAndTimestamp(entityId.getId(), t)).orElseGet(() -> entityRepository.findByIdAndDeletedIsFalse(entityId.getId())).map(AbstractEntity::getExpirationTimestamp).orElse(null));
     }
 
     @Override
     public String getServiceName() {
-        return FileService.NAME;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

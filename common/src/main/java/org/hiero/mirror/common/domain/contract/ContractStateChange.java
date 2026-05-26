@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.contract;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -18,7 +17,8 @@ import org.hiero.mirror.common.converter.EntityIdConverter;
 import org.hiero.mirror.common.domain.entity.EntityId;
 import org.springframework.data.domain.Persistable;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE) // For Builder
+// For Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
 @Data
 @Entity
@@ -50,32 +50,31 @@ public class ContractStateChange implements Persistable<ContractStateChange.Id> 
     @Override
     @JsonIgnore
     public Id getId() {
-        Id id = new Id();
-        id.setConsensusTimestamp(consensusTimestamp);
-        id.setContractId(contractId);
-        id.setSlot(slot);
-        return id;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @JsonIgnore
     @Override
     public boolean isNew() {
-        return true;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public void setContractId(EntityId contractId) {
-        this.contractId = contractId.getId();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @AllArgsConstructor
     @Data
     @NoArgsConstructor
     public static class Id implements Serializable {
+
         @Serial
         private static final long serialVersionUID = -3677350664183037811L;
 
         private long consensusTimestamp;
+
         private long contractId;
+
         private byte[] slot;
     }
 }

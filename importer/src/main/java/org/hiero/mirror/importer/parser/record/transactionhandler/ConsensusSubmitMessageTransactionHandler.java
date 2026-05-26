@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.transactionhandler;
 
 import static org.hiero.mirror.common.util.DomainUtils.toBytes;
 import static org.hiero.mirror.importer.util.Utility.DEFAULT_RUNNING_HASH_VERSION;
-
 import com.hederahashgraph.api.proto.java.ConsensusMessageChunkInfo;
 import jakarta.inject.Named;
 import lombok.RequiredArgsConstructor;
@@ -22,17 +20,17 @@ import org.hiero.mirror.importer.util.Utility;
 final class ConsensusSubmitMessageTransactionHandler extends AbstractTransactionHandler {
 
     private final EntityListener entityListener;
+
     private final EntityProperties entityProperties;
 
     @Override
     public EntityId getEntity(RecordItem recordItem) {
-        return EntityId.of(
-                recordItem.getTransactionBody().getConsensusSubmitMessage().getTopicID());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public TransactionType getType() {
-        return TransactionType.CONSENSUSSUBMITMESSAGE;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -44,52 +42,11 @@ final class ConsensusSubmitMessageTransactionHandler extends AbstractTransaction
      */
     @Override
     protected void addCommonEntityIds(Transaction transaction, RecordItem recordItem) {
-        recordItem.addEntityId(transaction.getNodeAccountId());
-        recordItem.addEntityId(transaction.getPayerAccountId());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     protected void doUpdateTransaction(Transaction transaction, RecordItem recordItem) {
-        if (!entityProperties.getPersist().isTopics() || !recordItem.isSuccessful()) {
-            return;
-        }
-
-        var receipt = recordItem.getTransactionRecord().getReceipt();
-        if (recordItem.isBlockstream() && receipt.getTopicRunningHash().isEmpty()) {
-            Utility.handleRecoverableError(
-                    "Skip topic message from blockstream due to missing runningHash at {}",
-                    recordItem.getConsensusTimestamp());
-            return;
-        }
-
-        var topicMessage = new TopicMessage();
-        var transactionBody = recordItem.getTransactionBody().getConsensusSubmitMessage();
-
-        // Only persist the value if it is not the default
-        if (receipt.getTopicRunningHashVersion() != DEFAULT_RUNNING_HASH_VERSION) {
-            var runningHashVersion =
-                    receipt.getTopicRunningHashVersion() == 0 ? 1 : (int) receipt.getTopicRunningHashVersion();
-            topicMessage.setRunningHashVersion(runningHashVersion);
-        }
-
-        // Handle optional fragmented topic message
-        if (transactionBody.hasChunkInfo()) {
-            ConsensusMessageChunkInfo chunkInfo = transactionBody.getChunkInfo();
-            topicMessage.setChunkNum(chunkInfo.getNumber());
-            topicMessage.setChunkTotal(chunkInfo.getTotal());
-
-            if (chunkInfo.hasInitialTransactionID()) {
-                topicMessage.setInitialTransactionId(
-                        chunkInfo.getInitialTransactionID().toByteArray());
-            }
-        }
-
-        topicMessage.setConsensusTimestamp(transaction.getConsensusTimestamp());
-        topicMessage.setMessage(toBytes(transactionBody.getMessage()));
-        topicMessage.setPayerAccountId(recordItem.getPayerAccountId());
-        topicMessage.setRunningHash(toBytes(receipt.getTopicRunningHash()));
-        topicMessage.setSequenceNumber(receipt.getTopicSequenceNumber());
-        topicMessage.setTopicId(transaction.getEntityId());
-        entityListener.onTopicMessage(topicMessage);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.downloader;
 
 import com.google.common.collect.HashMultimap;
@@ -34,55 +33,7 @@ public class ConsensusValidatorImpl implements ConsensusValidator {
      */
     @Override
     public void validate(Collection<StreamFileSignature> signatures) throws SignatureVerificationException {
-        Multimap<String, StreamFileSignature> signatureHashMap = HashMultimap.create();
-        StreamFilename filename = null;
-        BigDecimal stakeRequiredForConsensus = null;
-        long totalStake = 0L;
-
-        for (var signature : signatures) {
-            if (filename == null) {
-                filename = signature.getFilename();
-                totalStake = signature.getNode().getTotalStake();
-                stakeRequiredForConsensus = getStakeRequiredForConsensus(totalStake);
-            }
-
-            if (signature.getStatus() == StreamFileSignature.SignatureStatus.VERIFIED) {
-                signatureHashMap.put(signature.getFileHashAsHex(), signature);
-            }
-        }
-
-        if (BigDecimal.ZERO.equals(commonDownloaderProperties.getConsensusRatio()) && !signatureHashMap.isEmpty()) {
-            log.debug("Signature file {} does not require consensus, skipping consensus check", filename);
-            return;
-        }
-
-        long debugStake = 0;
-        long consensusCount = 0;
-
-        for (String key : signatureHashMap.keySet()) {
-            var validatedSignatures = signatureHashMap.get(key);
-            long stake = 0L;
-
-            for (var signature : validatedSignatures) {
-                stake += signature.getNode().getStake();
-            }
-
-            if (canReachConsensus(stake, stakeRequiredForConsensus)) {
-                consensusCount += validatedSignatures.size();
-                validatedSignatures.forEach(s -> s.setStatus(StreamFileSignature.SignatureStatus.CONSENSUS_REACHED));
-            }
-
-            if (debugStake < stake) {
-                debugStake = stake;
-            }
-        }
-
-        if (consensusCount > 0) {
-            return;
-        }
-
-        throw new SignatureVerificationException(
-                String.format("Consensus not reached for file %s with %d/%d stake", filename, debugStake, totalStake));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private boolean canReachConsensus(long stake, BigDecimal stakeRequiredForConsensus) {
@@ -93,9 +44,6 @@ public class ConsensusValidatorImpl implements ConsensusValidator {
         if (totalStake == 0) {
             throw new SignatureVerificationException("Invalid total staking weight. Consensus not " + "reached");
         }
-
-        return BigDecimal.valueOf(totalStake)
-                .multiply(commonDownloaderProperties.getConsensusRatio())
-                .setScale(0, RoundingMode.CEILING);
+        return BigDecimal.valueOf(totalStake).multiply(commonDownloaderProperties.getConsensusRatio()).setScale(0, RoundingMode.CEILING);
     }
 }

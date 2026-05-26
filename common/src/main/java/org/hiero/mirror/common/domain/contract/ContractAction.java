@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.contract;
 
 import static com.hedera.services.stream.proto.ContractAction.ResultDataCase.REVERT_REASON;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -24,7 +22,8 @@ import org.hiero.mirror.common.domain.entity.EntityId;
 import org.hiero.mirror.common.domain.entity.EntityType;
 import org.springframework.data.domain.Persistable;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE) // For Builder
+// For Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 @Data
 @Entity
@@ -80,29 +79,29 @@ public class ContractAction implements Persistable<ContractAction.Id> {
     @Override
     @JsonIgnore
     public ContractAction.Id getId() {
-        ContractAction.Id id = new ContractAction.Id();
-        id.setConsensusTimestamp(consensusTimestamp);
-        id.setIndex(index);
-        return id;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @JsonIgnore
     @Override
     public boolean isNew() {
-        return true; // Since we never update and use a natural ID, avoid Hibernate querying before insert
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @JsonIgnore
     public boolean hasRevertReason() {
-        return resultDataType == REVERT_REASON.getNumber();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
     public static class Id implements Serializable {
+
         private static final long serialVersionUID = -6192177810161178246L;
+
         private long consensusTimestamp;
+
         private int index;
     }
 }

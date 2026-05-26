@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.restjava.controller;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -7,7 +6,6 @@ import static org.hiero.mirror.restjava.common.Constants.APPLICATION_JSON;
 import static org.hiero.mirror.restjava.common.Constants.HIGH_VOLUME_THROTTLE;
 import static org.hiero.mirror.restjava.common.Constants.REGISTERED_NODE_ID;
 import static org.hiero.mirror.restjava.common.Constants.TIMESTAMP;
-
 import com.google.common.collect.ImmutableSortedMap;
 import com.hedera.hapi.node.base.Transaction;
 import com.hedera.pbj.runtime.ParseException;
@@ -71,135 +69,67 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 final class NetworkController {
 
-    private static final Function<NetworkNode, Map<String, String>> NETWORK_NODE_EXTRACTOR =
-            node -> ImmutableSortedMap.of(Constants.NODE_ID, node.getNodeId().toString());
+    private static final Function<NetworkNode, Map<String, String>> NETWORK_NODE_EXTRACTOR = node -> ImmutableSortedMap.of(Constants.NODE_ID, node.getNodeId().toString());
 
-    private static final Function<RegisteredNode, Map<String, String>> REGISTERED_NODE_EXTRACTOR =
-            node -> ImmutableSortedMap.of(
-                    Constants.REGISTERED_NODE_ID, node.getRegisteredNodeId().toString());
+    private static final Function<RegisteredNode, Map<String, String>> REGISTERED_NODE_EXTRACTOR = node -> ImmutableSortedMap.of(Constants.REGISTERED_NODE_ID, node.getRegisteredNodeId().toString());
 
     private final ExchangeRateMapper exchangeRateMapper;
+
     private final FeeEstimationService feeEstimationService;
+
     private final FeeScheduleMapper feeScheduleMapper;
+
     private final FileService fileService;
+
     private final LinkFactory linkFactory;
+
     private final NetworkService networkService;
+
     private final NetworkStakeMapper networkStakeMapper;
+
     private final NetworkSupplyMapper networkSupplyMapper;
+
     private final NetworkNodeMapper networkNodeMapper;
+
     private final RegisteredNodeMapper registeredNodeMapper;
 
     @GetMapping("/exchangerate")
-    NetworkExchangeRateSetResponse getExchangeRate(
-            @RequestParam(required = false) @Size(max = 2) TimestampParameter[] timestamp) {
-        final var bound = Bound.of(timestamp, TIMESTAMP, FileData.FILE_DATA.CONSENSUS_TIMESTAMP);
-        final var exchangeRateSet = fileService.getExchangeRate(bound);
-        return exchangeRateMapper.map(exchangeRateSet);
+    NetworkExchangeRateSetResponse getExchangeRate(@RequestParam(required = false) @Size(max = 2) TimestampParameter[] timestamp) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @GetMapping("/fees")
-    NetworkFeesResponse getFees(
-            @RequestParam(required = false) @Size(max = 2) TimestampParameter[] timestamp,
-            @RequestParam(required = false, defaultValue = "ASC") Sort.Direction order) {
-        final var bound = Bound.of(timestamp, TIMESTAMP, FileData.FILE_DATA.CONSENSUS_TIMESTAMP);
-        final var feeSchedule = fileService.getFeeSchedule(bound);
-        final var exchangeRate = fileService.getExchangeRate(bound);
-        return feeScheduleMapper.map(feeSchedule, exchangeRate, bound, order);
+    NetworkFeesResponse getFees(@RequestParam(required = false) @Size(max = 2) TimestampParameter[] timestamp, @RequestParam(required = false, defaultValue = "ASC") Sort.Direction order) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    @PostMapping(
-            consumes = {"application/protobuf", "application/x-protobuf"},
-            value = "/fees")
-    FeeEstimateResponse estimateFees(
-            @RequestBody @NotNull byte[] body,
-            @RequestParam(defaultValue = "INTRINSIC", required = false) FeeEstimateMode mode,
-            @RequestParam(name = HIGH_VOLUME_THROTTLE, defaultValue = "0", required = false) @Min(0) @Max(10000)
-                    int highVolumeThrottle) {
-        try {
-            final var transaction = Transaction.PROTOBUF.parse(Bytes.wrap(body));
-            return toResponse(feeEstimationService.estimateFees(transaction, mode, highVolumeThrottle));
-        } catch (ParseException e) {
-            throw new IllegalArgumentException("Unable to parse transaction", e);
-        }
+    @PostMapping(consumes = { "application/protobuf", "application/x-protobuf" }, value = "/fees")
+    FeeEstimateResponse estimateFees(@RequestBody @NotNull byte[] body, @RequestParam(defaultValue = "INTRINSIC", required = false) FeeEstimateMode mode, @RequestParam(name = HIGH_VOLUME_THROTTLE, defaultValue = "0", required = false) @Min(0) @Max(10000) int highVolumeThrottle) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @GetMapping("/stake")
     NetworkStakeResponse getNetworkStake() {
-        final var networkStake = networkService.getLatestNetworkStake();
-        return networkStakeMapper.map(networkStake);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @GetMapping("/supply")
-    ResponseEntity<?> getSupply(
-            @RequestParam(required = false) @Size(max = 2) TimestampParameter[] timestamp,
-            @RequestParam(name = "q", required = false) SupplyType supplyType) {
-        final var bound = Bound.of(timestamp, TIMESTAMP, FileData.FILE_DATA.CONSENSUS_TIMESTAMP);
-        final var networkSupply = networkService.getSupply(bound);
-
-        if (supplyType != null) {
-            final var valueInTinyCoins =
-                    supplyType == SupplyType.TOTALCOINS ? NetworkSupply.TOTAL_SUPPLY : networkSupply.releasedSupply();
-            final var formattedValue = networkSupplyMapper.convertToCurrencyFormat(valueInTinyCoins);
-
-            return ResponseEntity.ok()
-                    .contentType(new MediaType(MediaType.TEXT_PLAIN, UTF_8))
-                    .body(formattedValue);
-        }
-
-        return ResponseEntity.ok(networkSupplyMapper.map(networkSupply));
+    ResponseEntity<?> getSupply(@RequestParam(required = false) @Size(max = 2) TimestampParameter[] timestamp, @RequestParam(name = "q", required = false) SupplyType supplyType) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @GetMapping("/nodes")
     ResponseEntity<NetworkNodesResponse> getNodes(@RequestParameter NetworkNodeRequest request) {
-        final var fileId = request.getFileId();
-        if (fileId != null && fileId.operator() != RangeOperator.EQ) {
-            throw new IllegalArgumentException("Only equality operator is supported for file.id");
-        }
-        final var networkNodeRows = networkService.getNetworkNodes(request);
-        final var limit = request.getEffectiveLimit();
-
-        final var networkNodes = networkNodeMapper.map(networkNodeRows);
-
-        final var sort = Sort.by(request.getOrder(), Constants.NODE_ID);
-        final var pageable = PageRequest.of(0, limit, sort);
-        final var links = linkFactory.create(networkNodes, pageable, NETWORK_NODE_EXTRACTOR);
-
-        var response = new NetworkNodesResponse();
-        response.setNodes(networkNodes);
-        response.setLinks(links);
-        return ResponseEntity.ok(response);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @GetMapping("/registered-nodes")
     RegisteredNodesResponse getRegisteredNodes(@RequestParameter RegisteredNodesRequest request) {
-        final var registeredNodes = networkService.getRegisteredNodes(request);
-        final var registeredNodeDtos = registeredNodeMapper.map(registeredNodes);
-
-        final var sort = Sort.by(request.getOrder(), REGISTERED_NODE_ID);
-        final var pageable = PageRequest.of(0, request.getLimit(), sort);
-        final var links = linkFactory.create(registeredNodeDtos, pageable, REGISTERED_NODE_EXTRACTOR);
-
-        final var response = new RegisteredNodesResponse();
-        response.setRegisteredNodes(registeredNodeDtos);
-        response.setLinks(links);
-
-        return response;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private static FeeEstimateResponse toResponse(FeeResult feeResult) {
-        return new FeeEstimateResponse()
-                .node(new FeeEstimate()
-                        .base(feeResult.getNodeBaseFeeTinycents())
-                        .extras(toExtras(feeResult.getNodeExtraDetails())))
-                .network(new FeeEstimateNetwork()
-                        .multiplier(feeResult.getNetworkMultiplier())
-                        .subtotal(feeResult.getNetworkTotalTinycents()))
-                .service(new FeeEstimate()
-                        .base(feeResult.getServiceBaseFeeTinycents())
-                        .extras(toExtras(feeResult.getServiceExtraDetails())))
-                .total(feeResult.totalTinycents())
-                .highVolumeMultiplier(
-                        feeResult.getHighVolumeMultiplier() / HighVolumePricingCalculator.HIGH_VOLUME_MULTIPLIER_SCALE);
+        return new FeeEstimateResponse().node(new FeeEstimate().base(feeResult.getNodeBaseFeeTinycents()).extras(toExtras(feeResult.getNodeExtraDetails()))).network(new FeeEstimateNetwork().multiplier(feeResult.getNetworkMultiplier()).subtotal(feeResult.getNetworkTotalTinycents())).service(new FeeEstimate().base(feeResult.getServiceBaseFeeTinycents()).extras(toExtras(feeResult.getServiceExtraDetails()))).total(feeResult.totalTinycents()).highVolumeMultiplier(feeResult.getHighVolumeMultiplier() / HighVolumePricingCalculator.HIGH_VOLUME_MULTIPLIER_SCALE);
     }
 
     private static List<FeeExtra> toExtras(List<FeeResult.FeeDetail> details) {
@@ -214,12 +144,6 @@ final class NetworkController {
     }
 
     private static FeeExtra toExtra(FeeResult.FeeDetail detail) {
-        return new FeeExtra()
-                .charged(detail.charged())
-                .count(detail.used())
-                .feePerUnit(detail.perUnit())
-                .included(detail.included())
-                .name(detail.name())
-                .subtotal(detail.perUnit() * detail.charged());
+        return new FeeExtra().charged(detail.charged()).count(detail.used()).feePerUnit(detail.perUnit()).included(detail.included()).name(detail.name()).subtotal(detail.perUnit() * detail.charged());
     }
 }

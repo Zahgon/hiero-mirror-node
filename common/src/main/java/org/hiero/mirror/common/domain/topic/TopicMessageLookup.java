@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.topic;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -16,7 +15,8 @@ import lombok.NoArgsConstructor;
 import org.hiero.mirror.common.domain.UpsertColumn;
 import org.hiero.mirror.common.domain.Upsertable;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE) // For builder
+// For builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
 @Data
 @Entity
@@ -40,30 +40,22 @@ public class TopicMessageLookup {
     private long topicId;
 
     public static TopicMessageLookup from(String partition, TopicMessage topicMessage) {
-        long sequenceNumber = topicMessage.getSequenceNumber();
-        long timestamp = topicMessage.getConsensusTimestamp();
-        return TopicMessageLookup.builder()
-                .partition(partition)
-                .sequenceNumberRange(Range.closedOpen(sequenceNumber, sequenceNumber + 1))
-                .timestampRange(Range.closedOpen(timestamp, timestamp + 1))
-                .topicId(topicMessage.getTopicId().getId())
-                .build();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @JsonIgnore
     public Id getId() {
-        var id = new Id();
-        id.setPartition(partition);
-        id.setTopicId(topicId);
-        return id;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Data
     public static class Id implements Serializable {
+
         @Serial
         private static final long serialVersionUID = 5704900912468270592L;
 
         private String partition;
+
         private long topicId;
     }
 }

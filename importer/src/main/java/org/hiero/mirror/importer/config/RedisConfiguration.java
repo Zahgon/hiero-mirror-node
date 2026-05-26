@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,38 +26,23 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.RedisSerializer;
 
 @AutoConfigureBefore(DataRedisAutoConfiguration.class)
-@AutoConfigureAfter({MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class})
+@AutoConfigureAfter({ MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
 @Configuration(proxyBeanMethods = false)
 @SuppressWarnings("removal")
 class RedisConfiguration {
 
     @Bean
     RedisSerializer<StreamMessage> redisSerializer() {
-        var module = new SimpleModule();
-        module.addDeserializer(EntityId.class, EntityIdDeserializer.INSTANCE);
-        module.addSerializer(EntityIdSerializer.INSTANCE);
-
-        var objectMapper = new ObjectMapper(new MessagePackFactory());
-        objectMapper.registerModule(module);
-
-        return new Jackson2JsonRedisSerializer<>(objectMapper, StreamMessage.class);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Bean
-    RedisOperations<String, StreamMessage> redisOperations(
-            RedisConnectionFactory redisConnectionFactory, RedisSerializer<StreamMessage> redisSerializer) {
-        RedisTemplate<String, StreamMessage> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setConnectionFactory(redisConnectionFactory);
-        redisTemplate.setValueSerializer(redisSerializer);
-        return redisTemplate;
+    RedisOperations<String, StreamMessage> redisOperations(RedisConnectionFactory redisConnectionFactory, RedisSerializer<StreamMessage> redisSerializer) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Bean
-    ReactiveRedisOperations<String, StreamMessage> reactiveRedisOperations(
-            ReactiveRedisConnectionFactory factory, RedisSerializer<StreamMessage> redisSerializer) {
-        var serializationContext = RedisSerializationContext.<String, StreamMessage>newSerializationContext(
-                        redisSerializer)
-                .build();
-        return new ReactiveRedisTemplate<>(factory, serializationContext);
+    ReactiveRedisOperations<String, StreamMessage> reactiveRedisOperations(ReactiveRedisConnectionFactory factory, RedisSerializer<StreamMessage> redisSerializer) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

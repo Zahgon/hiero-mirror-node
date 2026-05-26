@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.repository.upsert;
 
 import static org.hiero.mirror.importer.util.Utility.toSnakeCase;
-
 import jakarta.inject.Named;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityManager;
@@ -38,78 +36,58 @@ import org.springframework.jdbc.core.JdbcOperations;
 public final class EntityMetadataRegistry {
 
     private final DBProperties dbProperties;
+
     private final EntityManager entityManager;
+
     private final Map<Class<?>, EntityMetadata> domainEntityMetadata = new ConcurrentHashMap<>();
+
     private final JdbcOperations jdbcOperations;
 
     public EntityMetadata lookup(Class<?> domainClass) {
-        return domainEntityMetadata.computeIfAbsent(domainClass, this::create);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private EntityMetadata create(Class<?> domainClass) {
         Upsertable upsertable = AnnotationUtils.findAnnotation(domainClass, Upsertable.class);
-
         if (upsertable == null) {
             throw new UnsupportedOperationException("Class is not annotated with @Upsertable: " + domainClass);
         }
-
         EntityType<?> entityType = entityManager.getMetamodel().entity(domainClass);
         Table table = AnnotationUtils.findAnnotation(domainClass, Table.class);
         String tableName = table != null ? table.name() : toSnakeCase(entityType.getName());
         Set<String> idAttributes = getIdAttributes(entityType);
         Set<ColumnMetadata> columnMetadata = new TreeSet<>();
-
         Map<String, InformationSchemaColumns> schema = getColumnSchema(tableName);
-
         for (Attribute<?, ?> attribute : entityType.getAttributes()) {
             boolean id = idAttributes.contains(attribute.getName());
-
             if (attribute.getPersistentAttributeType() == Attribute.PersistentAttributeType.EMBEDDED) {
                 var persistentAttribute = (SingularPersistentAttribute) attribute;
                 var embeddableType = (EmbeddableType<?>) persistentAttribute.getType();
-                embeddableType
-                        .getDeclaredSingularAttributes()
-                        .forEach(a -> columnMetadata.add(columnMetadata(schema, a, id)));
+                embeddableType.getDeclaredSingularAttributes().forEach(a -> columnMetadata.add(columnMetadata(schema, a, id)));
             } else {
                 columnMetadata.add(columnMetadata(schema, attribute, id));
             }
         }
-
         var entityMetadata = new EntityMetadata(tableName, upsertable, columnMetadata);
         log.debug("Creating {}", entityMetadata);
         return entityMetadata;
     }
 
     @SuppressWarnings("java:S4276")
-    private ColumnMetadata columnMetadata(
-            Map<String, InformationSchemaColumns> schema, Attribute<?, ?> attribute, boolean id) {
+    private ColumnMetadata columnMetadata(Map<String, InformationSchemaColumns> schema, Attribute<?, ?> attribute, boolean id) {
         String name = attribute.getName();
         Field field = (Field) attribute.getJavaMember();
         Column column = field.getAnnotation(Column.class);
         UpsertColumn upsertColumn = field.getAnnotation(UpsertColumn.class);
-        String columnName = column != null && StringUtils.isNotBlank(column.name())
-                ? toSnakeCase(column.name())
-                : toSnakeCase(name);
-
+        String columnName = column != null && StringUtils.isNotBlank(column.name()) ? toSnakeCase(column.name()) : toSnakeCase(name);
         InformationSchemaColumns columnSchema = schema.get(columnName);
-
         if (columnSchema == null) {
             throw new IllegalStateException("Missing information schema for " + columnName);
         }
-
         var getter = getter(field);
         var setter = setter(field);
         boolean updatable = !id && (column == null || column.updatable());
-        return new ColumnMetadata(
-                columnSchema.getColumnDefault(),
-                getter,
-                id,
-                columnName,
-                columnSchema.isNullable(),
-                setter,
-                attribute.getJavaType(),
-                updatable,
-                upsertColumn);
+        return new ColumnMetadata(columnSchema.getColumnDefault(), getter, id, columnName, columnSchema.isNullable(), setter, attribute.getJavaType(), updatable, upsertColumn);
     }
 
     /*
@@ -117,45 +95,33 @@ public final class EntityMetadataRegistry {
      */
     private Map<String, InformationSchemaColumns> getColumnSchema(String tableName) {
         String sql = """
-                select distinct column_name, regexp_replace(column_default, '::.*', '') as column_default,
-                is_nullable = 'YES' as nullable from information_schema.columns
-                where table_name = ? and table_schema = ?
-                """;
-
-        var columnSchemas = jdbcOperations.query(
-                sql,
-                (rs, rowNum) -> {
-                    var columnSchema = new InformationSchemaColumns();
-                    columnSchema.setColumnName(rs.getString(1));
-                    columnSchema.setColumnDefault(rs.getString(2));
-                    columnSchema.setNullable(rs.getBoolean(3));
-                    return columnSchema;
-                },
-                tableName,
-                dbProperties.getSchema());
-        var schema = columnSchemas.stream()
-                .collect(Collectors.toMap(InformationSchemaColumns::getColumnName, Function.identity()));
+            select distinct column_name, regexp_replace(column_default, '::.*', '') as column_default,
+            is_nullable = 'YES' as nullable from information_schema.columns
+            where table_name = ? and table_schema = ?
+            """;
+        var columnSchemas = jdbcOperations.query(sql, (rs, rowNum) -> {
+            var columnSchema = new InformationSchemaColumns();
+            columnSchema.setColumnName(rs.getString(1));
+            columnSchema.setColumnDefault(rs.getString(2));
+            columnSchema.setNullable(rs.getBoolean(3));
+            return columnSchema;
+        }, tableName, dbProperties.getSchema());
+        var schema = columnSchemas.stream().collect(Collectors.toMap(InformationSchemaColumns::getColumnName, Function.identity()));
         if (schema.isEmpty()) {
             throw new IllegalStateException("Missing information schema for " + tableName);
         }
-
         return schema;
     }
 
     private Set<String> getIdAttributes(EntityType<?> entityType) {
         try {
-            return entityType.getIdClassAttributes().stream()
-                    .map(SingularAttribute::getName)
-                    .collect(Collectors.toSet());
+            return entityType.getIdClassAttributes().stream().map(SingularAttribute::getName).collect(Collectors.toSet());
         } catch (IllegalArgumentException e) {
             SingularAttribute<?, ?> idAttribute = entityType.getId(Object.class);
-
             var attributeType = idAttribute.getPersistentAttributeType();
-            if (attributeType != Attribute.PersistentAttributeType.BASIC
-                    && attributeType != Attribute.PersistentAttributeType.EMBEDDED) {
+            if (attributeType != Attribute.PersistentAttributeType.BASIC && attributeType != Attribute.PersistentAttributeType.EMBEDDED) {
                 throw new UnsupportedOperationException("Unsupported ID attribute " + entityType.getName());
             }
-
             return Set.of(idAttribute.getName());
         }
     }
@@ -197,8 +163,11 @@ public final class EntityMetadataRegistry {
 
     @Data
     static class InformationSchemaColumns {
+
         private String columnName;
+
         private String columnDefault;
+
         private boolean nullable;
     }
 }

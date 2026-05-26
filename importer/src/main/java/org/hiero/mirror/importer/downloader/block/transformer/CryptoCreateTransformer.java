@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.downloader.block.transformer;
 
 import com.hedera.hapi.block.stream.output.protoc.TransactionOutput;
@@ -15,35 +14,11 @@ final class CryptoCreateTransformer extends AbstractBlockTransactionTransformer 
 
     @Override
     protected void doTransform(BlockTransactionTransformation blockTransactionTransformation) {
-        var blockTransaction = blockTransactionTransformation.blockTransaction();
-        if (!blockTransaction.isSuccessful()) {
-            return;
-        }
-
-        var recordBuilder = blockTransactionTransformation.recordItemBuilder().transactionRecordBuilder();
-        var alias = blockTransactionTransformation
-                .getTransactionBody()
-                .getCryptoCreateAccount()
-                .getAlias();
-        if (!alias.isEmpty() && alias.size() != DomainUtils.EVM_ADDRESS_LENGTH) {
-            // This must be a synthetic transaction. The statechanges for its alias and evm address are in the top level
-            // triggering crypto transfer transaction. However, there's no parent link to follow for statechanges
-            // lookup. Instead, the evm address can be calculated from the alias.
-            byte[] evmAddress = Utility.aliasToEvmAddress(DomainUtils.toBytes(alias));
-            if (ArrayUtils.isNotEmpty(evmAddress)) {
-                recordBuilder.setEvmAddress(DomainUtils.fromBytes(evmAddress));
-            }
-        }
-
-        var accountCreate = blockTransaction
-                .getTransactionOutput(TransactionCase.ACCOUNT_CREATE)
-                .map(TransactionOutput::getAccountCreate)
-                .orElseThrow();
-        recordBuilder.getReceiptBuilder().setAccountID(accountCreate.getCreatedAccountId());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public TransactionType getType() {
-        return TransactionType.CRYPTOCREATEACCOUNT;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

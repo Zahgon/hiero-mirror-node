@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.restjava.service;
 
 import jakarta.inject.Named;
@@ -14,10 +13,10 @@ import org.hiero.mirror.restjava.repository.TokenAirdropRepository;
 final class TokenAirdropServiceImpl implements TokenAirdropService {
 
     private final EntityService entityService;
+
     private final TokenAirdropRepository repository;
 
     public Collection<TokenAirdrop> getAirdrops(TokenAirdropRequest request) {
-        var id = entityService.lookup(request.getAccountId());
-        return repository.findAll(request, id);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

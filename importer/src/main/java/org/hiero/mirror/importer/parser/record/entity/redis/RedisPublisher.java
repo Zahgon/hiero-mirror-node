@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.entity.redis;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -27,25 +26,27 @@ import org.springframework.data.redis.core.SessionCallback;
 
 @CustomLog
 @Named
-@Order(0) // Triggering the async publishing before other operations can reduce latency
+// Triggering the async publishing before other operations can reduce latency
+@Order(0)
 public class RedisPublisher implements BatchPublisher {
 
     private static final String TOPIC_FORMAT = "topic.%d";
 
     private final LoadingCache<Long, String> channelNames;
+
     private final ParserContext parserContext;
+
     private final RedisProperties redisProperties;
+
     private final RecordParserProperties parserProperties;
+
     private final RedisOperations<String, StreamMessage> redisOperations;
+
     private final Timer timer;
+
     private final BlockingQueue<Collection<TopicMessage>> topicMessagesQueue;
 
-    RedisPublisher(
-            RedisProperties redisProperties,
-            RedisOperations<String, StreamMessage> redisOperations,
-            MeterRegistry meterRegistry,
-            ParserContext parserContext,
-            RecordParserProperties parserProperties) {
+    RedisPublisher(RedisProperties redisProperties, RedisOperations<String, StreamMessage> redisOperations, MeterRegistry meterRegistry, ParserContext parserContext, RecordParserProperties parserProperties) {
         this.channelNames = Caffeine.newBuilder().maximumSize(1000L).build(this::getChannelName);
         this.parserContext = parserContext;
         this.redisOperations = redisOperations;
@@ -53,11 +54,9 @@ public class RedisPublisher implements BatchPublisher {
         this.parserProperties = parserProperties;
         this.timer = PUBLISH_TIMER.tag("type", "redis").register(meterRegistry);
         this.topicMessagesQueue = new ArrayBlockingQueue<>(redisProperties.getQueueCapacity());
-
         if (!isEnabled()) {
             return;
         }
-
         Executor executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
             try {
@@ -73,15 +72,7 @@ public class RedisPublisher implements BatchPublisher {
     @Override
     @SneakyThrows
     public void onEnd(RecordFile recordFile) {
-        if (!isEnabled()) {
-            return;
-        }
-        final var topicMessages = parserContext.get(TopicMessage.class);
-
-        if (!topicMessages.isEmpty() && !topicMessagesQueue.offer(topicMessages)) {
-            log.warn("topicMessagesQueue is full, will block until space is available");
-            topicMessagesQueue.put(topicMessages);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private void publish(Collection<TopicMessage> messages) {
@@ -97,13 +88,10 @@ public class RedisPublisher implements BatchPublisher {
     // Batch send using Redis pipelining
     private SessionCallback<Object> callback(Collection<TopicMessage> messages) {
         return new SessionCallback<>() {
+
             @Override
             public <K, V> Object execute(RedisOperations<K, V> operations) {
-                for (TopicMessage topicMessage : messages) {
-                    String channel = channelNames.get(topicMessage.getTopicId().getId());
-                    redisOperations.convertAndSend(channel, topicMessage);
-                }
-                return null;
+                throw new UnsupportedOperationException("STUB: not implemented");
             }
         };
     }

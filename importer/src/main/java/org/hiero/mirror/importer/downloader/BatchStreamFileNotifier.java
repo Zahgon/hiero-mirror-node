@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.downloader;
 
 import jakarta.inject.Named;
@@ -34,7 +33,9 @@ import org.springframework.core.annotation.Order;
 final class BatchStreamFileNotifier implements StreamFileNotifier, Closeable {
 
     private final StreamFileSubscriber balanceStreamFileSubscriber;
+
     private final StreamFileSubscriber recordStreamFileSubscriber;
+
     private final ExecutorService executorService;
 
     BatchStreamFileNotifier(AccountBalanceFileParser accountBalanceFileParser, RecordFileParser recordFileParser) {
@@ -47,35 +48,34 @@ final class BatchStreamFileNotifier implements StreamFileNotifier, Closeable {
 
     @Override
     public void close() {
-        executorService.close();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void verified(StreamFile<?> streamFile) {
-        var streamFileSubscriber =
-                switch (streamFile.getType()) {
-                    case BALANCE -> balanceStreamFileSubscriber;
-                    case RECORD -> recordStreamFileSubscriber;
-                    default ->
-                        throw new IllegalArgumentException("Unsupported stream file type: " + streamFile.getType());
-                };
-        streamFileSubscriber.notify(streamFile);
-        log.debug("Published {}", streamFile);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private class StreamFileSubscriber implements Runnable {
 
         private final Collection<StreamFile<?>> buffer;
+
         private final AtomicLong files;
+
         private final AtomicLong items;
+
         private final AtomicReference<Instant> lastFlush;
+
         private final BatchProperties properties;
+
         private final BlockingQueue<StreamFile<?>> queue;
+
         private final StreamFileParser<StreamFile<?>> streamFileParser;
 
         @SuppressWarnings("unchecked")
         StreamFileSubscriber(StreamFileParser<? extends StreamFile<?>> streamFileParser) {
-            this.buffer = new ArrayList<>(); // Un-synchronized since only one thread reads and writes from it
+            // Un-synchronized since only one thread reads and writes from it
+            this.buffer = new ArrayList<>();
             this.files = new AtomicLong(0L);
             this.items = new AtomicLong(0L);
             this.lastFlush = new AtomicReference<>(Instant.now());
@@ -86,24 +86,12 @@ final class BatchStreamFileNotifier implements StreamFileNotifier, Closeable {
 
         @SneakyThrows
         public void notify(StreamFile<?> streamFile) {
-            queue.put(streamFile);
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         @Override
         public void run() {
-            long frequency = streamFileParser.getProperties().getFrequency().toMillis();
-
-            while (!executorService.isShutdown()) {
-                try {
-                    var streamFile = queue.poll(frequency, TimeUnit.MILLISECONDS);
-                    handle(streamFile);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    return;
-                } catch (Exception e) {
-                    log.error("Error during parsing", e);
-                }
-            }
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         private void handle(StreamFile<?> streamFile) {
@@ -115,12 +103,10 @@ final class BatchStreamFileNotifier implements StreamFileNotifier, Closeable {
                 }
                 return;
             }
-
             if (!flush(streamFile)) {
                 buffer.add(streamFile);
                 return;
             }
-
             // Flush the buffer, optimizing for the single item scenario
             if (buffer.isEmpty()) {
                 streamFileParser.parse(streamFile);
@@ -128,7 +114,6 @@ final class BatchStreamFileNotifier implements StreamFileNotifier, Closeable {
                 buffer.add(streamFile);
                 streamFileParser.parse(new ArrayList<>(buffer));
             }
-
             reset();
         }
 
@@ -141,23 +126,19 @@ final class BatchStreamFileNotifier implements StreamFileNotifier, Closeable {
          */
         private boolean flush(StreamFile<?> streamFile) {
             long count = items.addAndGet(streamFile.getCount());
-
             // Flush the buffer when the file count exceeds the maximum expected number of files
             if (files.incrementAndGet() >= properties.getMaxFiles()) {
                 return true;
             }
-
             // Flush the buffer when the item count exceeds the maximum expected number of items
             if (count >= properties.getMaxItems()) {
                 return true;
             }
-
             // Flush the buffer if stream file processing has caught up
             long lag = DomainUtils.now() - streamFile.getConsensusEnd();
             if (lag <= properties.getWindow().toNanos()) {
                 return true;
             }
-
             return exceedsInterval();
         }
 

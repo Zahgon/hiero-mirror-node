@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.common.domain.balance;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -34,7 +33,7 @@ public class TokenBalance implements Persistable<TokenBalance.Id> {
     @JsonIgnore
     @Override
     public boolean isNew() {
-        return true; // Since we never update balances and use a natural ID, avoid Hibernate querying before insert
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Data
@@ -45,11 +44,13 @@ public class TokenBalance implements Persistable<TokenBalance.Id> {
 
         private static final long serialVersionUID = -8547332015249955424L;
 
-        @Column(nullable = false, updatable = false) // set updatable = false to prevent additional hibernate query
+        // set updatable = false to prevent additional hibernate query
+        @Column(nullable = false, updatable = false)
         private long consensusTimestamp;
 
         @Convert(converter = EntityIdConverter.class)
-        @Column(nullable = false, updatable = false) // set updatable = false to prevent additional hibernate query
+        // set updatable = false to prevent additional hibernate query
+        @Column(nullable = false, updatable = false)
         private EntityId accountId;
 
         @Convert(converter = EntityIdConverter.class)

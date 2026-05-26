@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.publish.transaction.token;
 
 import com.hedera.hashgraph.sdk.AccountId;
@@ -40,10 +39,7 @@ public class TokenCreateTransactionSupplier implements TransactionSupplier<Token
     private TokenSupplyType supplyType = TokenSupplyType.INFINITE;
 
     @NotBlank
-    private String symbol = ThreadLocalRandom.current()
-            .ints(5, 'A', 'Z')
-            .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-            .toString();
+    private String symbol = ThreadLocalRandom.current().ints(5, 'A', 'Z').collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString();
 
     @NotBlank
     private String treasuryAccountId;
@@ -53,36 +49,6 @@ public class TokenCreateTransactionSupplier implements TransactionSupplier<Token
 
     @Override
     public TokenCreateTransaction get() {
-        AccountId treasuryAccount = AccountId.fromString(treasuryAccountId);
-        TokenCreateTransaction tokenCreateTransaction = new TokenCreateTransaction()
-                .setAutoRenewAccountId(treasuryAccount)
-                .setFreezeDefault(freezeDefault)
-                .setMaxTransactionFee(Hbar.fromTinybars(maxTransactionFee))
-                .setSupplyType(supplyType)
-                .setTokenMemo(Utility.getMemo("Mirror node created test token"))
-                .setTokenName(symbol + "_name")
-                .setTokenSymbol(symbol)
-                .setTokenType(type)
-                .setTreasuryAccountId(treasuryAccount);
-
-        if (adminKey != null) {
-            PublicKey key = PublicKey.fromString(adminKey);
-            tokenCreateTransaction
-                    .setAdminKey(key)
-                    .setFeeScheduleKey(key)
-                    .setFreezeKey(key)
-                    .setKycKey(key)
-                    .setSupplyKey(key)
-                    .setWipeKey(key);
-        }
-
-        if (type == TokenType.FUNGIBLE_COMMON) {
-            tokenCreateTransaction.setDecimals(decimals).setInitialSupply(initialSupply);
-        }
-        if (supplyType == TokenSupplyType.FINITE) {
-            tokenCreateTransaction.setMaxSupply(maxSupply);
-        }
-
-        return tokenCreateTransaction;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor;
 
 import static org.hiero.mirror.monitor.OperatorProperties.DEFAULT_OPERATOR_ACCOUNT_ID;
-
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
@@ -47,7 +45,7 @@ public class MonitorProperties {
     private NodeValidationProperties nodeValidation = new NodeValidationProperties();
 
     public MirrorNodeProperties getMirrorNode() {
-        return Objects.requireNonNullElseGet(this.mirrorNode, network::getMirrorNode);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -56,24 +54,6 @@ public class MonitorProperties {
      */
     @PostConstruct
     void init() {
-        var accountId = operator.getAccountId().split("\\.", 3);
-        if (accountId == null || accountId.length != 3) {
-            throw new IllegalArgumentException("Invalid operator account ID");
-        }
-
-        long shard = commonProperties.getShard();
-        long realm = commonProperties.getRealm();
-
-        if (Long.valueOf(accountId[0]) == shard && Long.valueOf(accountId[1]) == realm) {
-            return;
-        }
-
-        if (DEFAULT_OPERATOR_ACCOUNT_ID.equals(operator.getAccountId())) {
-            operator.setAccountId("%d.%d.%s".formatted(shard, realm, accountId[2]));
-        } else {
-            throw new IllegalArgumentException(
-                    "Operator account id %s has invalid shard/realm, expect shard=%d and realm=%d"
-                            .formatted(accountId, shard, realm));
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.web3.state;
 
 import com.hedera.hapi.node.base.AccountID;
@@ -16,12 +15,11 @@ import org.hiero.mirror.web3.state.keyvalue.AliasesReadableKVState;
 public class AliasedAccountCacheManager {
 
     public void putAccountAlias(final Bytes accountAlias, final AccountID accountID) {
-        getReadCache(AliasesReadableKVState.STATE_ID)
-                .putIfAbsent(ProtoBytes.newBuilder().value(accountAlias).build(), accountID);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public void putAccountNum(final AccountID accountID, final Account account) {
-        getReadCache(AccountReadableKVState.STATE_ID).putIfAbsent(accountID, account);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private Map<Object, Object> getReadCache(final int readStateId) {

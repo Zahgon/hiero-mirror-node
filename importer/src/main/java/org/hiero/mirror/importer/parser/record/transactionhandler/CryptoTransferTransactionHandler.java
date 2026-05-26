@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.parser.record.transactionhandler;
 
 import com.hederahashgraph.api.proto.java.AccountAmount;
@@ -25,20 +24,15 @@ class CryptoTransferTransactionHandler extends AbstractTransactionHandler {
 
     @Override
     protected void doUpdateTransaction(Transaction transaction, RecordItem recordItem) {
-        final var transactionBody = recordItem.getTransactionBody().getCryptoTransfer();
-        final var hookExecutionCollector = HookExecutionCollector.create();
-        addHookCalls(transactionBody.getTransfers().getAccountAmountsList(), hookExecutionCollector);
-        addTokenHookCalls(transactionBody.getTokenTransfersList(), hookExecutionCollector);
-        recordItem.setHookExecutionQueue(hookExecutionCollector.buildExecutionQueue());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public TransactionType getType() {
-        return TransactionType.CRYPTOTRANSFER;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    private void addHookCalls(
-            final List<AccountAmount> accountAmountsList, final HookExecutionCollector hookExecutionCollector) {
+    private void addHookCalls(final List<AccountAmount> accountAmountsList, final HookExecutionCollector hookExecutionCollector) {
         for (final var accountAmount : accountAmountsList) {
             final var accountId = accountAmount.getAccountID();
             if (accountAmount.hasPreTxAllowanceHook()) {
@@ -49,32 +43,25 @@ class CryptoTransferTransactionHandler extends AbstractTransactionHandler {
         }
     }
 
-    private void addNftHookCalls(
-            final List<NftTransfer> nftTransfersList, final HookExecutionCollector hookExecutionCollector) {
+    private void addNftHookCalls(final List<NftTransfer> nftTransfersList, final HookExecutionCollector hookExecutionCollector) {
         for (final var nftTransfer : nftTransfersList) {
             // sender hook is executed first
             final var senderAccountId = nftTransfer.getSenderAccountID();
             if (nftTransfer.hasPreTxSenderAllowanceHook()) {
-                hookExecutionCollector.addAllowExecHook(
-                        nftTransfer.getPreTxSenderAllowanceHook(), lookup(senderAccountId));
+                hookExecutionCollector.addAllowExecHook(nftTransfer.getPreTxSenderAllowanceHook(), lookup(senderAccountId));
             } else if (nftTransfer.hasPrePostTxSenderAllowanceHook()) {
-                hookExecutionCollector.addPrePostExecHook(
-                        nftTransfer.getPrePostTxSenderAllowanceHook(), lookup(senderAccountId));
+                hookExecutionCollector.addPrePostExecHook(nftTransfer.getPrePostTxSenderAllowanceHook(), lookup(senderAccountId));
             }
-
             final var receiverAccountId = nftTransfer.getReceiverAccountID();
             if (nftTransfer.hasPreTxReceiverAllowanceHook()) {
-                hookExecutionCollector.addAllowExecHook(
-                        nftTransfer.getPreTxReceiverAllowanceHook(), lookup(receiverAccountId));
+                hookExecutionCollector.addAllowExecHook(nftTransfer.getPreTxReceiverAllowanceHook(), lookup(receiverAccountId));
             } else if (nftTransfer.hasPrePostTxReceiverAllowanceHook()) {
-                hookExecutionCollector.addPrePostExecHook(
-                        nftTransfer.getPrePostTxReceiverAllowanceHook(), lookup(receiverAccountId));
+                hookExecutionCollector.addPrePostExecHook(nftTransfer.getPrePostTxReceiverAllowanceHook(), lookup(receiverAccountId));
             }
         }
     }
 
-    private void addTokenHookCalls(
-            final List<TokenTransferList> tokenTransfersList, final HookExecutionCollector hookExecutionCollector) {
+    private void addTokenHookCalls(final List<TokenTransferList> tokenTransfersList, final HookExecutionCollector hookExecutionCollector) {
         for (final var transferList : tokenTransfersList) {
             addHookCalls(transferList.getTransfersList(), hookExecutionCollector);
             addNftHookCalls(transferList.getNftTransfersList(), hookExecutionCollector);

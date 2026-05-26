@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.downloader.provider;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -32,41 +31,29 @@ final class CompositeStreamFileProvider implements StreamFileProvider {
 
     private final List<ProviderHealth> providers;
 
-    public CompositeStreamFileProvider(
-            final CommonDownloaderProperties properties, final List<StreamFileProvider> providers) {
+    public CompositeStreamFileProvider(final CommonDownloaderProperties properties, final List<StreamFileProvider> providers) {
         final var providerHealth = new ArrayList<ProviderHealth>();
-
         for (int i = 0; i < providers.size(); ++i) {
             final var provider = providers.get(i);
             final var sourceProperties = properties.getSources().get(i);
             providerHealth.add(new ProviderHealth(provider, sourceProperties));
         }
-
         this.providers = Collections.unmodifiableList(providerHealth);
     }
 
     @Override
     public Mono<StreamFileData> get(final StreamFilename streamFilename) {
-        final var index = new AtomicInteger(0);
-        return Mono.fromSupplier(() -> getProvider(index))
-                .flatMap(p -> p.get(streamFilename))
-                .retryWhen(Retry.from(s -> s.map(r -> shouldRetry(r, index))));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public Flux<StreamFileData> list(final ConsensusNode consensusNode, final StreamFilename lastFilename) {
-        final var index = new AtomicInteger(0);
-        return Mono.fromSupplier(() -> getProvider(index))
-                .flatMapMany(p -> p.list(consensusNode, lastFilename))
-                .retryWhen(Retry.from(s -> s.map(r -> shouldRetry(r, index))));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public Mono<String> discoverNetwork() {
-        final var index = new AtomicInteger(0);
-        return Mono.fromSupplier(() -> getProvider(index))
-                .flatMap(StreamFileProvider::discoverNetwork)
-                .retryWhen(Retry.from(s -> s.map(r -> shouldRetry(r, index))));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     // Get the next healthy provider
@@ -74,28 +61,23 @@ final class CompositeStreamFileProvider implements StreamFileProvider {
     private StreamFileProvider getProvider(final AtomicInteger index) {
         for (; index.get() < providers.size(); index.getAndIncrement()) {
             final var provider = providers.get(index.get());
-
             if (provider.isHealthy()) {
                 return provider.getProvider();
             }
         }
-
         return null;
     }
 
     private boolean shouldRetry(final Retry.RetrySignal r, final AtomicInteger index) {
         final var exception = r.failure();
         log.warn("Attempt #{} failed: {}", r.totalRetries() + 1, exception.getMessage());
-
         if (exception instanceof final TransientProviderException t) {
             throw t;
         }
-
         // Ensure we always keep at least one provider available
         if (index.get() + 1 >= providers.size()) {
             throw Exceptions.propagate(exception);
         }
-
         final var provider = providers.get(index.getAndIncrement());
         provider.markUnhealthy();
         return true;
@@ -103,19 +85,18 @@ final class CompositeStreamFileProvider implements StreamFileProvider {
 
     @VisibleForTesting
     boolean isHealthy() {
-        return providers.stream()
-                .filter(ProviderHealth::isHealthy)
-                .map(ProviderHealth::isHealthy)
-                .findFirst()
-                .orElse(false);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Value
     private class ProviderHealth {
 
         private final StreamFileProvider provider;
+
         private final StreamSourceProperties sourceProperties;
-        private final AtomicLong readmitTime = new AtomicLong(0L); // Zero indicates healthy
+
+        // Zero indicates healthy
+        private final AtomicLong readmitTime = new AtomicLong(0L);
 
         /**
          * Determines if the provider is healthy. This has the side effect of marking an unhealthy provider as healthy
@@ -124,19 +105,11 @@ final class CompositeStreamFileProvider implements StreamFileProvider {
          * @return whether the provider is healthy
          */
         boolean isHealthy() {
-            final long readmitMillis = readmitTime.get();
-
-            if (readmitMillis > 0 && readmitMillis <= System.currentTimeMillis()) {
-                readmitTime.compareAndSet(readmitMillis, 0L);
-                return true;
-            }
-
-            return readmitMillis == 0;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         void markUnhealthy() {
-            final long backoff = sourceProperties.getBackoff().toMillis();
-            readmitTime.set(System.currentTimeMillis() + backoff);
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
     }
 }

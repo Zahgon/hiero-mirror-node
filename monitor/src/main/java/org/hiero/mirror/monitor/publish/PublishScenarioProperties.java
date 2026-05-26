@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.publish;
 
 import jakarta.validation.constraints.Max;
@@ -21,7 +20,8 @@ public class PublishScenarioProperties extends ScenarioProperties {
     private boolean logResponse = false;
 
     // Maximum length of the transaction memo string
-    @Min(13) // 13 is the length of the memo timestamp
+    // 13 is the length of the memo timestamp
+    @Min(13)
     @Max(100)
     private int maxMemoLength = 100;
 
@@ -52,6 +52,6 @@ public class PublishScenarioProperties extends ScenarioProperties {
 
     @Override
     public long getLimit() {
-        return limit > 0 ? limit : Long.MAX_VALUE;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

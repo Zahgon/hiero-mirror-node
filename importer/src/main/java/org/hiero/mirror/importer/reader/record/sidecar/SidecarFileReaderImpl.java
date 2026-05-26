@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.reader.record.sidecar;
 
 import jakarta.inject.Named;
@@ -14,20 +13,6 @@ public class SidecarFileReaderImpl implements SidecarFileReader {
 
     @Override
     public void read(SidecarFile sidecarFile, StreamFileData streamFileData) {
-        try (var digestInputStream = new DigestInputStream(
-                streamFileData.getInputStream(),
-                MessageDigest.getInstance(sidecarFile.getHashAlgorithm().getName()))) {
-            var protoSidecarFile = com.hedera.services.stream.proto.SidecarFile.parseFrom(digestInputStream);
-            var bytes = streamFileData.getBytes();
-            sidecarFile.setActualHash(digestInputStream.getMessageDigest().digest());
-            sidecarFile.setBytes(bytes);
-            sidecarFile.setCount(protoSidecarFile.getSidecarRecordsCount());
-            sidecarFile.setRecords(protoSidecarFile.getSidecarRecordsList());
-            sidecarFile.setSize(bytes.length);
-        } catch (InvalidStreamFileException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new InvalidStreamFileException("Error reading sidecar file " + sidecarFile.getName(), e);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

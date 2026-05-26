@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.grpc.controller;
 
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -41,34 +40,22 @@ final class ConsensusController extends ConsensusServiceGrpc.ConsensusServiceImp
 
     @Override
     public void subscribeTopic(ConsensusTopicQuery request, StreamObserver<ConsensusTopicResponse> responseObserver) {
-        final var disposable = Mono.fromCallable(() -> toFilter(request))
-                .flatMapMany(topicMessageService::subscribeTopic)
-                .map(this::toResponse)
-                .onErrorMap(ProtoUtil::toStatusRuntimeException)
-                .subscribe(responseObserver::onNext, responseObserver::onError, responseObserver::onCompleted);
-
-        if (responseObserver instanceof ServerCallStreamObserver serverCallStreamObserver) {
-            serverCallStreamObserver.setOnCancelHandler(disposable::dispose);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private TopicMessageFilter toFilter(ConsensusTopicQuery query) {
         final var filter = TopicMessageFilter.builder().limit(query.getLimit());
-
         if (query.hasTopicID()) {
             filter.topicId(EntityId.of(query.getTopicID()));
         }
-
         if (query.hasConsensusStartTime()) {
             long startTime = convertTimestamp(query.getConsensusStartTime());
             filter.startTime(startTime);
         }
-
         if (query.hasConsensusEndTime()) {
             long endTime = convertTimestamp(query.getConsensusEndTime());
             filter.endTime(endTime);
         }
-
         return filter.build();
     }
 
@@ -82,36 +69,19 @@ final class ConsensusController extends ConsensusServiceGrpc.ConsensusServiceImp
 
     // Consider caching this conversion for multiple subscribers to the same topic if the need arises.
     private ConsensusTopicResponse toResponse(TopicMessage t) {
-        final var consensusTopicResponseBuilder = ConsensusTopicResponse.newBuilder()
-                .setConsensusTimestamp(ProtoUtil.toTimestamp(t.getConsensusTimestamp()))
-                .setMessage(ProtoUtil.toByteString(t.getMessage()))
-                .setRunningHash(ProtoUtil.toByteString(t.getRunningHash()))
-                .setRunningHashVersion(
-                        Objects.requireNonNullElse(t.getRunningHashVersion(), DEFAULT_RUNNING_HASH_VERSION))
-                .setSequenceNumber(t.getSequenceNumber());
-
+        final var consensusTopicResponseBuilder = ConsensusTopicResponse.newBuilder().setConsensusTimestamp(ProtoUtil.toTimestamp(t.getConsensusTimestamp())).setMessage(ProtoUtil.toByteString(t.getMessage())).setRunningHash(ProtoUtil.toByteString(t.getRunningHash())).setRunningHashVersion(Objects.requireNonNullElse(t.getRunningHashVersion(), DEFAULT_RUNNING_HASH_VERSION)).setSequenceNumber(t.getSequenceNumber());
         if (t.getChunkNum() != null) {
-            ConsensusMessageChunkInfo.Builder chunkBuilder = ConsensusMessageChunkInfo.newBuilder()
-                    .setNumber(t.getChunkNum())
-                    .setTotal(t.getChunkTotal());
-
-            TransactionID transactionID = parseTransactionID(
-                    t.getInitialTransactionId(), t.getTopicId().getNum(), t.getSequenceNumber());
+            ConsensusMessageChunkInfo.Builder chunkBuilder = ConsensusMessageChunkInfo.newBuilder().setNumber(t.getChunkNum()).setTotal(t.getChunkTotal());
+            TransactionID transactionID = parseTransactionID(t.getInitialTransactionId(), t.getTopicId().getNum(), t.getSequenceNumber());
             EntityId payerAccountEntity = t.getPayerAccountId();
             var validStartInstant = ProtoUtil.toTimestamp(t.getValidStartTimestamp());
-
             if (transactionID != null) {
                 chunkBuilder.setInitialTransactionID(transactionID);
             } else if (payerAccountEntity != null && validStartInstant != null) {
-                chunkBuilder.setInitialTransactionID(TransactionID.newBuilder()
-                        .setAccountID(payerAccountEntity.toAccountID())
-                        .setTransactionValidStart(validStartInstant)
-                        .build());
+                chunkBuilder.setInitialTransactionID(TransactionID.newBuilder().setAccountID(payerAccountEntity.toAccountID()).setTransactionValidStart(validStartInstant).build());
             }
-
             consensusTopicResponseBuilder.setChunkInfo(chunkBuilder.build());
         }
-
         return consensusTopicResponseBuilder.build();
     }
 

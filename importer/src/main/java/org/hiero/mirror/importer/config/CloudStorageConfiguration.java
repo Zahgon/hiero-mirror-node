@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.config;
 
 import java.net.URI;
@@ -39,98 +38,55 @@ import software.amazon.awssdk.services.s3.S3AsyncClient;
 class CloudStorageConfiguration {
 
     private final BlockProperties blockProperties;
+
     private final CommonProperties commonProperties;
+
     private final CommonDownloaderProperties commonDownloaderProperties;
+
     private final LocalStreamFileProperties localProperties;
+
     private final MetricsExecutionInterceptor metricsExecutionInterceptor;
 
     @Bean
     List<StreamFileProvider> streamFileProviders() {
-        if (StringUtils.isBlank(commonDownloaderProperties.getPathPrefix())) {
-            log.info(
-                    "Configured to download record streams from bucket {} and block streams from bucket {}",
-                    commonDownloaderProperties.getBucketName(),
-                    blockProperties.getBucketName());
-        } else {
-            log.info(
-                    "Configured to download record streams from bucket {} with path prefix {} and block streams from bucket {}",
-                    commonDownloaderProperties.getBucketName(),
-                    commonDownloaderProperties.getPathPrefix(),
-                    blockProperties.getBucketName());
-        }
-
-        var providers = new ArrayList<StreamFileProvider>();
-
-        for (var source : commonDownloaderProperties.getSources()) {
-            var provider =
-                    switch (source.getType()) {
-                        case LOCAL ->
-                            new LocalStreamFileProvider(commonProperties, commonDownloaderProperties, localProperties);
-                        case GCP, S3 ->
-                            new S3StreamFileProvider(
-                                    blockProperties, commonProperties, commonDownloaderProperties, s3Client(source));
-                    };
-
-            providers.add(provider);
-        }
-
-        return providers;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private AwsCredentialsProvider awsCredentialsProvider(StreamSourceProperties sourceProperties) {
         var type = sourceProperties.getType();
-
         if (commonDownloaderProperties.isAnonymousCredentials()) {
             log.info("Setting up {} client using anonymous credentials", type);
             return AnonymousCredentialsProvider.create();
         } else if (sourceProperties.isStaticCredentials()) {
             log.info("Setting up {} client using provided access/secret key", type);
             var credentials = sourceProperties.getCredentials();
-            return StaticCredentialsProvider.create(
-                    AwsBasicCredentials.create(credentials.getAccessKey(), credentials.getSecretKey()));
+            return StaticCredentialsProvider.create(AwsBasicCredentials.create(credentials.getAccessKey(), credentials.getSecretKey()));
         }
-
         log.info("Setting up {} client using default credentials provider", type);
         return DefaultCredentialsProvider.builder().build();
     }
 
     private S3AsyncClient s3Client(StreamSourceProperties sourceProperties) {
-        var httpClient = NettyNioAsyncHttpClient.builder()
-                .connectionTimeout(sourceProperties.getConnectionTimeout())
-                .maxConcurrency(sourceProperties.getMaxConcurrency())
-                .connectionMaxIdleTime(Duration.ofSeconds(5)) // https://github.com/aws/aws-sdk-java-v2/issues/1122
-                .build();
-
+        var httpClient = NettyNioAsyncHttpClient.builder().connectionTimeout(sourceProperties.getConnectionTimeout()).maxConcurrency(sourceProperties.getMaxConcurrency()).connectionMaxIdleTime(// https://github.com/aws/aws-sdk-java-v2/issues/1122
+        Duration.ofSeconds(5)).build();
         if (sourceProperties.getUri() == null) {
             sourceProperties.setUri(URI.create(sourceProperties.getType().getEndpoint()));
         }
-
-        return S3AsyncClient.builder()
-                .credentialsProvider(awsCredentialsProvider(sourceProperties))
-                .endpointOverride(sourceProperties.getUri())
-                .forcePathStyle(true)
-                .httpClient(httpClient)
-                .overrideConfiguration(overrideConfiguration(sourceProperties))
-                .region(Region.of(sourceProperties.getRegion()))
-                .build();
+        return S3AsyncClient.builder().credentialsProvider(awsCredentialsProvider(sourceProperties)).endpointOverride(sourceProperties.getUri()).forcePathStyle(true).httpClient(httpClient).overrideConfiguration(overrideConfiguration(sourceProperties)).region(Region.of(sourceProperties.getRegion())).build();
     }
 
     private ClientOverrideConfiguration overrideConfiguration(StreamSourceProperties sourceProperties) {
         var projectId = sourceProperties.getProjectId();
         var builder = ClientOverrideConfiguration.builder().addExecutionInterceptor(metricsExecutionInterceptor);
-
         if (StringUtils.isNotBlank(projectId)) {
             builder.addExecutionInterceptor(new ExecutionInterceptor() {
+
                 @Override
-                public SdkHttpRequest modifyHttpRequest(
-                        Context.ModifyHttpRequest context, ExecutionAttributes executionAttributes) {
-                    return context.httpRequest().toBuilder()
-                            .appendRawQueryParameter("userProject", projectId)
-                            .build();
+                public SdkHttpRequest modifyHttpRequest(Context.ModifyHttpRequest context, ExecutionAttributes executionAttributes) {
+                    throw new UnsupportedOperationException("STUB: not implemented");
                 }
             });
         }
-
         return builder.build();
     }
 }

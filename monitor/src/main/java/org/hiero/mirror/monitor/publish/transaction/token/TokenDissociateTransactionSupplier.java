@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.publish.transaction.token;
 
 import com.hedera.hashgraph.sdk.AccountId;
@@ -26,10 +25,6 @@ public class TokenDissociateTransactionSupplier implements TransactionSupplier<T
 
     @Override
     public TokenDissociateTransaction get() {
-
-        return new TokenDissociateTransaction()
-                .setTokenIds(List.of(TokenId.fromString(tokenId)))
-                .setAccountId(AccountId.fromString(accountId))
-                .setMaxTransactionFee(Hbar.fromTinybars(maxTransactionFee));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

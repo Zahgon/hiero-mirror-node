@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.downloader.provider;
 
 import java.util.regex.Pattern;
@@ -15,16 +14,12 @@ import reactor.core.publisher.Mono;
 abstract class AbstractStreamFileProvider implements StreamFileProvider {
 
     protected final CommonProperties commonProperties;
+
     protected final CommonDownloaderProperties downloaderProperties;
 
     @Override
     public Mono<String> discoverNetwork() {
-        final var network = downloaderProperties.getImporterProperties().getNetwork();
-        final var networkFilter =
-                Pattern.compile("^%s(-.+)?$".formatted(network)).asPredicate();
-        return doDiscoverNetwork()
-                .filter(networkFilter)
-                .reduce((first, second) -> first.compareTo(second) > 0 ? first : second);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     abstract Flux<String> doDiscoverNetwork();

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.downloader.block.tss;
 
 import com.hedera.cryptography.tss.TSS;
@@ -26,57 +25,34 @@ final class TssVerifierImpl implements TssVerifier {
     private static final Ledger EMPTY = new Ledger();
 
     private final AtomicReference<Optional<Ledger>> ledger = new AtomicReference<>(Optional.empty());
+
     private final LedgerRepository ledgerRepository;
 
-    private volatile @Nullable Ledger ledgerConfig;
-    private volatile @Nullable Ledger ledgerOnChain;
+    @Nullable
+    private volatile Ledger ledgerConfig;
+
+    @Nullable
+    private volatile Ledger ledgerOnChain;
 
     @Override
     public void setLedger(final Ledger ledger, final boolean fromConfig) {
-        if (fromConfig) {
-            ledgerConfig = ledger;
-        } else {
-            ledgerOnChain = ledger;
-        }
-
-        // Clear the atomic reference to reload the ledger
-        this.ledger.set(Optional.empty());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public void verify(final long blockNumber, final byte[] message, final byte[] signature) {
-        final var ledgerId = getLedger().getLedgerId();
-        if (!TSS.verifyTSS(ledgerId, signature, message)) {
-            if (log.isDebugEnabled()) {
-                log.debug(
-                        "Failed to verify TSS signature for block {}: ledgerId={}, message={}, signature={}",
-                        blockNumber,
-                        Hex.encodeHexString(ledgerId),
-                        Hex.encodeHexString(message),
-                        Hex.encodeHexString(signature));
-            }
-
-            throw new SignatureVerificationException("TSS signature verification failed for block " + blockNumber);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     private Ledger getLedger() {
-        return Objects.requireNonNull(ledger.get())
-                .or(() -> {
-                    final var resolved = Optional.ofNullable(ledgerOnChain)
-                            .or(ledgerRepository::findTopByOrderByConsensusTimestampDesc)
-                            .or(() -> Optional.ofNullable(ledgerConfig))
-                            .map(l -> {
-                                onLedgerSet(l);
-                                return l;
-                            })
-                            .or(() -> Optional.of(EMPTY));
-                    ledger.compareAndSet(Optional.empty(), resolved);
-                    return resolved;
-                })
-                .filter(l -> l != EMPTY)
-                .orElseThrow(() -> new IllegalStateException(
-                        "Ledger id, history proof verification key and node contributions not found"));
+        return Objects.requireNonNull(ledger.get()).or(() -> {
+            final var resolved = Optional.ofNullable(ledgerOnChain).or(ledgerRepository::findTopByOrderByConsensusTimestampDesc).or(() -> Optional.ofNullable(ledgerConfig)).map(l -> {
+                onLedgerSet(l);
+                return l;
+            }).or(() -> Optional.of(EMPTY));
+            ledger.compareAndSet(Optional.empty(), resolved);
+            return resolved;
+        }).filter(l -> l != EMPTY).orElseThrow(() -> new IllegalStateException("Ledger id, history proof verification key and node contributions not found"));
     }
 
     private void onLedgerSet(final Ledger ledger) {
@@ -90,7 +66,6 @@ final class TssVerifierImpl implements TssVerifier {
             nodeIds[i] = nodeContribution.getNodeId();
             weights[i] = nodeContribution.getWeight();
         }
-
         TSS.setAddressBook(schnorrPublicKeys, weights, nodeIds);
         WRAPSVerificationKey.setCurrentKey(ledger.getHistoryProofVerificationKey());
     }

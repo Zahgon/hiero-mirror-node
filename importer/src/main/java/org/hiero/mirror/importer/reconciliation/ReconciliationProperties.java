@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.reconciliation;
 
 import jakarta.validation.constraints.NotBlank;
@@ -18,7 +17,8 @@ import org.springframework.validation.annotation.Validated;
 class ReconciliationProperties {
 
     @NotBlank
-    private String cron = "0 0 0 * * *"; // Every day at midnight
+    private String // Every day at midnight
+    cron = "0 0 0 * * *";
 
     @DurationMin(millis = 0)
     private Duration delay = Duration.ofSeconds(1L);
@@ -37,17 +37,16 @@ class ReconciliationProperties {
     private boolean token = false;
 
     public void setStartDate(Instant startDate) {
-        if (startDate == null || startDate.isAfter(endDate)) {
-            String message = String.format("Start date %s must be valid and not after end date %s", startDate, endDate);
-            throw new IllegalArgumentException(message);
-        }
-
-        this.startDate = startDate;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public enum RemediationStrategy {
-        ACCUMULATE, // Continue processing after transfer failures without resetting balances for the next iteration
-        FAIL, // Halt processing on any reconciliation failure
-        RESET, // Continue processing after transfer failures with corrected balances
+
+        // Continue processing after transfer failures without resetting balances for the next iteration
+        ACCUMULATE,
+        // Halt processing on any reconciliation failure
+        FAIL,
+        // Continue processing after transfer failures with corrected balances
+        RESET
     }
 }

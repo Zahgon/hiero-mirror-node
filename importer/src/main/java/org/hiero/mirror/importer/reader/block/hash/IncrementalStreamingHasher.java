@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer.reader.block.hash;
 
 import static org.hiero.mirror.common.util.DomainUtils.createSha384Digest;
 import static org.hiero.mirror.importer.reader.block.hash.HashUtils.hashLeaf;
-
 import java.security.MessageDigest;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,17 +15,24 @@ import java.util.List;
  *
  * <p>This class is based on Hiero Consensus Node's {@code IncrementalStreamingHasher}, located at
  * <a href="https://github.com/hiero-ledger/hiero-consensus-node/blob/main/hedera-node/hedera-app/src/main/java/com/hedera/node/app/blocks/impl/IncrementalStreamingHasher.java">this link</a>.
- *
  */
 final class IncrementalStreamingHasher {
 
-    private static final byte[] HASH_OF_ZERO_BYTES = createSha384Digest().digest(new byte[] {0x0});
+    private static final byte[] HASH_OF_ZERO_BYTES = createSha384Digest().digest(new byte[] { 0x0 });
 
-    /** The hashing algorithm used for computing the hashes. */
+    /**
+     * The hashing algorithm used for computing the hashes.
+     */
     private final MessageDigest digest = createSha384Digest();
-    /** A list to store intermediate hashes as we build the tree. */
+
+    /**
+     * A list to store intermediate hashes as we build the tree.
+     */
     private final List<byte[]> hashList = new LinkedList<>();
-    /** The count of leaves in the tree. */
+
+    /**
+     * The count of leaves in the tree.
+     */
     private long leafCount;
 
     /**
@@ -41,7 +46,7 @@ final class IncrementalStreamingHasher {
      * @param data the raw data for the new leaf
      */
     public void addLeaf(final byte[] data) {
-        addNodeByHash(hashLeaf(digest, data));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -60,21 +65,7 @@ final class IncrementalStreamingHasher {
      *         if no leaves have been added
      */
     public byte[] computeRootHash() {
-        if (hashList.isEmpty()) {
-            // This value is precomputed as the hash of an empty tree; therefore it should _not_ be hashed as a leaf
-            return HASH_OF_ZERO_BYTES;
-        }
-
-        if (hashList.size() == 1) {
-            // This value should already have been hashed as a leaf, and therefore should _not_ be re-hashed
-            return hashList.getFirst();
-        }
-
-        byte[] merkleRootHash = hashList.getLast();
-        for (int i = hashList.size() - 2; i >= 0; i--) {
-            merkleRootHash = hashInternalNode(hashList.get(i), merkleRootHash);
-        }
-        return merkleRootHash;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**

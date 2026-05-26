@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.importer;
 
 import jakarta.validation.Valid;
@@ -31,6 +30,7 @@ import org.springframework.validation.annotation.Validated;
 public class ImporterProperties {
 
     public static final String STREAMS = "streams";
+
     static final String NETWORK_PREFIX_DELIMITER = "-";
 
     @NotNull
@@ -75,66 +75,63 @@ public class ImporterProperties {
     private Version smartContractThrottlingVersion = Version.parse("0.69.0");
 
     public Path getArchiveDestinationFolderPath(StreamFileData streamFileData) {
-        if (groupByDay) {
-            return getStreamPath().resolve(streamFileData.getFilename().substring(0, 10));
-        }
-
-        return getStreamPath();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public String getNetwork() {
-        return StringUtils.substringBefore(this.network, NETWORK_PREFIX_DELIMITER)
-                .toLowerCase();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public String getNetworkPrefix() {
-        var networkPrefix = StringUtils.substringAfter(this.network, NETWORK_PREFIX_DELIMITER);
-        return StringUtils.isEmpty(networkPrefix) ? null : networkPrefix.toLowerCase();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     public enum ConsensusMode {
-        EQUAL, // all nodes equally weighted
-        STAKE, // all nodes specify their node stake
-        STAKE_IN_ADDRESS_BOOK // like STAKE, but only the nodes found in the address book are used in the calculation.
+
+        // all nodes equally weighted
+        EQUAL,
+        // all nodes specify their node stake
+        STAKE,
+        // like STAKE, but only the nodes found in the address book are used in the calculation.
+        STAKE_IN_ADDRESS_BOOK
     }
 
     @NullMarked
     public final class HederaNetwork {
+
         public static final String DEMO = "demo";
+
         public static final String MAINNET = "mainnet";
+
         public static final String OTHER = "other";
+
         public static final String PREVIEWNET = "previewnet";
+
         public static final String TESTNET = "testnet";
 
-        private static final Map<String, CloudBucket> NETWORK_DEFAULT_BUCKETS = Map.of(
-                DEMO, new CloudBucket("hedera-demo-recent-block-streams", "hedera-demo-streams"),
-                MAINNET, new CloudBucket("hedera-mainnet-recent-block-streams", "hedera-mainnet-streams"),
-                // OTHER has no default bucket
-                PREVIEWNET, new CloudBucket("hedera-previewnet-recent-block-streams", "hedera-preview-testnet-streams"),
-                TESTNET, new CloudBucket("hedera-testnet-recent-block-streams", "hedera-testnet-streams-2024-02"));
+        private static final Map<String, CloudBucket> NETWORK_DEFAULT_BUCKETS = Map.of(DEMO, new CloudBucket("hedera-demo-recent-block-streams", "hedera-demo-streams"), MAINNET, new CloudBucket("hedera-mainnet-recent-block-streams", "hedera-mainnet-streams"), // OTHER has no default bucket
+        PREVIEWNET, new CloudBucket("hedera-previewnet-recent-block-streams", "hedera-preview-testnet-streams"), TESTNET, new CloudBucket("hedera-testnet-recent-block-streams", "hedera-testnet-streams-2024-02"));
 
-        private HederaNetwork() {}
+        private HederaNetwork() {
+        }
 
         public static String getBlockStreamBucketName(final String network) {
-            return Optional.ofNullable(NETWORK_DEFAULT_BUCKETS.get(network))
-                    .map(CloudBucket::blockStream)
-                    .orElse("");
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         public static String getBucketName(final String network) {
-            return Optional.ofNullable(NETWORK_DEFAULT_BUCKETS.get(network))
-                    .map(CloudBucket::recordStream)
-                    .orElse("");
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         public static boolean hasCutover(final String network) {
-            return MAINNET.equals(network) || TESTNET.equals(network);
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         public static boolean isAllowAnonymousAccess(final String network) {
-            return DEMO.equals(network);
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
     }
 
-    private record CloudBucket(String blockStream, String recordStream) {}
+    private record CloudBucket(String blockStream, String recordStream) {
+    }
 }

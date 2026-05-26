@@ -1,12 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.restjava.dto;
 
 import static org.hiero.mirror.restjava.common.Constants.FILE_ID;
 import static org.hiero.mirror.restjava.common.Constants.LIMIT;
 import static org.hiero.mirror.restjava.common.Constants.NODE_ID;
 import static org.hiero.mirror.restjava.common.Constants.ORDER;
-
 import jakarta.validation.constraints.Min;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -28,6 +26,7 @@ import org.springframework.data.domain.Sort.Direction;
 public class NetworkNodeRequest {
 
     public static final int DEFAULT_LIMIT = 10;
+
     public static final int MAX_LIMIT = 25;
 
     @RestJavaQueryParam(name = FILE_ID, required = false)
@@ -51,6 +50,6 @@ public class NetworkNodeRequest {
      * network nodes.
      */
     public int getEffectiveLimit() {
-        return Math.min(limit, MAX_LIMIT);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }

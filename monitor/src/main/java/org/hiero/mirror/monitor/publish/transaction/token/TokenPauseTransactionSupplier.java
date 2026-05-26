@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 package org.hiero.mirror.monitor.publish.transaction.token;
 
 import com.hedera.hashgraph.sdk.Hbar;
@@ -21,9 +20,6 @@ public class TokenPauseTransactionSupplier implements TransactionSupplier<TokenP
 
     @Override
     public TokenPauseTransaction get() {
-
-        return new TokenPauseTransaction()
-                .setMaxTransactionFee(Hbar.fromTinybars(maxTransactionFee))
-                .setTokenId(TokenId.fromString(tokenId));
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }
